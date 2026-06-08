@@ -1,0 +1,67 @@
+name: "Windows Nightly"
+
+on:
+  schedule:
+    - cron: "0 20 * * *"
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  build-windows:
+    name: build-windows-x64
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies (vcpkg)
+        shell: pwsh
+        run: |
+          vcpkg install openssl srtp opus srt --triplet x64-windows
+          Write-Host "vcpkg deps installed" -ForegroundColor Green
+
+      - name: Configure CMake
+        shell: pwsh
+        run: |
+          cmake -B trunk/ide/srs_msvc/build `
+                -S trunk/ide/srs_msvc `
+                -G "Visual Studio 17 2022" -A x64 `
+                -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          if ($LASTEXITCODE -ne 0) { throw "CMake configure failed" }
+
+      - name: Build
+        shell: pwsh
+        run: |
+          cmake --build trunk/ide/srs_msvc/build --config Debug
+          if ($LASTEXITCODE -ne 0) { throw "Build failed" }
+
+      - name: Smoke test
+        shell: pwsh
+        run: |
+          $SrsExe = "trunk/ide/srs_msvc/build/Debug/srs.exe"
+          $ConfSrc = "trunk/conf/test.conf"
+          if (-not (Test-Path $SrsExe)) { throw "srs.exe not found" }
+          $proc = Start-Process -FilePath $SrsExe -ArgumentList "-c `"$ConfSrc`"" -NoNewWindow -PassThru
+          Start-Sleep -Seconds 5
+          if ($proc.HasExited) { throw "SRS exited with code $($proc.ExitCode)" }
+          try {
+            $resp = Invoke-WebRequest -Uri "http://localhost:19850/api/v1/versions" -UseBasicParsing -TimeoutSec 5
+            Write-Host "API OK: $($resp.Content)" -ForegroundColor Green
+          } finally {
+            Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+          }
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: srs-win-x64-debug
+          path: |
+            trunk/ide/srs_msvc/build/Debug/srs.exe
+            trunk/ide/srs_msvc/build/Debug/srs.pdb
+            trunk/ide/srs_msvc/build/Debug/*.conf
+            trunk/ide/srs_msvc/build/Debug/*.dll
+          retention-days: 7
