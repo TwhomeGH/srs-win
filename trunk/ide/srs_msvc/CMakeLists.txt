@@ -44,7 +44,7 @@ add_subdirectory(${SRS_TRUNK}/3rdparty/st-srs ${CMAKE_BINARY_DIR}/st-srs)
 # Find external dependencies (install via vcpkg or provide manually)
 # ============================================================
 # For now, we use find_package with REQUIRED components.
-# Install via: vcpkg install openssl srtp opus ffmpeg srt --triplet x64-windows
+# Install via: vcpkg install openssl libsrtp opus ffmpeg srt --triplet x64-windows
 find_package(PkgConfig QUIET)
 
 # OpenSSL

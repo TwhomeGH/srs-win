@@ -53,8 +53,9 @@ jobs:
 
       - name: Install dependencies (vcpkg)
         shell: pwsh
+        continue-on-error: true
         run: |
-          vcpkg install openssl srtp opus srt --triplet x64-windows
+          vcpkg install openssl libsrtp opus srt --triplet x64-windows
 
       - name: Configure CMake
         shell: pwsh
