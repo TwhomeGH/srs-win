@@ -48,6 +48,7 @@ jobs:
           $SrsExe = "trunk/ide/srs_msvc/build/Debug/srs.exe"
           $ConfSrc = "trunk/conf/test.conf"
           if (-not (Test-Path $SrsExe)) { throw "srs.exe not found" }
+          Remove-Item -Path "objs/srs.pid" -ErrorAction SilentlyContinue
           $proc = Start-Process -FilePath $SrsExe -ArgumentList "-c `"$ConfSrc`"" -NoNewWindow -PassThru
           Start-Sleep -Seconds 5
           if ($proc.HasExited) { throw "SRS exited with code $($proc.ExitCode)" }
