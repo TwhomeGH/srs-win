@@ -19,8 +19,19 @@ using namespace std;
 
 // For utest to mock it.
 srs_open_t _srs_open_fn = ::open;
+#ifdef _WIN32
+static ssize_t srs_compat_write(int fildes, const void *buf, size_t nbyte) {
+    return ::_write(fildes, buf, (unsigned int)nbyte);
+}
+static ssize_t srs_compat_read(int fildes, void *buf, size_t nbyte) {
+    return ::_read(fildes, buf, (unsigned int)nbyte);
+}
+srs_write_t _srs_write_fn = srs_compat_write;
+srs_read_t _srs_read_fn = srs_compat_read;
+#else
 srs_write_t _srs_write_fn = ::write;
 srs_read_t _srs_read_fn = ::read;
+#endif
 srs_lseek_t _srs_lseek_fn = ::lseek;
 srs_close_t _srs_close_fn = ::close;
 
@@ -217,7 +228,11 @@ srs_error_t SrsFileReader::open(string p)
         return srs_error_new(ERROR_SYSTEM_FILE_ALREADY_OPENED, "file %s already opened", path_.c_str());
     }
 
+#ifdef _WIN32
+    if ((fd_ = _srs_open_fn(p.c_str(), O_RDONLY | O_BINARY)) < 0) {
+#else
     if ((fd_ = _srs_open_fn(p.c_str(), O_RDONLY)) < 0) {
+#endif
         return srs_error_new(ERROR_SYSTEM_FILE_OPENE, "open file %s failed", p.c_str());
     }
 

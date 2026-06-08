@@ -39,6 +39,44 @@
 #ifndef __ST_THREAD_H__
 #define __ST_THREAD_H__
 
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
+#include <io.h>
+#include <time.h>
+#include <errno.h>
+#include <process.h>
+#ifndef POLLIN
+#define POLLIN      0x0300
+#define POLLOUT     0x0010
+#define POLLPRI     0x0020
+#define POLLERR     0x0008
+#define POLLHUP     0x0018
+#define POLLNVAL    0x0020
+#endif
+/* Windows doesn't have iovec, use WSABUF instead when needed */
+#ifndef IOV_MAX
+#define IOV_MAX 16
+#endif
+/* Ensure socklen_t is defined */
+#ifndef socklen_t
+#define socklen_t int
+#endif
+/* struct msghdr for Windows (POSIX socket ancillary data) */
+#ifndef HAVE_STRUCT_MSGHDR
+struct msghdr {
+    void *msg_name;
+    int msg_namelen;
+    struct iovec *msg_iov;
+    int msg_iovlen;
+    void *msg_control;
+    int msg_controllen;
+    int msg_flags;
+};
+#define HAVE_STRUCT_MSGHDR
+#endif
+#else
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -46,6 +84,7 @@
 #include <time.h>
 #include <errno.h>
 #include <poll.h>
+#endif
 
 #define ST_VERSION	    "1.9"
 #define ST_VERSION_MAJOR    1

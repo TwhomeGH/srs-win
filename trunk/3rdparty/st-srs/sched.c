@@ -42,8 +42,13 @@
  */
 
 #include <stdlib.h>
+#ifndef _WIN32
 #include <unistd.h>
 #include <fcntl.h>
+#else
+#include <io.h>
+#include <process.h>
+#endif
 #include <string.h>
 #include <time.h>
 #include <errno.h>
@@ -56,33 +61,33 @@
 
 // Global stat.
 #if defined(DEBUG) && defined(DEBUG_STATS)
-__thread unsigned long long _st_stat_sched_15ms = 0;
-__thread unsigned long long _st_stat_sched_20ms = 0;
-__thread unsigned long long _st_stat_sched_25ms = 0;
-__thread unsigned long long _st_stat_sched_30ms = 0;
-__thread unsigned long long _st_stat_sched_35ms = 0;
-__thread unsigned long long _st_stat_sched_40ms = 0;
-__thread unsigned long long _st_stat_sched_80ms = 0;
-__thread unsigned long long _st_stat_sched_160ms = 0;
-__thread unsigned long long _st_stat_sched_s = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sched_15ms = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sched_20ms = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sched_25ms = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sched_30ms = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sched_35ms = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sched_40ms = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sched_80ms = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sched_160ms = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sched_s = 0;
 
-__thread unsigned long long _st_stat_thread_run = 0;
-__thread unsigned long long _st_stat_thread_idle = 0;
-__thread unsigned long long _st_stat_thread_yield = 0;
-__thread unsigned long long _st_stat_thread_yield2 = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_thread_run = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_thread_idle = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_thread_yield = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_thread_yield2 = 0;
 #endif
 
 
 /* Global data */
-__thread _st_vp_t _st_this_vp;           /* This VP */
-__thread _st_thread_t *_st_this_thread;  /* Current thread */
-__thread int _st_active_count = 0;       /* Active thread count */
+ST_THREAD_LOCAL _st_vp_t _st_this_vp;           /* This VP */
+ST_THREAD_LOCAL _st_thread_t *_st_this_thread;  /* Current thread */
+ST_THREAD_LOCAL int _st_active_count = 0;       /* Active thread count */
 
-__thread time_t _st_curr_time = 0;       /* Current time as returned by time(2) */
-__thread st_utime_t _st_last_tset;       /* Last time it was fetched */
+ST_THREAD_LOCAL time_t _st_curr_time = 0;       /* Current time as returned by time(2) */
+ST_THREAD_LOCAL st_utime_t _st_last_tset;       /* Last time it was fetched */
 
 // We should initialize the thread-local variable in st_init().
-extern __thread _st_clist_t _st_free_stacks;
+extern ST_THREAD_LOCAL _st_clist_t _st_free_stacks;
 
 int st_poll(struct pollfd *pds, int npds, st_utime_t timeout)
 {
@@ -174,6 +179,14 @@ int st_init(void)
         /* Already initialized */
         return 0;
     }
+
+#ifdef _WIN32
+    /* Initialize Winsock */
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        return -1;
+    }
+#endif
     
     /* We can ignore return value here */
     st_set_eventsys(ST_EVENTSYS_DEFAULT);
@@ -197,7 +210,15 @@ int st_init(void)
     if ((*_st_eventsys->init)() < 0)
         return -1;
     
+#ifdef _WIN32
+    {
+        SYSTEM_INFO si;
+        GetSystemInfo(&si);
+        _st_this_vp.pagesize = (int)si.dwPageSize;
+    }
+#else
     _st_this_vp.pagesize = getpagesize();
+#endif
     _st_this_vp.last_clock = st_utime();
     
     /*
@@ -235,6 +256,9 @@ int st_init(void)
 void st_destroy(void)
 {
     (*_st_eventsys->destroy)();
+#ifdef _WIN32
+    WSACleanup();
+#endif
 }
 
 
@@ -719,8 +743,8 @@ int _st_iterate_threads_flag = 0;
 
 void _st_iterate_threads(void)
 {
-    static __thread _st_thread_t *thread = NULL;
-    static __thread _st_jmp_buf_t orig_jb, save_jb;
+    static ST_THREAD_LOCAL _st_thread_t *thread = NULL;
+    static ST_THREAD_LOCAL _st_jmp_buf_t orig_jb, save_jb;
     _st_clist_t *q;
     
     if (!_st_iterate_threads_flag) {

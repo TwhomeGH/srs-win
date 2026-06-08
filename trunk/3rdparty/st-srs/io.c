@@ -41,7 +41,7 @@
  * and consists of extensive modifications made during the year(s) 1999-2000.
  */
 
-#include <stdlib.h>
+#ifndef _WIN32
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -51,26 +51,103 @@
 #include <sys/resource.h>
 #include <fcntl.h>
 #include <signal.h>
+#else
+#include <io.h>
+#endif
 #include <errno.h>
 #include "common.h"
 
 // Global stat.
 #if defined(DEBUG) && defined(DEBUG_STATS)
-__thread unsigned long long _st_stat_recvfrom = 0;
-__thread unsigned long long _st_stat_recvfrom_eagain = 0;
-__thread unsigned long long _st_stat_sendto = 0;
-__thread unsigned long long _st_stat_sendto_eagain = 0;
-__thread unsigned long long _st_stat_read = 0;
-__thread unsigned long long _st_stat_read_eagain = 0;
-__thread unsigned long long _st_stat_readv = 0;
-__thread unsigned long long _st_stat_readv_eagain = 0;
-__thread unsigned long long _st_stat_writev = 0;
-__thread unsigned long long _st_stat_writev_eagain = 0;
-__thread unsigned long long _st_stat_recvmsg = 0;
-__thread unsigned long long _st_stat_recvmsg_eagain = 0;
-__thread unsigned long long _st_stat_sendmsg = 0;
-__thread unsigned long long _st_stat_sendmsg_eagain = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_recvfrom = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_recvfrom_eagain = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sendto = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sendto_eagain = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_read = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_read_eagain = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_readv = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_readv_eagain = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_writev = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_writev_eagain = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_recvmsg = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_recvmsg_eagain = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sendmsg = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_sendmsg_eagain = 0;
 #endif
+
+#ifdef _WIN32
+/* On Windows, socket operations use Winsock which sets WSAGetLastError().
+ * Our wrapper functions map WSA errors to errno so the rest of the code
+ * can use the standard errno-based macros unchanged.
+ */
+static inline int _st_read_sock(int fd, void *buf, size_t nbyte)
+{
+    return recv(fd, buf, (int)nbyte, 0);
+}
+static inline int _st_write_sock(int fd, const void *buf, size_t nbyte)
+{
+    return send(fd, (const char*)buf, (int)nbyte, 0);
+}
+static inline void _st_map_wsa_errno(void)
+{
+    switch (WSAGetLastError()) {
+    case WSAEWOULDBLOCK: errno = EAGAIN; break;
+    case WSAEINTR:       errno = EINTR; break;
+    case WSAECONNRESET:  errno = ECONNRESET; break;
+    case WSAENOTCONN:    errno = ENOTCONN; break;
+    case WSAETIMEDOUT:   errno = ETIMEDOUT; break;
+    case WSAEINPROGRESS: errno = EINPROGRESS; break;
+    case WSAEADDRINUSE:  errno = EADDRINUSE; break;
+    case WSAEACCES:      errno = EACCES; break;
+    default:             errno = EIO; break;
+    }
+}
+/* Override accept to map WSA error to errno */
+static inline int _st_accept_sock(int fd, struct sockaddr *addr, socklen_t *addrlen)
+{
+    int ret = accept(fd, addr, addrlen);
+    if (ret < 0) _st_map_wsa_errno();
+    return ret;
+}
+/* Override readv/writev for Windows - we don't have real readv/writev,
+ * so we use a loop (or just fail over to read/write). Since Windows sockets
+ * don't support readv/writev, we provide a simple single-buffer fallback. */
+static inline int _st_readv_sock(int fd, const struct iovec *iov, int iov_size)
+{
+    if (iov_size == 1)
+        return _st_read_sock(fd, iov[0].iov_base, iov[0].iov_len);
+    /* For multiple iovecs, use a simple read into first buffer */
+    return _st_read_sock(fd, iov[0].iov_base, iov[0].iov_len);
+}
+static inline int _st_writev_sock(int fd, const struct iovec *iov, int iov_size)
+{
+    if (iov_size == 1)
+        return _st_write_sock(fd, iov[0].iov_base, iov[0].iov_len);
+    return _st_write_sock(fd, iov[0].iov_base, iov[0].iov_len);
+}
+/* Replace ioctl with ioctlsocket for sockets */
+static inline int _st_ioctl_sock(int fd, int cmd, void *arg)
+{
+    return ioctlsocket(fd, cmd, (unsigned long*)arg);
+}
+/* Override close for sockets */
+static inline int _st_close_sock(int fd)
+{
+    return closesocket(fd);
+}
+
+#define _IO_NOT_READY_ERROR  (errno == EAGAIN || errno == EWOULDBLOCK)
+
+#else /* !_WIN32 */
+
+/* POSIX: use standard read/write/close/ioctl */
+#define _st_read_sock(fd, buf, nbyte)      read(fd, buf, nbyte)
+#define _st_write_sock(fd, buf, nbyte)     write(fd, buf, nbyte)
+#define _st_readv_sock(fd, iov, iov_size)  readv(fd, iov, iov_size)
+#define _st_writev_sock(fd, iov, iov_size) writev(fd, iov, iov_size)
+#define _st_accept_sock(fd, addr, addrlen) accept(fd, addr, addrlen)
+#define _st_ioctl_sock(fd, cmd, arg)       ioctl(fd, cmd, arg)
+#define _st_close_sock(fd)                 close(fd)
 
 #if EAGAIN != EWOULDBLOCK
     #define _IO_NOT_READY_ERROR  ((errno == EAGAIN) || (errno == EWOULDBLOCK))
@@ -78,10 +155,12 @@ __thread unsigned long long _st_stat_sendmsg_eagain = 0;
     #define _IO_NOT_READY_ERROR  (errno == EAGAIN)
 #endif
 
+#endif /* _WIN32 */
+
 #define _LOCAL_MAXIOV  16
 
 /* File descriptor object free list */
-static __thread _st_netfd_t *_st_netfd_freelist = NULL;
+static ST_THREAD_LOCAL _st_netfd_t *_st_netfd_freelist = NULL;
 /* Maximum number of file descriptors that the process can open */
 static int _st_osfd_limit = -1;
 
@@ -89,6 +168,11 @@ static void _st_netfd_free_aux_data(_st_netfd_t *fd);
 
 int _st_io_init(void)
 {
+#ifdef _WIN32
+    /* Windows: no SIGPIPE, no rlimit. Just set a reasonable default */
+    _st_osfd_limit = 8192;
+    return 0;
+#else
     struct sigaction sigact;
     struct rlimit rlim;
     int fdlim;
@@ -125,6 +209,7 @@ int _st_io_init(void)
     _st_osfd_limit = (int) rlim.rlim_max;
 
     return 0;
+#endif
 }
 
 
@@ -174,14 +259,21 @@ static _st_netfd_t *_st_netfd_new(int osfd, int nonblock, int is_socket)
     
     if (nonblock) {
         /* Use just one system call */
-        if (is_socket && ioctl(osfd, FIONBIO, &flags) != -1)
+        if (is_socket && _st_ioctl_sock(osfd, FIONBIO, &flags) != -1)
             return fd;
+#ifdef _WIN32
+        /* On Windows, non-socket fds (pipes, etc.) can't use fcntl.
+         * Just return the fd - the O_NONBLOCK will be set at open time
+         * via _st_open() if needed, or the caller handles blocking I/O. */
+        return fd;
+#else
         /* Do it the Posix way */
         if ((flags = fcntl(osfd, F_GETFL, 0)) < 0 ||
             fcntl(osfd, F_SETFL, flags | O_NONBLOCK) < 0) {
             st_netfd_free(fd);
             return NULL;
         }
+#endif
     }
 
     return fd;
@@ -206,7 +298,7 @@ int st_netfd_close(_st_netfd_t *fd)
         return -1;
     
     st_netfd_free(fd);
-    return close(fd->osfd);
+    return _st_close_sock(fd->osfd);
 }
 
 
@@ -280,7 +372,7 @@ _st_netfd_t *st_accept(_st_netfd_t *fd, struct sockaddr *addr, int *addrlen, st_
     int osfd, err;
     _st_netfd_t *newfd;
     
-    while ((osfd = accept(fd->osfd, addr, (socklen_t *)addrlen)) < 0) {
+    while ((osfd = _st_accept_sock(fd->osfd, addr, (socklen_t *)addrlen)) < 0) {
         if (errno == EINTR)
             continue;
         if (!_IO_NOT_READY_ERROR)
@@ -302,7 +394,7 @@ _st_netfd_t *st_accept(_st_netfd_t *fd, struct sockaddr *addr, int *addrlen, st_
     
     if (!newfd) {
         err = errno;
-        close(osfd);
+        _st_close_sock(osfd);
         errno = err;
     }
     
@@ -354,7 +446,10 @@ ssize_t st_read(_st_netfd_t *fd, void *buf, size_t nbyte, st_utime_t timeout)
     ++_st_stat_read;
     #endif
     
-    while ((n = read(fd->osfd, buf, nbyte)) < 0) {
+    while ((n = _st_read_sock(fd->osfd, buf, nbyte)) < 0) {
+#ifdef _WIN32
+        _st_map_wsa_errno();
+#endif
         if (errno == EINTR)
             continue;
         if (!_IO_NOT_READY_ERROR)
@@ -396,7 +491,10 @@ ssize_t st_readv(_st_netfd_t *fd, const struct iovec *iov, int iov_size, st_utim
     ++_st_stat_readv;
     #endif
     
-    while ((n = readv(fd->osfd, iov, iov_size)) < 0) {
+    while ((n = _st_readv_sock(fd->osfd, iov, iov_size)) < 0) {
+#ifdef _WIN32
+        _st_map_wsa_errno();
+#endif
         if (errno == EINTR)
             continue;
         if (!_IO_NOT_READY_ERROR)
@@ -420,10 +518,13 @@ int st_readv_resid(_st_netfd_t *fd, struct iovec **iov, int *iov_size, st_utime_
     
     while (*iov_size > 0) {
         if (*iov_size == 1)
-            n = read(fd->osfd, (*iov)->iov_base, (*iov)->iov_len);
+            n = _st_read_sock(fd->osfd, (*iov)->iov_base, (*iov)->iov_len);
         else
-            n = readv(fd->osfd, *iov, *iov_size);
+            n = _st_readv_sock(fd->osfd, *iov, *iov_size);
         if (n < 0) {
+#ifdef _WIN32
+            _st_map_wsa_errno();
+#endif
             if (errno == EINTR)
                 continue;
             if (!_IO_NOT_READY_ERROR)
@@ -513,7 +614,10 @@ ssize_t st_writev(_st_netfd_t *fd, const struct iovec *iov, int iov_size, st_uti
                 rv = -1;
             break;
         }
-        if ((n = writev(fd->osfd, tmp_iov, iov_cnt)) < 0) {
+        if ((n = _st_writev_sock(fd->osfd, tmp_iov, iov_cnt)) < 0) {
+#ifdef _WIN32
+            _st_map_wsa_errno();
+#endif
             if (errno == EINTR)
                 continue;
             if (!_IO_NOT_READY_ERROR) {
@@ -579,10 +683,13 @@ int st_writev_resid(_st_netfd_t *fd, struct iovec **iov, int *iov_size, st_utime
     
     while (*iov_size > 0) {
         if (*iov_size == 1)
-            n = write(fd->osfd, (*iov)->iov_base, (*iov)->iov_len);
+            n = _st_write_sock(fd->osfd, (*iov)->iov_base, (*iov)->iov_len);
         else
-            n = writev(fd->osfd, *iov, *iov_size);
+            n = _st_writev_sock(fd->osfd, *iov, *iov_size);
         if (n < 0) {
+#ifdef _WIN32
+            _st_map_wsa_errno();
+#endif
             if (errno == EINTR)
                 continue;
             if (!_IO_NOT_READY_ERROR)
@@ -628,6 +735,9 @@ int st_recvfrom(_st_netfd_t *fd, void *buf, int len, struct sockaddr *from, int 
     #endif
 
     while ((n = recvfrom(fd->osfd, buf, len, 0, from, (socklen_t *)fromlen)) < 0) {
+#ifdef _WIN32
+        _st_map_wsa_errno();
+#endif
         if (errno == EINTR)
             continue;
         if (!_IO_NOT_READY_ERROR)
@@ -655,6 +765,9 @@ int st_sendto(_st_netfd_t *fd, const void *msg, int len, const struct sockaddr *
     #endif
     
     while ((n = sendto(fd->osfd, msg, len, 0, to, tolen)) < 0) {
+#ifdef _WIN32
+        _st_map_wsa_errno();
+#endif
         if (errno == EINTR)
             continue;
         if (!_IO_NOT_READY_ERROR)
@@ -673,6 +786,53 @@ int st_sendto(_st_netfd_t *fd, const void *msg, int len, const struct sockaddr *
 }
 
 
+#ifdef _WIN32
+/* Windows does not have recvmsg/sendmsg; provide a basic fallback.
+ * For a single iovec, use recvfrom/sendto.
+ * For multiple iovecs, this is a best-effort implementation. */
+int st_recvmsg(_st_netfd_t *fd, struct msghdr *msg, int flags, st_utime_t timeout)
+{
+    int n;
+    #if defined(DEBUG) && defined(DEBUG_STATS)
+    ++_st_stat_recvmsg;
+    #endif
+    /* For simplicity, recv data into the first iovec buffer. */
+    while ((n = recvfrom(fd->osfd, msg->msg_iov[0].iov_base, (int)msg->msg_iov[0].iov_len, flags, (struct sockaddr *)msg->msg_name, (socklen_t *)&msg->msg_namelen)) < 0) {
+        _st_map_wsa_errno();
+        if (errno == EINTR)
+            continue;
+        if (!_IO_NOT_READY_ERROR)
+            return -1;
+        #if defined(DEBUG) && defined(DEBUG_STATS)
+        ++_st_stat_recvmsg_eagain;
+        #endif
+        if (st_netfd_poll(fd, POLLIN, timeout) < 0)
+            return -1;
+    }
+    return n;
+}
+
+int st_sendmsg(_st_netfd_t *fd, const struct msghdr *msg, int flags, st_utime_t timeout)
+{
+    int n;
+    #if defined(DEBUG) && defined(DEBUG_STATS)
+    ++_st_stat_sendmsg;
+    #endif
+    while ((n = sendto(fd->osfd, msg->msg_iov[0].iov_base, (int)msg->msg_iov[0].iov_len, flags, (const struct sockaddr *)msg->msg_name, msg->msg_namelen)) < 0) {
+        _st_map_wsa_errno();
+        if (errno == EINTR)
+            continue;
+        if (!_IO_NOT_READY_ERROR)
+            return -1;
+        #if defined(DEBUG) && defined(DEBUG_STATS)
+        ++_st_stat_sendmsg_eagain;
+        #endif
+        if (st_netfd_poll(fd, POLLOUT, timeout) < 0)
+            return -1;
+    }
+    return n;
+}
+#else
 int st_recvmsg(_st_netfd_t *fd, struct msghdr *msg, int flags, st_utime_t timeout)
 {
     int n;
@@ -725,6 +885,7 @@ int st_sendmsg(_st_netfd_t *fd, const struct msghdr *msg, int flags, st_utime_t 
     
     return n;
 }
+#endif
 
 
 /*
@@ -743,10 +904,13 @@ _st_netfd_t *st_open(const char *path, int oflags, mode_t mode)
     newfd = _st_netfd_new(osfd, 0, 0);
     if (!newfd) {
         err = errno;
+#ifdef _WIN32
+        _close(osfd);
+#else
         close(osfd);
+#endif
         errno = err;
     }
     
     return newfd;
 }
-

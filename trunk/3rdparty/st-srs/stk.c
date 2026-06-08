@@ -45,16 +45,20 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <sys/mman.h>
+#endif
 #include "common.h"
 
 
 /* How much space to leave between the stacks, at each end */
 #define REDZONE	_st_this_vp.pagesize
 
-__thread _st_clist_t _st_free_stacks;
-__thread int _st_num_free_stacks = 0;
-__thread int _st_randomize_stacks = 0;
+ST_THREAD_LOCAL _st_clist_t _st_free_stacks;
+ST_THREAD_LOCAL int _st_num_free_stacks = 0;
+ST_THREAD_LOCAL int _st_randomize_stacks = 0;
 
 static char *_st_new_stk_segment(int size);
 static void _st_delete_stk_segment(char *vaddr, int size);
@@ -93,7 +97,7 @@ _st_stack_t *_st_stack_new(int stack_size)
         st_clist_remove(&ts->links);
         _st_num_free_stacks--;
 
-#if defined(DEBUG) && !defined(MD_NO_PROTECT)
+#if defined(DEBUG) && !defined(MD_NO_PROTECT) && !defined(_WIN32)
         mprotect(ts->vaddr, REDZONE, PROT_READ | PROT_WRITE);
         mprotect(ts->stk_top + extra, REDZONE, PROT_READ | PROT_WRITE);
 #endif
@@ -117,7 +121,7 @@ _st_stack_t *_st_stack_new(int stack_size)
     ts->stk_top = ts->stk_bottom + stack_size;
 
     /* For example, in OpenWRT, the memory at the begin minus 16B by mprotect is read-only. */
-#if defined(DEBUG) && !defined(MD_NO_PROTECT)
+#if defined(DEBUG) && !defined(MD_NO_PROTECT) && !defined(_WIN32)
     mprotect(ts->vaddr, REDZONE, PROT_NONE);
     mprotect(ts->stk_top + extra, REDZONE, PROT_NONE);
 #endif
@@ -149,7 +153,11 @@ void _st_stack_free(_st_stack_t *ts)
 
 static char *_st_new_stk_segment(int size)
 {
-#ifdef MALLOC_STACK
+#ifdef _WIN32
+    /* Use VirtualAlloc on Windows for stack allocation */
+    void *vaddr = VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (!vaddr) return NULL;
+#elif defined(MALLOC_STACK)
     void *vaddr = malloc(size);
 #else
     static int zero_fd = -1;
@@ -172,7 +180,7 @@ static char *_st_new_stk_segment(int size)
     if (vaddr == (void *)MAP_FAILED)
         return NULL;
     
-#endif /* MALLOC_STACK */
+#endif /* !WIN32 / MALLOC_STACK / MMAP */
     
     return (char *)vaddr;
 }
@@ -180,7 +188,10 @@ static char *_st_new_stk_segment(int size)
 
 void _st_delete_stk_segment(char *vaddr, int size)
 {
-#ifdef MALLOC_STACK
+#ifdef _WIN32
+    (void)size;
+    VirtualFree(vaddr, 0, MEM_RELEASE);
+#elif defined(MALLOC_STACK)
     free(vaddr);
 #else
     (void) munmap(vaddr, size);

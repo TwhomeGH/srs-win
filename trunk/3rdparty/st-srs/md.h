@@ -183,6 +183,28 @@ extern void _st_md_cxt_restore(_st_jmp_buf_t env, int val);
         (void) gettimeofday(&tv, NULL); \
         return (tv.tv_sec * 1000000LL + tv.tv_usec)
 
+#elif defined(_WIN32) || defined(_WIN64)
+
+    /*
+     * Native Windows (MSVC/MinGW-w64) build.
+     * Uses Winsock select() for event system, VirtualAlloc for stack.
+     */
+    #define MD_ACCEPT_NB_INHERITED
+    #define MD_HAVE_SOCKLEN_T
+    #define MD_HAVE_SELECT
+
+    #if defined(_M_AMD64) || defined(_M_X64) || defined(__amd64__) || defined(__x86_64__)
+        #define MD_GET_SP(_t) *((long *)&((_t)->context[0].__jmpbuf[6]))
+    #else
+        #error Unknown CPU architecture for Windows port
+    #endif
+
+    #define MD_GET_UTIME()                                 \
+        LARGE_INTEGER _md_freq, _md_counter;               \
+        QueryPerformanceFrequency(&_md_freq);              \
+        QueryPerformanceCounter(&_md_counter);             \
+        return (_md_counter.QuadPart * 1000000LL) / _md_freq.QuadPart
+
 #else
     #error Unknown OS
 #endif /* OS */

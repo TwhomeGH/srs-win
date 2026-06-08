@@ -47,9 +47,9 @@
 #include "common.h"
 
 
-extern __thread time_t _st_curr_time;
-extern __thread st_utime_t _st_last_tset;
-extern __thread int _st_active_count;
+extern ST_THREAD_LOCAL time_t _st_curr_time;
+extern ST_THREAD_LOCAL st_utime_t _st_last_tset;
+extern ST_THREAD_LOCAL int _st_active_count;
 
 static st_utime_t (*_st_utime)(void) = NULL;
 

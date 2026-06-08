@@ -477,7 +477,11 @@ if [[ $SRS_USE_SYS_SRTP == NO ]]; then
     # If use ASM for SRTP, we enable openssl(with ASM).
     if [[ $SRS_SRTP_ASM == YES ]]; then
         SRTP_OPTIONS="--enable-openssl"
-        SRTP_CONFIGURE="env PKG_CONFIG_PATH=${SRS_DEPENDS_LIBS}/openssl/lib/pkgconfig ./configure"
+        if [[ $SRS_USE_SYS_SSL == YES ]]; then
+            SRTP_CONFIGURE="./configure"
+        else
+            SRTP_CONFIGURE="env PKG_CONFIG_PATH=${SRS_DEPENDS_LIBS}/openssl/lib/pkgconfig ./configure"
+        fi
     else
         SRTP_OPTIONS="--disable-openssl"
         SRTP_CONFIGURE="./configure"
@@ -718,8 +722,12 @@ if [[ $SRS_USE_SYS_SRT == NO ]]; then
         patch -p0 -R ${SRS_OBJS}/${SRS_PLATFORM}/srt-1-fit/srtcore/api.cpp ${SRS_WORKDIR}/3rdparty/patches/srt/api.cpp-01.patch &&
         (
             cd ${SRS_OBJS}/${SRS_PLATFORM}/srt-1-fit &&
-            env PKG_CONFIG_PATH=${SRS_DEPENDS_LIBS}/openssl/lib/pkgconfig \
+            if [[ $SRS_USE_SYS_SSL == YES ]]; then
                 ./configure --prefix=${SRS_DEPENDS_LIBS}/${SRS_PLATFORM}/3rdparty/srt $LIBSRT_OPTIONS
+            else
+                env PKG_CONFIG_PATH=${SRS_DEPENDS_LIBS}/openssl/lib/pkgconfig \
+                    ./configure --prefix=${SRS_DEPENDS_LIBS}/${SRS_PLATFORM}/3rdparty/srt $LIBSRT_OPTIONS
+            fi
         ) &&
         make -C ${SRS_OBJS}/${SRS_PLATFORM}/srt-1-fit ${SRS_JOBS} &&
         make -C ${SRS_OBJS}/${SRS_PLATFORM}/srt-1-fit install &&

@@ -311,6 +311,8 @@ srs_error_t SrsTcpListener::cycle()
 {
     srs_error_t err = srs_success;
 
+    srs_trace("%s listener cycle start", label_.c_str());
+
     while (true) {
         if ((err = trd_->pull()) != srs_success) {
             return srs_error_wrap(err, "tcp listener");
@@ -328,6 +330,8 @@ srs_error_t SrsTcpListener::cycle()
 srs_error_t SrsTcpListener::do_cycle()
 {
     srs_error_t err = srs_success;
+
+    srs_trace("%s listener do_cycle start, fd=%d", label_.c_str(), srs_netfd_fileno(lfd_));
 
     srs_netfd_t fd = srs_accept(lfd_, NULL, NULL, SRS_UTIME_NO_TIMEOUT);
     if (fd == NULL) {

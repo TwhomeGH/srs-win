@@ -641,6 +641,7 @@ scApp.provider("$sc_server", [function(){
             port: 1985,
             rtmp: [1935],
             http: [8080],
+            customURL:"srsapi.coffee0709.cc.cd",
             baseurl: function(){
                 return self.schema + "://" + self.host + (self.port === 80? "": ":" + self.port);
             },

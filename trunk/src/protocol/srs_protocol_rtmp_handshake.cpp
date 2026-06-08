@@ -6,6 +6,7 @@
 
 #include <srs_protocol_rtmp_handshake.hpp>
 
+#include <string.h>
 #include <time.h>
 
 #include <srs_core_autofree.hpp>
@@ -20,6 +21,10 @@
 using namespace srs_internal;
 
 // for openssl_HMACsha256
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+#include <openssl/core_names.h>
+#include <openssl/params.h>
+#endif
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 // for openssl_generate_key
@@ -119,17 +124,67 @@ uint8_t SrsGenuineFPKey[] = {
     0x6E, 0xEC, 0x5D, 0x2D, 0x29, 0x80, 0x6F, 0xAB,
     0x93, 0xB8, 0xE6, 0x36, 0xCF, 0xEB, 0x31, 0xAE}; // 62
 
-srs_error_t do_openssl_HMACsha256(HMAC_CTX *ctx, const void *data, int data_size, void *digest, unsigned int *digest_size)
+srs_error_t do_openssl_HMACsha256(const void *key, int key_size, const void *data, int data_size, void *digest, unsigned int *digest_size)
 {
     srs_error_t err = srs_success;
 
-    if (HMAC_Update(ctx, (unsigned char *)data, data_size) < 0) {
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+    EVP_MAC *mac = EVP_MAC_fetch(NULL, "HMAC", NULL);
+    if (mac == NULL) {
+        return srs_error_new(ERROR_OpenSslCreateHMAC, "hmac fetch");
+    }
+
+    EVP_MAC_CTX *ctx = EVP_MAC_CTX_new(mac);
+    EVP_MAC_free(mac);
+    if (ctx == NULL) {
+        return srs_error_new(ERROR_OpenSslCreateHMAC, "hmac new");
+    }
+
+    OSSL_PARAM params[2];
+    params[0] = OSSL_PARAM_construct_utf8_string(OSSL_MAC_PARAM_DIGEST, (char *)"SHA256", 0);
+    params[1] = OSSL_PARAM_construct_end();
+
+    size_t len = 0;
+    if (EVP_MAC_init(ctx, (const unsigned char *)key, key_size, params) != 1) {
+        EVP_MAC_CTX_free(ctx);
+        return srs_error_new(ERROR_OpenSslSha256Init, "hmac init");
+    }
+
+    if (EVP_MAC_update(ctx, (const unsigned char *)data, data_size) != 1) {
+        EVP_MAC_CTX_free(ctx);
         return srs_error_new(ERROR_OpenSslSha256Update, "hmac update");
     }
 
-    if (HMAC_Final(ctx, (unsigned char *)digest, digest_size) < 0) {
+    if (EVP_MAC_final(ctx, (unsigned char *)digest, &len, 32) != 1) {
+        EVP_MAC_CTX_free(ctx);
         return srs_error_new(ERROR_OpenSslSha256Final, "hmac final");
     }
+
+    EVP_MAC_CTX_free(ctx);
+    *digest_size = (unsigned int)len;
+#else
+    HMAC_CTX *ctx = HMAC_CTX_new();
+    if (ctx == NULL) {
+        return srs_error_new(ERROR_OpenSslCreateHMAC, "hmac new");
+    }
+
+    if (HMAC_Init_ex(ctx, (unsigned char *)key, key_size, EVP_sha256(), NULL) != 1) {
+        HMAC_CTX_free(ctx);
+        return srs_error_new(ERROR_OpenSslSha256Init, "hmac init");
+    }
+
+    if (HMAC_Update(ctx, (unsigned char *)data, data_size) != 1) {
+        HMAC_CTX_free(ctx);
+        return srs_error_new(ERROR_OpenSslSha256Update, "hmac update");
+    }
+
+    if (HMAC_Final(ctx, (unsigned char *)digest, digest_size) != 1) {
+        HMAC_CTX_free(ctx);
+        return srs_error_new(ERROR_OpenSslSha256Final, "hmac final");
+    }
+
+    HMAC_CTX_free(ctx);
+#endif
 
     return err;
 }
@@ -152,24 +207,13 @@ srs_error_t openssl_HMACsha256(const void *key, int key_size, const void *data, 
         // use data to digest.
         // @see ./crypto/sha/sha256t.c
         // @see ./crypto/evp/digest.c
-        if (EVP_Digest(data, data_size, temp_digest, &digest_size, EVP_sha256(), NULL) < 0) {
+        if (EVP_Digest(data, data_size, temp_digest, &digest_size, EVP_sha256(), NULL) != 1) {
             return srs_error_new(ERROR_OpenSslSha256EvpDigest, "evp digest");
         }
     } else {
-        // use key-data to digest.
-        HMAC_CTX *ctx = HMAC_CTX_new();
-        if (ctx == NULL) {
-            return srs_error_new(ERROR_OpenSslCreateHMAC, "hmac new");
-        }
         // @remark, if no key, use EVP_Digest to digest,
         // for instance, in python, hashlib.sha256(data).digest().
-        if (HMAC_Init_ex(ctx, temp_key, key_size, EVP_sha256(), NULL) < 0) {
-            HMAC_CTX_free(ctx);
-            return srs_error_new(ERROR_OpenSslSha256Init, "hmac init");
-        }
-
-        err = do_openssl_HMACsha256(ctx, data, data_size, temp_digest, &digest_size);
-        HMAC_CTX_free(ctx);
+        err = do_openssl_HMACsha256(temp_key, key_size, data, data_size, temp_digest, &digest_size);
 
         if (err != srs_success) {
             return srs_error_wrap(err, "hmac sha256");
@@ -245,10 +289,18 @@ srs_error_t SrsDH::copy_public_key(char *pkey, int32_t &pkey_size)
     int32_t key_size = BN_num_bytes(pub_key);
     srs_assert(key_size > 0);
 
-    // maybe the key_size is 127, but dh will write all 128bytes pkey,
-    // so, donot need to set/initialize the pkey.
+    // RTMP complex handshake uses a fixed 128B DH public key field.
     // @see https://github.com/ossrs/srs/issues/165
-    key_size = BN_bn2bin(pub_key, (unsigned char *)pkey);
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+    key_size = BN_bn2binpad(pub_key, (unsigned char *)pkey, pkey_size);
+#else
+    int32_t bn_size = BN_num_bytes(pub_key);
+    memset(pkey, 0, pkey_size);
+    key_size = BN_bn2bin(pub_key, (unsigned char *)pkey + pkey_size - bn_size);
+    if (key_size > 0) {
+        key_size = pkey_size;
+    }
+#endif
     srs_assert(key_size > 0);
 
     // output the size of public key.

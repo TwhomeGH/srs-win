@@ -44,3 +44,24 @@ cmake-build-debug
 /trunk/ide/vscode-build
 /build/
 
+# Windows build artifacts
+trunk/ide/srs_msvc/build/
+trunk/build/
+trunk/trunk/
+
+# Runtime data
+trunk/data/
+
+# Log files
+*.log
+srs_*.txt
+stderr*.txt
+stdout*.txt
+st_*.txt
+accept.txt
+et --hard
+test_open.c
+
+# Visual Studio Code local config
+.vscode/
+

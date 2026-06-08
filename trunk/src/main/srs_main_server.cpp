@@ -7,8 +7,14 @@
 #include <srs_core.hpp>
 
 #include <stdlib.h>
+#ifndef _WIN32
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
+#else
+#include <io.h>
+#include <process.h>
+#endif
 
 #include <sstream>
 using namespace std;
@@ -27,9 +33,6 @@ using namespace std;
 #ifdef SRS_SANITIZER_LOG
 #include <sanitizer/asan_interface.h>
 #endif
-
-#include <unistd.h>
-using namespace std;
 
 #include <srs_app_circuit_breaker.hpp>
 #include <srs_app_config.hpp>
@@ -379,7 +382,11 @@ void show_macro_features()
               srsu2msi(SRS_PERF_MW_SLEEP), possible_mr_latency, srsu2msi(SRS_PERF_PLAY_QUEUE));
 
 #if VERSION_MAJOR > VERSION_STABLE
+#ifdef _MSC_VER
+#pragma message("Warning: Current branch is not stable.")
+#else
 #warning "Current branch is not stable."
+#endif
     srs_warn("%s/%s is not stable", RTMP_SIG_SRS_KEY, RTMP_SIG_SRS_VERSION);
 #endif
 
@@ -408,6 +415,7 @@ srs_error_t run_directly_or_daemon()
         return srs_success;
     }
 
+#ifndef _WIN32
     srs_trace("start daemon mode...");
 
     int pid = fork();
@@ -444,11 +452,20 @@ srs_error_t run_directly_or_daemon()
     }
 
     return err;
+#else
+    // Windows does not support fork(), running as foreground server.
+    srs_warn("daemon mode not supported on Windows, running as foreground");
+    if ((err = run_srs_server()) != srs_success) {
+        return srs_error_wrap(err, "run server");
+    }
+    return srs_success;
+#endif
 }
 
 srs_error_t run_srs_server()
 {
     srs_error_t err = srs_success;
+    srs_trace("run_srs_server: creating SrsServer");
 
     _srs_server = new SrsServer();
 

@@ -45,9 +45,53 @@
 #define __ST_COMMON_H__
 
 #include <stddef.h>
+#ifndef _WIN32
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#else
+#include <winsock2.h>
+#include <windows.h>
+#include <process.h>
+#include <time.h>
+#include <stdlib.h>
+/* Prevent redefinition of ERROR macro from windows.h */
+#ifndef ERROR_SUCCESS
+#define ERROR_SUCCESS 0L
+#endif
+#ifndef O_NONBLOCK
+#define O_NONBLOCK 0x4000
+#endif
+/* struct iovec for Windows (io.c uses it) */
+struct iovec {
+    void *iov_base;
+    size_t iov_len;
+};
+/* Provide ssize_t and mode_t for MSVC before public.h uses them */
+#ifndef _SSIZE_T_DEFINED
+#ifdef _WIN64
+typedef __int64 ssize_t;
+#else
+typedef int ssize_t;
+#endif
+#define _SSIZE_T_DEFINED
+#endif
+#ifndef _MODE_T_DEFINED
+typedef unsigned short mode_t;
+#define _MODE_T_DEFINED
+#endif
+/* Provide random/srandom for MSVC */
+#ifndef HAVE_RANDOM
+/* Note: Use rand() based fallback; rand_s() requires _CRT_RAND_S before stdlib.h */
+static inline long random(void) {
+    return (long)((rand() << 15) ^ rand()) & 0x7FFFFFFF;
+}
+static inline void srandom(unsigned int seed) {
+    srand(seed);
+}
+#define HAVE_RANDOM
+#endif
+#endif
 #include <setjmp.h>
 
 /* Enable assertions only if DEBUG is defined */
@@ -244,9 +288,15 @@ typedef struct _st_netfd {
  * Current vp, thread, and event system
  */
 
-extern __thread _st_vp_t        _st_this_vp;
-extern __thread _st_thread_t *_st_this_thread;
-extern __thread _st_eventsys_t *_st_eventsys;
+#ifdef _WIN32
+#define ST_THREAD_LOCAL __declspec(thread)
+#else
+#define ST_THREAD_LOCAL __thread
+#endif
+
+extern ST_THREAD_LOCAL _st_vp_t        _st_this_vp;
+extern ST_THREAD_LOCAL _st_thread_t *_st_this_thread;
+extern ST_THREAD_LOCAL _st_eventsys_t *_st_eventsys;
 
 
 /*****************************************

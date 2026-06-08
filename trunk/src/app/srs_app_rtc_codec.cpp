@@ -211,7 +211,14 @@ srs_error_t SrsAudioTranscoder::init_dec(SrsAudioCodecId src_codec)
         return srs_error_new(ERROR_RTC_RTP_MUXER, "Could not open codec");
     }
 
-    dec_->channel_layout = av_get_default_channel_layout(dec_->channels);
+    // 棄用
+    // dec_->channel_layout = av_get_default_channel_layout(dec_->channels);
+    
+    // 新版
+    av_channel_layout_default(&dec_->ch_layout, dec_->ch_layout.nb_channels);
+
+
+    
 
     dec_frame_ = av_frame_alloc();
     if (!dec_frame_) {
@@ -240,8 +247,9 @@ srs_error_t SrsAudioTranscoder::init_enc(SrsAudioCodecId dst_codec, int dst_chan
     }
 
     enc_->sample_rate = dst_samplerate;
-    enc_->channels = dst_channels;
-    enc_->channel_layout = av_get_default_channel_layout(dst_channels);
+    // 設定聲道數
+    enc_->ch_layout.nb_channels = dst_channels;
+
     enc_->bit_rate = dst_bit_rate;
     enc_->sample_fmt = codec->sample_fmts[0];
     enc_->time_base.num = 1;
@@ -264,12 +272,15 @@ srs_error_t SrsAudioTranscoder::init_enc(SrsAudioCodecId dst_codec, int dst_chan
     }
 
     enc_frame_ = av_frame_alloc();
+
     if (!enc_frame_) {
         return srs_error_new(ERROR_RTC_RTP_MUXER, "Could not allocate audio encode in frame");
     }
     enc_frame_->format = enc_->sample_fmt;
     enc_frame_->nb_samples = enc_->frame_size;
-    enc_frame_->channel_layout = enc_->channel_layout;
+    
+    // 複製 codec 的 channel layout 到 frame
+    av_channel_layout_copy(&enc_frame_->ch_layout, &enc_->ch_layout);
 
     if (av_frame_get_buffer(enc_frame_, 0) < 0) {
         return srs_error_new(ERROR_RTC_RTP_MUXER, "Could not get audio frame buffer");
@@ -286,11 +297,13 @@ srs_error_t SrsAudioTranscoder::init_enc(SrsAudioCodecId dst_codec, int dst_chan
 
 srs_error_t SrsAudioTranscoder::init_swr(AVCodecContext *decoder)
 {
-    swr_ = swr_alloc_set_opts(NULL, enc_->channel_layout, enc_->sample_fmt, enc_->sample_rate,
-                              decoder->channel_layout, decoder->sample_fmt, decoder->sample_rate, 0, NULL);
-    if (!swr_) {
+    
+    // 使用新版 API，傳入 AVChannelLayout                
+    if (swr_alloc_set_opts2(&swr_, &enc_->ch_layout, enc_->sample_fmt, enc_->sample_rate,
+                        &decoder->ch_layout, decoder->sample_fmt, decoder->sample_rate, 0, NULL) < 0) {
         return srs_error_new(ERROR_RTC_RTP_MUXER, "alloc swr");
     }
+
 
     int error;
     char err_buf[AV_ERROR_MAX_STRING_SIZE] = {0};
@@ -303,23 +316,28 @@ srs_error_t SrsAudioTranscoder::init_swr(AVCodecContext *decoder)
      * Each pointer will later point to the audio samples of the corresponding
      * channels (although it may be NULL for interleaved formats).
      */
-    if (!(swr_data_ = (uint8_t **)calloc(enc_->channels, sizeof(*swr_data_)))) {
+
+    // 用 nb_channels 取代舊的 channels 欄位
+    if (!(swr_data_ = (uint8_t **)calloc(enc_->ch_layout.nb_channels, sizeof(*swr_data_)))) {
         return srs_error_new(ERROR_RTC_RTP_MUXER, "alloc swr buffer");
     }
 
+
     /* Allocate memory for the samples of all channels in one consecutive
      * block for convenience. */
-    if ((error = av_samples_alloc(swr_data_, NULL, enc_->channels, enc_->frame_size, enc_->sample_fmt, 0)) < 0) {
+    if ((error = av_samples_alloc(swr_data_, NULL, enc_->ch_layout.nb_channels,
+                              enc_->frame_size, enc_->sample_fmt, 0)) < 0) {
         return srs_error_new(ERROR_RTC_RTP_MUXER, "alloc swr buffer(%d:%s)", error,
                              av_make_error_string(err_buf, AV_ERROR_MAX_STRING_SIZE, error));
     }
+
 
     return srs_success;
 }
 
 srs_error_t SrsAudioTranscoder::init_fifo()
 {
-    if (!(fifo_ = av_audio_fifo_alloc(enc_->sample_fmt, enc_->channels, 1))) {
+    if (!(fifo_ = av_audio_fifo_alloc(enc_->sample_fmt, enc_->ch_layout.nb_channels, 1)   )   ) {
         return srs_error_new(ERROR_RTC_RTP_MUXER, "Could not allocate FIFO");
     }
     return srs_success;

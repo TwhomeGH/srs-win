@@ -6,22 +6,9 @@
 
 #include <srs_protocol_utility.hpp>
 
+// System/compat includes MUST come before SRS headers to prevent SRS
+// macros (e.g. #define StatusCode "code") from leaking into Windows SDK headers.
 #include <unistd.h>
-
-#include <algorithm>
-#include <arpa/inet.h>
-#include <sstream>
-#include <stdlib.h>
-using namespace std;
-
-#include <srs_kernel_buffer.hpp>
-#include <srs_kernel_codec.hpp>
-#include <srs_kernel_consts.hpp>
-#include <srs_kernel_log.hpp>
-#include <srs_kernel_utility.hpp>
-#include <srs_protocol_io.hpp>
-#include <srs_protocol_rtmp_stack.hpp>
-
 #include <arpa/inet.h>
 #include <ifaddrs.h>
 #include <limits.h>
@@ -31,8 +18,16 @@ using namespace std;
 #include <netdb.h>
 #include <sstream>
 #include <stdlib.h>
-#include <unistd.h>
+#include <algorithm>
 using namespace std;
+
+#include <srs_kernel_buffer.hpp>
+#include <srs_kernel_codec.hpp>
+#include <srs_kernel_consts.hpp>
+#include <srs_kernel_log.hpp>
+#include <srs_kernel_utility.hpp>
+#include <srs_protocol_io.hpp>
+#include <srs_protocol_rtmp_stack.hpp>
 
 #include <srs_core_autofree.hpp>
 #include <srs_kernel_consts.hpp>
@@ -145,7 +140,7 @@ void srs_net_url_guess_stream(string &app, string &param, string &stream)
         app = app.substr(0, pos);
 
         if ((pos = stream.find("?")) != std::string::npos) {
-            param = stream.substr(pos);
+            param = stream.substr(pos + 1); // 注意要 +1，去掉 '?'
             stream = stream.substr(0, pos);
         }
         return;
@@ -155,8 +150,22 @@ void srs_net_url_guess_stream(string &app, string &param, string &stream)
     if ((pos = param.find("/")) != std::string::npos) {
         stream = param.substr(pos + 1);
         param = param.substr(0, pos);
+        return;
+    }
+
+    // ✅ 新增：Extract stream from query string like ?stream=test
+    if (stream.empty() && !param.empty()) {
+        size_t spos = param.find("stream=");
+        if (spos != std::string::npos) {
+            stream = param.substr(spos + 7); // 取出 stream= 後面的值
+            size_t amp = stream.find("&");
+            if (amp != std::string::npos) {
+                stream = stream.substr(0, amp);
+            }
+        }
     }
 }
+
 
 void srs_net_url_parse_query(string q, map<string, string> &query)
 {

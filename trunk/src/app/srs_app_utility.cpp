@@ -328,7 +328,26 @@ SrsProcSystemStat *srs_get_system_proc_stat()
 
 bool get_proc_system_stat(SrsProcSystemStat &r)
 {
-#if !defined(SRS_OSX)
+#if defined(_WIN32)
+    FILETIME idle_time, kernel_time, user_time;
+    if (!GetSystemTimes(&idle_time, &kernel_time, &user_time)) {
+        srs_warn("GetSystemTimes failed, ignore");
+        return false;
+    }
+    // FILETIME is 100-ns intervals; convert to USER_HZ (1/100ths of a second)
+    // by dividing by 10000 (100-ns → 1-ms) then dividing by 10 (ms → 1/100 s).
+    ULARGE_INTEGER idle, kernel, user;
+    idle.LowPart = idle_time.dwLowDateTime;
+    idle.HighPart = idle_time.dwHighDateTime;
+    kernel.LowPart = kernel_time.dwLowDateTime;
+    kernel.HighPart = kernel_time.dwHighDateTime;
+    user.LowPart = user_time.dwLowDateTime;
+    user.HighPart = user_time.dwHighDateTime;
+    r.user_ = user.QuadPart / 10000;
+    r.sys_  = (kernel.QuadPart - idle.QuadPart) / 10000;
+    r.idle_ = idle.QuadPart / 10000;
+    r.nice_ = r.iowait_ = r.irq_ = r.softirq_ = r.steal_ = r.guest_ = 0;
+#elif !defined(SRS_OSX)
     FILE *f = fopen("/proc/stat", "r");
     if (f == NULL) {
         srs_warn("open system cpu stat failed, ignore");
@@ -367,7 +386,48 @@ bool get_proc_system_stat(SrsProcSystemStat &r)
 
 bool get_proc_self_stat(SrsProcSelfStat &r)
 {
-#if !defined(SRS_OSX)
+#if defined(_WIN32)
+    FILETIME create_time, exit_time, kernel_time, user_time;
+    if (!GetProcessTimes(GetCurrentProcess(), &create_time, &exit_time, &kernel_time, &user_time)) {
+        srs_warn("GetProcessTimes failed, ignore");
+        return false;
+    }
+    ULARGE_INTEGER k, u;
+    k.LowPart = kernel_time.dwLowDateTime;
+    k.HighPart = kernel_time.dwHighDateTime;
+    u.LowPart = user_time.dwLowDateTime;
+    u.HighPart = user_time.dwHighDateTime;
+    // FILETIME is 100-ns intervals; convert to USER_HZ (1/100ths of a second)
+    r.utime_ = (unsigned long)(u.QuadPart / 10000);
+    r.stime_ = (unsigned long)(k.QuadPart / 10000);
+    r.cutime_ = r.cstime_ = 0;
+    r.pid_ = GetCurrentProcessId();
+    r.ppid_ = 0;
+    r.priority_ = GetPriorityClass(GetCurrentProcess());
+    SYSTEM_INFO si;
+    GetSystemInfo(&si);
+    r.processor_ = GetCurrentProcessorNumber();
+    // remaining /proc/self/stat fields have no Windows equivalent; zero them
+    r.pgrp_ = r.session_ = r.tty_nr_ = r.tpgid_ = 0;
+    r.flags_ = 0;
+    r.minflt_ = r.cminflt_ = r.majflt_ = r.cmajflt_ = 0;
+    r.nice_ = r.num_threads_ = 0;
+    r.itrealvalue_ = 0;
+    r.starttime_ = 0;
+    r.vsize_ = 0;
+    r.rss_ = 0;
+    r.rsslim_ = 0;
+    r.startcode_ = r.endcode_ = r.startstack_ = 0;
+    r.kstkesp_ = r.kstkeip_ = 0;
+    r.signal_ = r.blocked_ = r.sigignore_ = r.sigcatch_ = 0;
+    r.wchan_ = r.nswap_ = r.cnswap_ = 0;
+    r.exit_signal_ = 0;
+    r.rt_priority_ = r.policy_ = 0;
+    r.delayacct_blkio_ticks_ = 0;
+    r.guest_time_ = r.cguest_time_ = 0;
+    r.state_ = 'R';
+    snprintf(r.comm_, sizeof(r.comm_), "(srs.exe)");
+#elif !defined(SRS_OSX)
     FILE *f = fopen("/proc/self/stat", "r");
     if (f == NULL) {
         srs_warn("open self cpu stat failed, ignore");

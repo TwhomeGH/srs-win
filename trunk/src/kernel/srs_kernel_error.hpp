@@ -405,6 +405,15 @@
     XX(ERROR_USER_END, 9999, "UserEnd", "The last error code of user")
 
 // For human readable error generation. Generate integer error code.
+// Windows wingdi.h defines ERROR as 0, which can break any token starting
+// with ERROR_ (e.g. ERROR_SOCKET_CREATE would become 0_SOCKET_CREATE).
+#ifdef _WIN32
+#pragma push_macro("ERROR")
+#undef ERROR
+// winerror.h defines ERROR_NOT_SUPPORTED as 50L, which collides with our enum value.
+#pragma push_macro("ERROR_NOT_SUPPORTED")
+#undef ERROR_NOT_SUPPORTED
+#endif
 #define SRS_ERRNO_GEN(n, v, m, s) n = v,
 enum SrsErrorCode {
 #ifndef _WIN32
@@ -419,6 +428,10 @@ enum SrsErrorCode {
                             SRS_ERRNO_MAP_USER(SRS_ERRNO_GEN)
 };
 #undef SRS_ERRNO_GEN
+#ifdef _WIN32
+#pragma pop_macro("ERROR_NOT_SUPPORTED")
+#pragma pop_macro("ERROR")
+#endif
 
 // Whether the error code is an system control error.
 // TODO: FIXME: Remove it from underlayer for confused with error and logger.

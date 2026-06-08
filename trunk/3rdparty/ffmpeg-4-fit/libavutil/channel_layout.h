@@ -229,4 +229,38 @@ int av_get_standard_channel_layout(unsigned index, uint64_t *layout,
  * @}
  */
 
+enum AVChannelOrder {
+    AV_CHANNEL_ORDER_UNSPEC,
+    AV_CHANNEL_ORDER_NATIVE,
+    AV_CHANNEL_ORDER_CUSTOM,
+    AV_CHANNEL_ORDER_AMBISONIC,
+};
+
+typedef struct AVChannelLayout {
+    enum AVChannelOrder order;
+    int nb_channels;
+    uint64_t mask;
+    void *opaque;
+} AVChannelLayout;
+
+static inline int av_channel_layout_default(AVChannelLayout *ch_layout, int nb_channels)
+{
+    ch_layout->order = AV_CHANNEL_ORDER_NATIVE;
+    ch_layout->nb_channels = nb_channels;
+    ch_layout->mask = (nb_channels > 0) ? av_get_default_channel_layout(nb_channels) : 0;
+    ch_layout->opaque = NULL;
+    return 0;
+}
+
+static inline int av_channel_layout_copy(AVChannelLayout *dst, const AVChannelLayout *src)
+{
+    *dst = *src;
+    return 0;
+}
+
+/**
+ * @}
+ * @}
+ */
+
 #endif /* AVUTIL_CHANNEL_LAYOUT_H */

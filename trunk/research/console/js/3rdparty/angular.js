@@ -7947,6 +7947,7 @@ function $HttpProvider() {
           config.withCredentials = defaults.withCredentials;
         }
 
+        console.log("HTTP request:", config);
         // send request
         return sendReq(config, reqData, headers).then(transformResponse, transformResponse);
       };

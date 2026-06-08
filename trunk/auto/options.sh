@@ -75,7 +75,7 @@ SRS_LOG_LEVEL_V2=YES
 #
 ################################################################
 # Experts options.
-SRS_USE_SYS_SSL=NO # Use system ssl(-lssl) if required.
+SRS_USE_SYS_SSL=YES # Use system ssl(-lssl) if required.
 SRS_USE_SYS_FFMPEG=NO # Use system ffmpeg if required.
 SRS_USE_SYS_SRT=NO # Use system srt(-lsrt) if required.
 SRS_USE_SYS_SRTP=NO # Use system srtp(-lsrtp) if required.

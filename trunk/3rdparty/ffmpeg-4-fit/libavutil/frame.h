@@ -34,6 +34,7 @@
 #include "rational.h"
 #include "samplefmt.h"
 #include "pixfmt.h"
+#include "channel_layout.h"
 #include "version.h"
 
 
@@ -402,6 +403,10 @@ typedef struct AVFrame {
      * Channel layout of the audio data.
      */
     uint64_t channel_layout;
+    /**
+     * Channel layout of the audio data (new AVChannelLayout based API).
+     */
+    AVChannelLayout ch_layout;
 
     /**
      * AVBuffer references backing the data for this frame. If all elements of

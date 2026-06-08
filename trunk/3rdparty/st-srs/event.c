@@ -35,8 +35,16 @@
  */
 
 #include <stdlib.h>
+#ifndef _WIN32
 #include <unistd.h>
 #include <fcntl.h>
+#else
+#include <io.h>
+#include <winsock2.h>
+#ifndef FD_SETSIZE
+#define FD_SETSIZE 8192
+#endif
+#endif
 #include <string.h>
 #include <time.h>
 #include <errno.h>
@@ -51,14 +59,14 @@
 
 // Global stat.
 #if defined(DEBUG) && defined(DEBUG_STATS)
-__thread unsigned long long _st_stat_epoll = 0;
-__thread unsigned long long _st_stat_epoll_zero = 0;
-__thread unsigned long long _st_stat_epoll_shake = 0;
-__thread unsigned long long _st_stat_epoll_spin = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_epoll = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_epoll_zero = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_epoll_shake = 0;
+ST_THREAD_LOCAL unsigned long long _st_stat_epoll_spin = 0;
 #endif
 
 #if !defined(MD_HAVE_KQUEUE) && !defined(MD_HAVE_EPOLL) && !defined(MD_HAVE_SELECT)
-    #error Only support epoll(for Linux), kqueue(for Darwin) or select(for Cygwin)
+    #error Only support epoll(for Linux), kqueue(for Darwin) or select(for Windows/Cygwin)
 #endif
 
 
@@ -86,7 +94,7 @@ typedef struct _kq_fd_data {
     int revents;
 } _kq_fd_data_t;
 
-static __thread struct _st_kqdata {
+static ST_THREAD_LOCAL struct _st_kqdata {
     _kq_fd_data_t *fd_data;
     struct kevent *evtlist;
     struct kevent *addlist;
@@ -119,7 +127,7 @@ typedef struct _epoll_fd_data {
     int revents;
 } _epoll_fd_data_t;
 
-static __thread struct _st_epolldata {
+static ST_THREAD_LOCAL struct _st_epolldata {
     _epoll_fd_data_t *fd_data;
     struct epoll_event *evtlist;
     int fd_data_size;
@@ -147,7 +155,7 @@ static __thread struct _st_epolldata {
 
 #endif  /* MD_HAVE_EPOLL */
 
-__thread _st_eventsys_t *_st_eventsys = NULL;
+ST_THREAD_LOCAL _st_eventsys_t *_st_eventsys = NULL;
 
 
 #ifdef MD_HAVE_SELECT
@@ -222,6 +230,18 @@ ST_HIDDEN void _st_select_pollset_del(struct pollfd *pds, int npds)
     }
 }
 
+ST_HIDDEN int _st_check_fd_valid(int osfd)
+{
+#ifdef _WIN32
+    /* On Windows, use FIONREAD ioctl to check socket validity */
+    u_long avail;
+    int ret = ioctlsocket((SOCKET)osfd, FIONREAD, &avail);
+    return (ret == 0) ? 0 : -1;
+#else
+    return fcntl(osfd, F_GETFL, 0);
+#endif
+}
+
 ST_HIDDEN void _st_select_find_bad_fd(void)
 {
     _st_clist_t *q;
@@ -244,7 +264,7 @@ ST_HIDDEN void _st_select_find_bad_fd(void)
             pds->revents = 0;
             if (pds->events == 0)
                 continue;
-            if (fcntl(osfd, F_GETFL, 0) < 0) {
+            if (_st_check_fd_valid(osfd) < 0) {
                 pds->revents = POLLNVAL;
                 notify = 1;
             }

@@ -6,6 +6,10 @@
 
 #include <srs_kernel_utility.hpp>
 
+#ifdef _WIN32
+#include <winsock2.h>
+#endif
+
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -825,14 +829,22 @@ string srs_net_address_any()
         int fd = socket(AF_INET, SOCK_DGRAM, 0);
         if (fd != -1) {
             ipv4_active = true;
+#ifdef _WIN32
+            closesocket(fd);
+#else
             close(fd);
+#endif
         }
     }
     if (true) {
         int fd = socket(AF_INET6, SOCK_DGRAM, 0);
         if (fd != -1) {
             ipv6_active = true;
+#ifdef _WIN32
+            closesocket(fd);
+#else
             close(fd);
+#endif
         }
     }
 

@@ -8,10 +8,15 @@
 
 using namespace std;
 
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+#include <openssl/core_names.h>
+#include <openssl/params.h>
+#endif
 #include <openssl/dh.h>
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 #include <openssl/ssl.h>
+#include <openssl/core_names.h> 
 
 #include <srs_core_autofree.hpp>
 #include <srs_kernel_buffer.hpp>
@@ -82,27 +87,65 @@ static srs_error_t hmac_encode(const std::string &algo, const char *key, const i
         return srs_error_new(ERROR_RTC_STUN, "unknown algo=%s", algo.c_str());
     }
 
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+    (void)engine;
+
+    EVP_MAC *mac = EVP_MAC_fetch(NULL, "HMAC", NULL);
+    if (mac == NULL) {
+        return srs_error_new(ERROR_RTC_STUN, "hmac fetch failed");
+    }
+
+    EVP_MAC_CTX *ctx = EVP_MAC_CTX_new(mac);
+    EVP_MAC_free(mac);
+    if (ctx == NULL) {
+        return srs_error_new(ERROR_RTC_STUN, "hmac init failed");
+    }
+
+    OSSL_PARAM params[2];
+    params[0] = OSSL_PARAM_construct_utf8_string(OSSL_MAC_PARAM_DIGEST, (char *)algo.c_str(), 0);
+    params[1] = OSSL_PARAM_construct_end();
+
+    size_t len = 0;
+    if (EVP_MAC_init(ctx, (const unsigned char *)key, key_length, params) != 1) {
+        EVP_MAC_CTX_free(ctx);
+        return srs_error_new(ERROR_RTC_STUN, "hmac init failed");
+    }
+
+    if (EVP_MAC_update(ctx, (const unsigned char *)input, input_length) != 1) {
+        EVP_MAC_CTX_free(ctx);
+        return srs_error_new(ERROR_RTC_STUN, "hmac update failed");
+    }
+
+    if (EVP_MAC_final(ctx, (unsigned char *)output, &len, EVP_MAX_MD_SIZE) != 1) {
+        EVP_MAC_CTX_free(ctx);
+        return srs_error_new(ERROR_RTC_STUN, "hmac final failed");
+    }
+
+    EVP_MAC_CTX_free(ctx);
+    output_length = (unsigned int)len;
+#else
     HMAC_CTX *ctx = HMAC_CTX_new();
     if (ctx == NULL) {
-        return srs_error_new(ERROR_RTC_STUN, "hmac init faied");
+        return srs_error_new(ERROR_RTC_STUN, "hmac init failed");
     }
 
-    if (HMAC_Init_ex(ctx, key, key_length, engine, NULL) < 0) {
+    if (HMAC_Init_ex(ctx, key, key_length, engine, NULL) != 1) {
         HMAC_CTX_free(ctx);
-        return srs_error_new(ERROR_RTC_STUN, "hmac init faied");
+        return srs_error_new(ERROR_RTC_STUN, "hmac init failed");
     }
 
-    if (HMAC_Update(ctx, (const unsigned char *)input, input_length) < 0) {
+    if (HMAC_Update(ctx, (const unsigned char *)input, input_length) != 1) {
         HMAC_CTX_free(ctx);
-        return srs_error_new(ERROR_RTC_STUN, "hmac update faied");
+        return srs_error_new(ERROR_RTC_STUN, "hmac update failed");
     }
 
-    if (HMAC_Final(ctx, (unsigned char *)output, &output_length) < 0) {
+    if (HMAC_Final(ctx, (unsigned char *)output, &output_length) != 1) {
         HMAC_CTX_free(ctx);
-        return srs_error_new(ERROR_RTC_STUN, "hmac final faied");
+        return srs_error_new(ERROR_RTC_STUN, "hmac final failed");
     }
 
     HMAC_CTX_free(ctx);
+#endif
 
     return err;
 }

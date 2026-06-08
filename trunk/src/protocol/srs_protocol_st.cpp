@@ -6,12 +6,23 @@
 
 #include <srs_protocol_st.hpp>
 
+#ifndef _WIN32
 #include <fcntl.h>
 #include <netdb.h>
-#include <st.h>
 #include <sys/resource.h>
 #include <sys/socket.h>
+#else
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#endif
+#include <st.h>
 using namespace std;
+
+#ifdef _WIN32
+#define srs_close_socket(fd) closesocket(fd)
+#else
+#define srs_close_socket(fd) ::close(fd)
+#endif
 
 #include <srs_core_autofree.hpp>
 #include <srs_core_deprecated.hpp>
@@ -39,7 +50,7 @@ bool srs_st_epoll_is_supported(void)
 }
 #endif
 
-#ifdef SRS_SANITIZER
+#if defined(SRS_SANITIZER) && !defined(_WIN32)
 void srs_set_primordial_stack(void *stack_top)
 {
     if (!stack_top) {
@@ -66,8 +77,8 @@ srs_error_t srs_st_init()
 #endif
 
     // Select the best event system available on the OS. In Linux this is
-    // epoll(). On BSD it will be kqueue.
-#if defined(SRS_CYGWIN64)
+    // epoll(). On BSD it will be kqueue. On Windows use select().
+#if defined(SRS_CYGWIN64) || defined(_WIN32)
     if (st_set_eventsys(ST_EVENTSYS_SELECT) == -1) {
         return srs_error_new(ERROR_ST_SET_SELECT, "st enable st failed, current is %s", st_get_eventsys_name());
     }
@@ -132,19 +143,24 @@ void srs_close_stfd_ptr(srs_netfd_t *stfd)
 
 srs_error_t srs_fd_closeexec(int fd)
 {
+#ifndef _WIN32
     int flags = fcntl(fd, F_GETFD);
     flags |= FD_CLOEXEC;
     if (fcntl(fd, F_SETFD, flags) == -1) {
         return srs_error_new(ERROR_SOCKET_SETCLOSEEXEC, "FD_CLOEXEC fd=%d", fd);
     }
-
+#else
+    // On Windows, sockets don't inherit across exec (no fork/exec model).
+    // SetHandleInformation could be used for non-socket handles, but for sockets
+    // this is effectively a no-op.
+#endif
     return srs_success;
 }
 
 srs_error_t srs_fd_reuseaddr(int fd)
 {
     int v = 1;
-    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &v, sizeof(int)) == -1) {
+    if (setsockopt((SOCKET)fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&v, sizeof(int)) == -1) {
         return srs_error_new(ERROR_SOCKET_SETREUSEADDR, "SO_REUSEADDR fd=%d", fd);
     }
 
@@ -155,12 +171,12 @@ srs_error_t srs_fd_reuseport(int fd)
 {
 #if defined(SO_REUSEPORT)
     int v = 1;
-    if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &v, sizeof(int)) == -1) {
+    if (setsockopt((SOCKET)fd, SOL_SOCKET, SO_REUSEPORT, (const char*)&v, sizeof(int)) == -1) {
         srs_warn("SO_REUSEPORT failed for fd=%d", fd);
     }
 #else
-#warning "SO_REUSEPORT is not supported by your OS"
-    srs_warn("SO_REUSEPORT is not supported util Linux kernel 3.9");
+    // SO_REUSEPORT is Linux-specific (since 3.9); silently ignored on other platforms.
+    (void)fd;
 #endif
 
     return srs_success;
@@ -170,7 +186,7 @@ srs_error_t srs_fd_keepalive(int fd)
 {
 #ifdef SO_KEEPALIVE
     int v = 1;
-    if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &v, sizeof(int)) == -1) {
+    if (setsockopt((SOCKET)fd, SOL_SOCKET, SO_KEEPALIVE, (const char*)&v, sizeof(int)) == -1) {
         return srs_error_new(ERROR_SOCKET_SETKEEPALIVE, "SO_KEEPALIVE fd=%d", fd);
     }
 #endif
@@ -238,7 +254,7 @@ srs_error_t srs_tcp_connect(string server, int port, srs_utime_t tm, srs_netfd_t
     srs_assert(!stfd);
     stfd = st_netfd_open_socket(sock);
     if (stfd == NULL) {
-        ::close(sock);
+        srs_close_socket(sock);
         return srs_error_new(ERROR_ST_OPEN_SOCKET, "open socket");
     }
 
@@ -316,7 +332,7 @@ srs_error_t srs_tcp_listen(std::string ip, int port, srs_netfd_t *pfd)
     }
 
     if ((err = do_srs_tcp_listen(fd, r.get(), pfd)) != srs_success) {
-        ::close(fd);
+        srs_close_socket(fd);
         return srs_error_wrap(err, "fd=%d", fd);
     }
 
@@ -378,7 +394,7 @@ srs_error_t srs_udp_listen(std::string ip, int port, srs_netfd_t *pfd)
     }
 
     if ((err = do_srs_udp_listen(fd, r.get(), pfd)) != srs_success) {
-        ::close(fd);
+        srs_close_socket(fd);
         return srs_error_wrap(err, "fd=%d", fd);
     }
 
