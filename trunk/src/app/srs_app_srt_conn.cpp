@@ -10,7 +10,9 @@ using namespace std;
 
 #include <srs_app_config.hpp>
 #include <srs_app_http_hooks.hpp>
+#ifdef SRS_AUTO_RTC_USE
 #include <srs_app_rtc_source.hpp>
+#endif
 #include <srs_app_rtmp_source.hpp>
 #include <srs_app_srt_server.hpp>
 #include <srs_app_srt_source.hpp>
@@ -399,6 +401,7 @@ srs_error_t SrsMpegtsSrtConn::acquire_publish()
     // TODO: FIXME: the code below is repeat in srs_app_rtmp_conn.cpp, refactor it later, use function instead.
 
     // Check whether RTC stream is busy.
+#ifdef SRS_AUTO_RTC_USE
     SrsSharedPtr<SrsRtcSource> rtc;
     bool rtc_server_enabled = _srs_config->get_rtc_server_enabled();
     bool rtc_enabled = _srs_config->get_rtc_enabled(req_->vhost_);
@@ -412,13 +415,14 @@ srs_error_t SrsMpegtsSrtConn::acquire_publish()
             return srs_error_new(ERROR_SYSTEM_STREAM_BUSY, "rtc stream %s busy", req_->get_stream_url().c_str());
         }
     }
+#endif
 
     if (_srs_config->get_srt_to_rtmp(req_->vhost_)) {
         // Bridge to RTMP and RTC streaming.
         SrsCompositeBridge *bridge = new SrsCompositeBridge();
         bridge->append(new SrsFrameToRtmpBridge(live_source));
 
-#if defined(SRS_FFMPEG_FIT)
+#if defined(SRS_FFMPEG_FIT) && defined(SRS_AUTO_RTC_USE)
         if (rtc.get() && _srs_config->get_rtc_from_rtmp(req_->vhost_)) {
             bridge->append(new SrsFrameToRtcBridge(rtc));
         }

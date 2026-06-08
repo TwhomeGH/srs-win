@@ -20,11 +20,15 @@ using namespace std;
 #include <srs_app_http_hooks.hpp>
 #include <srs_app_recv_thread.hpp>
 #include <srs_app_refer.hpp>
+#ifdef SRS_AUTO_RTC_USE
 #include <srs_app_rtc_source.hpp>
+#endif
 #include <srs_app_rtmp_source.hpp>
 #include <srs_app_security.hpp>
 #include <srs_app_server.hpp>
+#ifdef SRS_AUTO_SRT_USE
 #include <srs_app_srt_source.hpp>
+#endif
 #include <srs_app_st.hpp>
 #include <srs_app_statistic.hpp>
 #include <srs_app_stream_token.hpp>
@@ -1018,6 +1022,7 @@ srs_error_t SrsRtmpConn::acquire_publish(SrsSharedPtr<SrsLiveSource> source)
     }
 
     // Check whether RTC stream is busy.
+#ifdef SRS_AUTO_RTC_USE
     SrsSharedPtr<SrsRtcSource> rtc;
     bool rtc_server_enabled = _srs_config->get_rtc_server_enabled();
     bool rtc_enabled = _srs_config->get_rtc_enabled(req->vhost_);
@@ -1030,8 +1035,10 @@ srs_error_t SrsRtmpConn::acquire_publish(SrsSharedPtr<SrsLiveSource> source)
             return srs_error_new(ERROR_SYSTEM_STREAM_BUSY, "rtc stream %s busy", req->get_stream_url().c_str());
         }
     }
+#endif
 
     // Check whether SRT stream is busy.
+#ifdef SRS_AUTO_SRT_USE
     bool srt_server_enabled = _srs_config->get_srt_enabled();
     bool srt_enabled = _srs_config->get_srt_enabled(req->vhost_);
     if (srt_server_enabled && srt_enabled && !info_->edge_) {
@@ -1044,6 +1051,7 @@ srs_error_t SrsRtmpConn::acquire_publish(SrsSharedPtr<SrsLiveSource> source)
             return srs_error_new(ERROR_SYSTEM_STREAM_BUSY, "srt stream %s busy", req->get_stream_url().c_str());
         }
     }
+#endif
 
 #ifdef SRS_RTSP
     // RTSP only support viewer, so we don't need to check it.

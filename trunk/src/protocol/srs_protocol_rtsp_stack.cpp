@@ -22,7 +22,9 @@ using namespace std;
 #define SRS_RTSP_BUFFER 4096
 
 // Forward declaration of RTCP detection function
+#ifdef SRS_AUTO_RTC_USE
 extern bool srs_is_rtcp(const uint8_t *data, size_t len);
+#endif
 
 // get the status text of code.
 string srs_generate_rtsp_status_text(int status)
@@ -741,7 +743,11 @@ srs_error_t SrsRtspStack::try_consume_rtcp_frame()
         }
 
         // Check if the payload is RTCP (starts at offset 4)
+#ifdef SRS_AUTO_RTC_USE
         if (payload_length >= 8 && srs_is_rtcp((const uint8_t *)(data + 4), payload_length)) {
+#else
+        if (false) {
+#endif
             // This is an RTCP packet in RTSP over TCP format
             srs_trace("RTSP: Consuming RTCP packet(%d), channel=%d, size=%d bytes",
                       (uint8_t)data[5], channel, payload_length);

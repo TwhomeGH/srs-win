@@ -16,20 +16,26 @@
 #include <srs_app_listener.hpp>
 #include <srs_app_reload.hpp>
 #include <srs_app_rtmp_source.hpp>
+#ifdef SRS_AUTO_SRT_USE
 #include <srs_app_srt_listener.hpp>
 #include <srs_app_srt_server.hpp>
+#endif
 #include <srs_app_st.hpp>
 #include <srs_kernel_hourglass.hpp>
 #include <srs_protocol_conn.hpp>
+#ifdef SRS_AUTO_SRT_USE
 #include <srs_protocol_srt.hpp>
+#endif
 #include <srs_protocol_st.hpp>
 
 class SrsAsyncCallWorker;
 class SrsUdpMuxListener;
 class SrsUdpMuxSocket;
+#ifdef SRS_AUTO_RTC_USE
 class SrsRtcUserConfig;
 class SrsSdp;
 class SrsRtcConnection;
+#endif
 class ISrsAsyncCallTask;
 class SrsSignalManager;
 class SrsServer;
@@ -52,9 +58,13 @@ class SrsUdpCasterListener;
 class SrsGbListener;
 class SrsRtmpTransport;
 class SrsRtmpsTransport;
+#ifdef SRS_AUTO_SRT_USE
 class SrsSrtAcceptor;
 class SrsSrtEventLoop;
+#endif
+#ifdef SRS_AUTO_RTC_USE
 class SrsRtcSessionManager;
+#endif
 class SrsPidFileLocker;
 
 // Initialize global shared variables cross all threads.
@@ -67,7 +77,9 @@ class SrsServer : public ISrsReloadHandler, // Reload framework for permormance 
                   public ISrsLiveSourceHandler,
                   public ISrsTcpHandler,
                   public ISrsHourGlass,
+#ifdef SRS_AUTO_SRT_USE
                   public ISrsSrtClientHandler,
+#endif
                   public ISrsUdpMuxHandler
 {
 private:
@@ -87,7 +99,9 @@ private:
     // If reusing, HTTP API use the same port of HTTP server.
     bool reuse_api_over_server_;
     // If reusing, WebRTC TCP use the same port of HTTP server.
+#ifdef SRS_AUTO_RTC_USE
     bool reuse_rtc_over_server_;
+#endif
     // RTMP stream listeners, over TCP.
     SrsMultipleTcpListeners *rtmp_listener_;
     // RTMPS stream listeners, over TCP.
@@ -103,7 +117,9 @@ private:
     // listener, and it might be reused by HTTP API and WebRTC TCP.
     SrsMultipleTcpListeners *https_listener_;
     // WebRTC over TCP listener. Please note that there is always a UDP listener by RTC server.
+#ifdef SRS_AUTO_RTC_USE
     SrsMultipleTcpListeners *webrtc_listener_;
+#endif
 #ifdef SRS_RTSP
     // RTSP listener, over TCP.
     SrsMultipleTcpListeners *rtsp_listener_;
@@ -120,15 +136,19 @@ private:
     SrsGbListener *stream_caster_gb28181_;
 #endif
 
+#ifdef SRS_AUTO_SRT_USE
 private:
     // SRT acceptors for MPEG-TS over SRT.
     std::vector<SrsSrtAcceptor *> srt_acceptors_;
+#endif
 
+#ifdef SRS_AUTO_RTC_USE
 private:
     // WebRTC UDP listeners for RTC server functionality.
     std::vector<SrsUdpMuxListener *> rtc_listeners_;
     // WebRTC session manager.
     SrsRtcSessionManager *rtc_session_manager_;
+#endif
 
 private:
     // Signal manager which convert gignal to io message.
@@ -216,26 +236,32 @@ private:
     // Resample the server kbs.
     virtual void resample_kbps();
 
+#ifdef SRS_AUTO_SRT_USE
     // SRT-related methods
     virtual srs_error_t listen_srt_mpegts();
     virtual void close_srt_listeners();
     virtual srs_error_t accept_srt_client(srs_srt_t srt_fd);
     virtual srs_error_t srt_fd_to_resource(srs_srt_t srt_fd, ISrsResource **pr);
+#endif
 
+#ifdef SRS_AUTO_RTC_USE
 private:
     // WebRTC-related methods
     virtual srs_error_t listen_rtc_udp();
+#endif
 
     // Interface ISrsUdpMuxHandler
 public:
     virtual srs_error_t on_udp_packet(SrsUdpMuxSocket *skt);
 
+#ifdef SRS_AUTO_RTC_USE
 private:
     virtual srs_error_t listen_rtc_api();
 
 public:
     virtual SrsRtcConnection *find_rtc_session_by_username(const std::string &ufrag);
     virtual srs_error_t create_rtc_session(SrsRtcUserConfig *ruc, SrsSdp &local_sdp, SrsRtcConnection **psession);
+#endif
 
 private:
     virtual srs_error_t srs_update_server_statistics();

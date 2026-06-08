@@ -7,10 +7,12 @@
 #include <srs_app_stream_bridge.hpp>
 
 #include <srs_app_config.hpp>
+#ifdef SRS_AUTO_RTC_USE
 #include <srs_app_rtc_source.hpp>
+#include <srs_kernel_rtc_rtp.hpp>
+#endif
 #include <srs_app_rtmp_source.hpp>
 #include <srs_core_autofree.hpp>
-#include <srs_kernel_rtc_rtp.hpp>
 #include <srs_protocol_format.hpp>
 #include <srs_protocol_rtmp_stack.hpp>
 #ifdef SRS_RTSP
@@ -65,6 +67,7 @@ srs_error_t SrsFrameToRtmpBridge::on_frame(SrsMediaPacket *frame)
     return source_->on_frame(frame);
 }
 
+#ifdef SRS_AUTO_RTC_USE
 SrsFrameToRtcBridge::SrsFrameToRtcBridge(SrsSharedPtr<SrsRtcSource> source)
 {
     source_ = source;
@@ -133,6 +136,7 @@ srs_error_t SrsFrameToRtcBridge::on_rtp(SrsRtpPacket *pkt)
 {
     return source_->on_rtp(pkt);
 }
+#endif
 
 #ifdef SRS_RTSP
 SrsFrameToRtspBridge::SrsFrameToRtspBridge(SrsSharedPtr<SrsRtspSource> source)

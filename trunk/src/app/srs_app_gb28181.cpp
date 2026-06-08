@@ -34,7 +34,9 @@ using namespace std;
 #define SRS_GB_LARGE_PACKET 1500
 #define SRS_GB_SESSION_DRIVE_INTERVAL (300 * SRS_UTIME_MILLISECONDS)
 
+#ifdef SRS_AUTO_RTC_USE
 extern bool srs_is_rtcp(const uint8_t *data, size_t len);
+#endif
 
 std::string srs_gb_session_state(SrsGbSessionState state)
 {
@@ -548,7 +550,11 @@ srs_error_t SrsGbMediaTcpConn::do_cycle()
         }
 
         // Drop all RTCP packets.
+#ifdef SRS_AUTO_RTC_USE
         if (srs_is_rtcp(buffer_ + reserved, length)) {
+#else
+        if (false) {
+#endif
             nn_rtcp_++;
             srs_warn("PS: Drop RTCP packets nn=%d", nn_rtcp_);
             continue;

@@ -41,19 +41,6 @@
 #include <srs_protocol_raw_avc.hpp>
 #include <srs_protocol_rtp.hpp>
 
-// The NACK sent by us(SFU).
-SrsPps *_srs_pps_snack = NULL;
-SrsPps *_srs_pps_snack2 = NULL;
-SrsPps *_srs_pps_snack3 = NULL;
-SrsPps *_srs_pps_snack4 = NULL;
-SrsPps *_srs_pps_sanack = NULL;
-SrsPps *_srs_pps_svnack = NULL;
-
-SrsPps *_srs_pps_rnack = NULL;
-SrsPps *_srs_pps_rnack2 = NULL;
-SrsPps *_srs_pps_rhnack = NULL;
-SrsPps *_srs_pps_rmnack = NULL;
-
 extern SrsPps *_srs_pps_aloss2;
 extern SrsServer *_srs_server;
 

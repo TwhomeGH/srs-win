@@ -166,7 +166,6 @@ set(SRS_PROTOCOL_SOURCES
     ${SRS_TRUNK}/src/protocol/srs_protocol_rtmp_msg_array.cpp
     ${SRS_TRUNK}/src/protocol/srs_protocol_rtmp_stack.cpp
     ${SRS_TRUNK}/src/protocol/srs_protocol_rtp.cpp
-    ${SRS_TRUNK}/src/protocol/srs_protocol_rtsp_stack.cpp
     ${SRS_TRUNK}/src/protocol/srs_protocol_sdp.cpp
     ${SRS_TRUNK}/src/protocol/srs_protocol_st.cpp
     ${SRS_TRUNK}/src/protocol/srs_protocol_stream.cpp
@@ -214,8 +213,6 @@ set(SRS_APP_SOURCES
     ${SRS_TRUNK}/src/app/srs_app_reload.cpp
     ${SRS_TRUNK}/src/app/srs_app_rtmp_conn.cpp
     ${SRS_TRUNK}/src/app/srs_app_rtmp_source.cpp
-    ${SRS_TRUNK}/src/app/srs_app_rtsp_conn.cpp
-    ${SRS_TRUNK}/src/app/srs_app_rtsp_source.cpp
     ${SRS_TRUNK}/src/app/srs_app_security.cpp
     ${SRS_TRUNK}/src/app/srs_app_server.cpp
     ${SRS_TRUNK}/src/app/srs_app_st.cpp
@@ -322,10 +319,8 @@ file(WRITE ${SRS_AUTO_HEADERS}
 // Features
 #define SRS_AUTO_SSL
 #define SRS_AUTO_SSL_USE
-#define SRS_AUTO_GB28181
 #define SRS_AUTO_H265
 #define SRS_AUTO_H265_USE
-#define SRS_RTSP
 #define SRS_DASH
 
 // Feature _BOOL variants (for API version info)
@@ -362,6 +357,17 @@ else()
 "
     )
 endif()
+if(_srs_rtc_enabled)
+    file(APPEND ${SRS_AUTO_HEADERS}
+"#define SRS_RTSP
+"
+    )
+endif()
+file(APPEND ${SRS_AUTO_HEADERS}
+"#define SRS_AUTO_GB28181
+#define SRS_GB28181
+"
+)
 file(APPEND ${SRS_AUTO_HEADERS}
 "
 // Enable FFMPEG stub for transcoding/ingest (spawns ffmpeg process)
@@ -393,6 +399,17 @@ if(_srs_rtc_enabled)
         ${SRS_TRUNK}/src/app/srs_app_rtc_network.cpp
         ${SRS_TRUNK}/src/app/srs_app_rtc_server.cpp
         ${SRS_TRUNK}/src/app/srs_app_rtc_source.cpp
+    )
+endif()
+
+# Add RTSP source files (requires RTC)
+if(_srs_rtc_enabled)
+    list(APPEND SRS_PROTOCOL_SOURCES
+        ${SRS_TRUNK}/src/protocol/srs_protocol_rtsp_stack.cpp
+    )
+    list(APPEND SRS_APP_SOURCES
+        ${SRS_TRUNK}/src/app/srs_app_rtsp_conn.cpp
+        ${SRS_TRUNK}/src/app/srs_app_rtsp_source.cpp
     )
 endif()
 

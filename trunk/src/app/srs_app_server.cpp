@@ -31,11 +31,13 @@ using namespace std;
 #include <srs_app_log.hpp>
 #include <srs_app_mpegts_udp.hpp>
 #include <srs_app_reload.hpp>
+#ifdef SRS_AUTO_RTC_USE
 #include <srs_app_rtc_api.hpp>
 #include <srs_app_rtc_dtls.hpp>
 #include <srs_app_rtc_network.hpp>
 #include <srs_app_rtc_server.hpp>
 #include <srs_app_rtc_source.hpp>
+#endif
 #include <srs_app_rtmp_conn.hpp>
 #include <srs_app_rtmp_source.hpp>
 #include <srs_app_statistic.hpp>
@@ -50,14 +52,18 @@ using namespace std;
 #include <srs_kernel_utility.hpp>
 #include <srs_protocol_conn.hpp>
 #include <srs_protocol_log.hpp>
+#ifdef SRS_AUTO_RTC_USE
 #include <srs_protocol_rtc_stun.hpp>
+#endif
 #include <srs_protocol_sdp.hpp>
 #ifdef SRS_GB28181
 #include <srs_app_gb28181.hpp>
 #endif
+#ifdef SRS_AUTO_SRT_USE
 #include <srs_app_srt_conn.hpp>
 #include <srs_app_srt_server.hpp>
 #include <srs_app_srt_source.hpp>
+#endif
 #ifdef SRS_RTSP
 #include <srs_app_rtsp_conn.hpp>
 #include <srs_app_rtsp_source.hpp>
@@ -74,8 +80,10 @@ extern SrsReloadState _srs_reload_state;
 extern std::string _srs_reload_id;
 
 // External WebRTC global variables
+#ifdef SRS_AUTO_RTC_USE
 extern SrsRtcBlackhole *_srs_blackhole;
 extern SrsDtlsCertificate *_srs_rtc_dtls_certificate;
+#endif
 
 srs_error_t srs_global_initialize()
 {
@@ -109,16 +117,22 @@ srs_error_t srs_global_initialize()
     _srs_circuit_breaker = new SrsCircuitBreaker();
     _srs_hooks = new SrsHttpHooks();
 
+#ifdef SRS_AUTO_SRT_USE
     _srs_srt_sources = new SrsSrtSourceManager();
+#endif
 
+#ifdef SRS_AUTO_RTC_USE
     _srs_rtc_sources = new SrsRtcSourceManager();
     _srs_blackhole = new SrsRtcBlackhole();
+#endif
 
     // Initialize stream publish token manager
     _srs_stream_publish_tokens = new SrsStreamPublishTokenManager();
 
     _srs_conn_manager = new SrsResourceManager("RTC", true);
+#ifdef SRS_AUTO_RTC_USE
     _srs_rtc_dtls_certificate = new SrsDtlsCertificate();
+#endif
 #ifdef SRS_RTSP
     _srs_rtsp_sources = new SrsRtspSourceManager();
     _srs_rtsp_manager = new SrsResourceManager("RTSP", true);
@@ -159,7 +173,9 @@ SrsServer::SrsServer()
     apis_listener_ = new SrsMultipleTcpListeners(this);
     http_listener_ = new SrsMultipleTcpListeners(this);
     https_listener_ = new SrsMultipleTcpListeners(this);
+#ifdef SRS_AUTO_RTC_USE
     webrtc_listener_ = new SrsMultipleTcpListeners(this);
+#endif
 #ifdef SRS_RTSP
     rtsp_listener_ = new SrsMultipleTcpListeners(this);
 #endif
@@ -172,14 +188,18 @@ SrsServer::SrsServer()
 
     http_server_ = new SrsHttpServer(this);
     reuse_api_over_server_ = false;
+#ifdef SRS_AUTO_RTC_USE
     reuse_rtc_over_server_ = false;
+#endif
 
     http_heartbeat_ = new SrsHttpHeartbeat();
     ingester_ = new SrsIngester();
     timer_ = NULL;
 
+#ifdef SRS_AUTO_RTC_USE
     // Initialize WebRTC components
     rtc_session_manager_ = new SrsRtcSessionManager();
+#endif
 }
 
 SrsServer::~SrsServer()
@@ -207,7 +227,9 @@ SrsServer::~SrsServer()
     srs_freep(apis_listener_);
     srs_freep(http_listener_);
     srs_freep(https_listener_);
+#ifdef SRS_AUTO_RTC_USE
     srs_freep(webrtc_listener_);
+#endif
 #ifdef SRS_RTSP
     srs_freep(rtsp_listener_);
 #endif
@@ -217,8 +239,11 @@ SrsServer::~SrsServer()
 #ifdef SRS_GB28181
     srs_freep(stream_caster_gb28181_);
 #endif
+#ifdef SRS_AUTO_SRT_USE
     close_srt_listeners();
+#endif
 
+#ifdef SRS_AUTO_RTC_USE
     // Cleanup WebRTC components
     if (true) {
         std::vector<SrsUdpMuxListener *>::iterator it;
@@ -230,6 +255,7 @@ SrsServer::~SrsServer()
     }
 
     srs_freep(rtc_session_manager_);
+#endif
 }
 
 void SrsServer::dispose()
@@ -243,7 +269,9 @@ void SrsServer::dispose()
     apis_listener_->close();
     http_listener_->close();
     https_listener_->close();
+#ifdef SRS_AUTO_RTC_USE
     webrtc_listener_->close();
+#endif
 #ifdef SRS_RTSP
     rtsp_listener_->close();
 #endif
@@ -253,7 +281,9 @@ void SrsServer::dispose()
 #ifdef SRS_GB28181
     stream_caster_gb28181_->close();
 #endif
+#ifdef SRS_AUTO_SRT_USE
     close_srt_listeners();
+#endif
 
     // Fast stop to notify FFMPEG to quit, wait for a while then fast kill.
     ingester_->dispose();
@@ -279,7 +309,9 @@ void SrsServer::gracefully_dispose()
     apis_listener_->close();
     http_listener_->close();
     https_listener_->close();
+#ifdef SRS_AUTO_RTC_USE
     webrtc_listener_->close();
+#endif
 #ifdef SRS_RTSP
     rtsp_listener_->close();
 #endif
@@ -289,7 +321,9 @@ void SrsServer::gracefully_dispose()
 #ifdef SRS_GB28181
     stream_caster_gb28181_->close();
 #endif
+#ifdef SRS_AUTO_SRT_USE
     close_srt_listeners();
+#endif
     srs_trace("listeners closed");
 
     // Fast stop to notify FFMPEG to quit, wait for a while then fast kill.
@@ -332,6 +366,7 @@ srs_error_t SrsServer::initialize()
         return srs_error_wrap(err, "init server");
     }
 
+#ifdef SRS_AUTO_SRT_USE
     if ((err = srs_srt_log_initialize()) != srs_success) {
         return srs_error_wrap(err, "srt log initialize");
     }
@@ -345,11 +380,14 @@ srs_error_t SrsServer::initialize()
     if ((err = _srt_eventloop->start()) != srs_success) {
         return srs_error_wrap(err, "srt poller start");
     }
+#endif
 
+#ifdef SRS_AUTO_RTC_USE
     // Initialize WebRTC DTLS certificate
     if ((err = _srs_rtc_dtls_certificate->initialize()) != srs_success) {
         return srs_error_wrap(err, "rtc dtls certificate initialize");
     }
+#endif
 
     // Start the DVR async call.
     if ((err = _srs_dvr_async->start()) != srs_success) {
@@ -366,6 +404,7 @@ srs_error_t SrsServer::initialize()
     vector<string> http_listens = _srs_config->get_http_stream_listens();
     vector<string> https_listens = _srs_config->get_https_stream_listens();
 
+#ifdef SRS_AUTO_RTC_USE
     bool rtc = _srs_config->get_rtc_server_enabled();
     bool rtc_tcp = _srs_config->get_rtc_server_tcp_enabled();
     vector<string> rtc_listens = _srs_config->get_rtc_server_tcp_listens();
@@ -378,6 +417,7 @@ srs_error_t SrsServer::initialize()
         srs_trace("WebRTC tcp=%s reuses https=%s server", srs_strings_join(rtc_listens, ",").c_str(), srs_strings_join(https_listens, ",").c_str());
         reuse_rtc_over_server_ = true;
     }
+#endif
 
     // If enabled and the listen is the same value, reuse port.
     bool api = _srs_config->get_http_api_enabled();
@@ -405,6 +445,7 @@ srs_error_t SrsServer::initialize()
         return srs_error_wrap(err, "http server initialize");
     }
 
+#ifdef SRS_AUTO_RTC_USE
     // Initialize the black hole.
     if ((err = _srs_blackhole->initialize()) != srs_success) {
         return srs_error_wrap(err, "black hole");
@@ -414,6 +455,7 @@ srs_error_t SrsServer::initialize()
     if ((err = rtc_session_manager_->initialize()) != srs_success) {
         return srs_error_wrap(err, "rtc session manager");
     }
+#endif
 
     return err;
 }
@@ -456,13 +498,17 @@ srs_error_t SrsServer::run()
         return srs_error_wrap(err, "live sources");
     }
 
+#ifdef SRS_AUTO_SRT_USE
     if ((err = _srs_srt_sources->initialize()) != srs_success) {
         return srs_error_wrap(err, "srt sources");
     }
+#endif
 
+#ifdef SRS_AUTO_RTC_USE
     if ((err = _srs_rtc_sources->initialize()) != srs_success) {
         return srs_error_wrap(err, "rtc sources");
     }
+#endif
 
 #ifdef SRS_RTSP
     if ((err = _srs_rtsp_sources->initialize()) != srs_success) {
@@ -575,6 +621,7 @@ srs_error_t SrsServer::listen()
         }
     }
 
+#ifdef SRS_AUTO_RTC_USE
     // Start WebRTC over TCP listener.
     string protocol = _srs_config->get_rtc_server_protocol();
     if (!reuse_rtc_over_server_ && protocol != "udp" && _srs_config->get_rtc_server_tcp_enabled()) {
@@ -583,6 +630,7 @@ srs_error_t SrsServer::listen()
             return srs_error_wrap(err, "webrtc tcp listen");
         }
     }
+#endif
 
 #ifdef SRS_RTSP
     // Start RTSP listener. RTC is a critical dependency.
@@ -641,15 +689,19 @@ srs_error_t SrsServer::listen()
         }
     }
 
+#ifdef SRS_AUTO_SRT_USE
     // Listen MPEG-TS over SRT.
     if ((err = listen_srt_mpegts()) != srs_success) {
         return srs_error_wrap(err, "srt mpegts listen");
     }
+#endif
 
+#ifdef SRS_AUTO_RTC_USE
     // Listen WebRTC UDP.
     if ((err = listen_rtc_udp()) != srs_success) {
         return srs_error_wrap(err, "rtc udp listen");
     }
+#endif
 
     if ((err = _srs_conn_manager->start()) != srs_success) {
         return srs_error_wrap(err, "connection manager");
@@ -779,9 +831,11 @@ srs_error_t SrsServer::http_handle()
     srs_trace("http: api mount /console to %s", dir.c_str());
 
     // WebRTC API endpoints
+#ifdef SRS_AUTO_RTC_USE
     if ((err = listen_rtc_api()) != srs_success) {
         return srs_error_wrap(err, "rtc api");
     }
+#endif
 
     return err;
 }
@@ -1076,9 +1130,11 @@ srs_error_t SrsServer::notify(int event, srs_utime_t interval, srs_utime_t tick)
     case 10:
         srs_update_udp_snmp_statistic();
         break;
+#ifdef SRS_AUTO_RTC_USE
     case 11:
         rtc_session_manager_->srs_update_rtc_sessions();
         break;
+#endif
     case 12:
         srs_update_server_statistics();
         break;
@@ -1115,23 +1171,29 @@ void SrsServer::resample_kbps()
         }
 #endif
 
+#ifdef SRS_AUTO_RTC_USE
         SrsRtcTcpConn *tcp = dynamic_cast<SrsRtcTcpConn *>(c);
         if (tcp) {
             stat->kbps_add_delta(c->get_id().c_str(), tcp->delta());
             continue;
         }
+#endif
 
+#ifdef SRS_AUTO_SRT_USE
         SrsMpegtsSrtConn *srt = dynamic_cast<SrsMpegtsSrtConn *>(c);
         if (srt) {
             stat->kbps_add_delta(c->get_id().c_str(), srt->delta());
             continue;
         }
+#endif
 
+#ifdef SRS_AUTO_RTC_USE
         SrsRtcConnection *rtc = dynamic_cast<SrsRtcConnection *>(c);
         if (rtc) {
             stat->kbps_add_delta(c->get_id().c_str(), rtc->delta());
             continue;
         }
+#endif
 
         // Impossible path, because we only create these connections above.
         srs_assert(false);
@@ -1141,6 +1203,7 @@ void SrsServer::resample_kbps()
     stat->kbps_sample();
 }
 
+#ifdef SRS_AUTO_SRT_USE
 srs_error_t SrsServer::listen_srt_mpegts()
 {
     srs_error_t err = srs_success;
@@ -1237,7 +1300,9 @@ srs_error_t SrsServer::srt_fd_to_resource(srs_srt_t srt_fd, ISrsResource **pr)
 
     return err;
 }
+#endif
 
+#ifdef SRS_AUTO_RTC_USE
 srs_error_t SrsServer::listen_rtc_udp()
 {
     srs_error_t err = srs_success;
@@ -1287,12 +1352,18 @@ srs_error_t SrsServer::listen_rtc_udp()
 
     return err;
 }
+#endif
 
 srs_error_t SrsServer::on_udp_packet(SrsUdpMuxSocket *skt)
 {
+#ifdef SRS_AUTO_RTC_USE
     return rtc_session_manager_->on_udp_packet(skt);
+#else
+    return srs_success;
+#endif
 }
 
+#ifdef SRS_AUTO_RTC_USE
 srs_error_t SrsServer::listen_rtc_api()
 {
     srs_error_t err = srs_success;
@@ -1348,6 +1419,7 @@ srs_error_t SrsServer::create_rtc_session(SrsRtcUserConfig *ruc, SrsSdp &local_s
 
     return rtc_session_manager_->create_rtc_session(ruc, local_sdp, psession);
 }
+#endif
 
 srs_error_t SrsServer::srs_update_server_statistics()
 {
@@ -1424,6 +1496,7 @@ srs_error_t SrsServer::do_on_tcp_client(ISrsListener *listener, srs_netfd_t &stf
     srs_netfd_t stfd2 = stfd;
     stfd = NULL;
 
+#ifdef SRS_AUTO_RTC_USE
     // If reuse HTTP server with WebRTC TCP, peek to detect the client.
     if (reuse_rtc_over_server_ && (listener == http_listener_ || listener == https_listener_)) {
         SrsTcpConnection *skt = new SrsTcpConnection(stfd2);
@@ -1453,6 +1526,7 @@ srs_error_t SrsServer::do_on_tcp_client(ISrsListener *listener, srs_netfd_t &stf
             resource = new SrsHttpxConn(_srs_conn_manager, io, http_server_, ip, port, key, cert);
         }
     }
+#endif
 
     // Create resource by normal listeners.
     if (!resource) {
@@ -1470,8 +1544,10 @@ srs_error_t SrsServer::do_on_tcp_client(ISrsListener *listener, srs_netfd_t &stf
             string key = listener == https_listener_ ? _srs_config->get_https_stream_ssl_key() : "";
             string cert = listener == https_listener_ ? _srs_config->get_https_stream_ssl_cert() : "";
             resource = new SrsHttpxConn(_srs_conn_manager, new SrsTcpConnection(stfd2), http_server_, ip, port, key, cert);
+#ifdef SRS_AUTO_RTC_USE
         } else if (listener == webrtc_listener_) {
             resource = new SrsRtcTcpConn(new SrsTcpConnection(stfd2), ip, port);
+#endif
 #ifdef SRS_RTSP
         } else if (listener == rtsp_listener_) {
             resource = new SrsRtspConnection(_srs_conn_manager, new SrsTcpConnection(stfd2), ip, port);
@@ -1486,6 +1562,7 @@ srs_error_t SrsServer::do_on_tcp_client(ISrsListener *listener, srs_netfd_t &stf
         }
     }
 
+#ifdef SRS_AUTO_RTC_USE
     // For RTC TCP connection, use resource executor to manage the resource.
     SrsRtcTcpConn *raw_conn = dynamic_cast<SrsRtcTcpConn *>(resource);
     if (raw_conn) {
@@ -1498,6 +1575,7 @@ srs_error_t SrsServer::do_on_tcp_client(ISrsListener *listener, srs_netfd_t &stf
         }
         return err;
     }
+#endif
 
     // Use connection manager to manage all the resources.
     srs_assert(resource);

@@ -50,14 +50,6 @@ using namespace std;
 #include <srs_protocol_st.hpp>
 #include <srs_protocol_utility.hpp>
 
-SrsPps *_srs_pps_sstuns = NULL;
-SrsPps *_srs_pps_srtcps = NULL;
-SrsPps *_srs_pps_srtps = NULL;
-
-SrsPps *_srs_pps_pli = NULL;
-SrsPps *_srs_pps_twcc = NULL;
-SrsPps *_srs_pps_rr = NULL;
-
 extern SrsPps *_srs_pps_snack;
 extern SrsPps *_srs_pps_snack2;
 extern SrsPps *_srs_pps_snack3;

@@ -155,6 +155,28 @@ SrsPps *_srs_pps_rrtcps = NULL;
 // NACK and loss statistics (only _srs_pps_aloss2 was originally in srs_app_server.cpp)
 SrsPps *_srs_pps_aloss2 = NULL;
 
+// Send-side RTC packet statistics (defined here unconditionally to avoid linker errors when RTC is disabled)
+SrsPps *_srs_pps_sstuns = NULL;
+SrsPps *_srs_pps_srtcps = NULL;
+SrsPps *_srs_pps_srtps = NULL;
+
+// NACK statistics
+SrsPps *_srs_pps_snack = NULL;
+SrsPps *_srs_pps_snack2 = NULL;
+SrsPps *_srs_pps_snack3 = NULL;
+SrsPps *_srs_pps_snack4 = NULL;
+SrsPps *_srs_pps_sanack = NULL;
+SrsPps *_srs_pps_svnack = NULL;
+SrsPps *_srs_pps_rnack = NULL;
+SrsPps *_srs_pps_rnack2 = NULL;
+SrsPps *_srs_pps_rhnack = NULL;
+SrsPps *_srs_pps_rmnack = NULL;
+
+// RTC control statistics
+SrsPps *_srs_pps_pli = NULL;
+SrsPps *_srs_pps_twcc = NULL;
+SrsPps *_srs_pps_rr = NULL;
+
 SrsPps *_srs_pps_objs_msgs = NULL;
 
 #if defined(SRS_DEBUG) && defined(SRS_DEBUG_STATS)
