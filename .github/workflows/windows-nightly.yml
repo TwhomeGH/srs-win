@@ -18,20 +18,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies (vcpkg)
-        shell: pwsh
-        continue-on-error: true
-        run: |
-          vcpkg install openssl libsrtp opus srt --triplet x64-windows
-          Write-Host "vcpkg deps installed" -ForegroundColor Green
-
       - name: Configure CMake
         shell: pwsh
         run: |
           cmake -B trunk/ide/srs_msvc/build `
                 -S trunk/ide/srs_msvc `
-                -G "Visual Studio 17 2022" -A x64 `
-                -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+                -G "Visual Studio 17 2022" -A x64
           if ($LASTEXITCODE -ne 0) { throw "CMake configure failed" }
 
       - name: Build
@@ -57,6 +49,7 @@ jobs:
           }
 
       - name: Upload build artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: srs-win-x64-debug

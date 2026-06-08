@@ -51,19 +51,12 @@ jobs:
           $body | Out-File -FilePath release_notes.md -Encoding utf8
           echo "Release notes generated."
 
-      - name: Install dependencies (vcpkg)
-        shell: pwsh
-        continue-on-error: true
-        run: |
-          vcpkg install openssl libsrtp opus srt --triplet x64-windows
-
       - name: Configure CMake
         shell: pwsh
         run: |
           cmake -B trunk/ide/srs_msvc/build `
                 -S trunk/ide/srs_msvc `
-                -G "Visual Studio 17 2022" -A x64 `
-                -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+                -G "Visual Studio 17 2022" -A x64
           if ($LASTEXITCODE -ne 0) { throw "CMake configure failed" }
 
       - name: Build
