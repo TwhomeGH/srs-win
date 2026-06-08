@@ -1,0 +1,10 @@
+^F:\SRS\TRUNK\IDE\SRS_MSVC\BUILD-NOTC\CMAKEFILES\148A6CA387E2061CF8914EF5CA0BA14E\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SF:/srs/trunk/ide/srs_msvc -BF:/srs/trunk/ide/srs_msvc/build-notc --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file F:/srs/trunk/ide/srs_msvc/build-notc/srs.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

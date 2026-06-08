@@ -1,0 +1,5 @@
+F:/srs/trunk/ide/srs_msvc/build-notc/CMakeFiles/srs.dir
+F:/srs/trunk/ide/srs_msvc/build-notc/CMakeFiles/ALL_BUILD.dir
+F:/srs/trunk/ide/srs_msvc/build-notc/CMakeFiles/ZERO_CHECK.dir
+F:/srs/trunk/ide/srs_msvc/build-notc/st-srs/CMakeFiles/st-srs.dir
+F:/srs/trunk/ide/srs_msvc/build-notc/st-srs/CMakeFiles/ALL_BUILD.dir

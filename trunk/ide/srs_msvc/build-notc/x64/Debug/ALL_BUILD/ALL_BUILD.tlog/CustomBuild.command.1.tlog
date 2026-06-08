@@ -1,0 +1,10 @@
+^F:\SRS\TRUNK\IDE\SRS_MSVC\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SF:/srs/trunk/ide/srs_msvc -BF:/srs/trunk/ide/srs_msvc/build-notc --check-stamp-file F:/srs/trunk/ide/srs_msvc/build-notc/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

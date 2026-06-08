@@ -1,0 +1,533 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{98745E0B-A3D6-3509-B91A-C3DB5390FB4F}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>srs</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">F:\srs\trunk\ide\srs_msvc\build-notc\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">srs.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">srs</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">F:\srs\trunk\ide\srs_msvc\build-notc\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">srs.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">srs</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">F:\srs\trunk\ide\srs_msvc\build-notc\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">srs.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">srs</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">F:\srs\trunk\ide\srs_msvc\build-notc\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">srs.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">srs</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Program Files/OpenSSL-Win64/include" /bigobj /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;4267;4244;4018</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <ForcedIncludeFiles>"F:/srs/trunk/ide/srs_msvc/force_include.h"</ForcedIncludeFiles>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_ITERATOR_DEBUG_LEVEL=0;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_ITERATOR_DEBUG_LEVEL=0;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_ITERATOR_DEBUG_LEVEL=0;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <IncludePaths>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(IncludePaths)</IncludePaths>
+      <AdditionalOptions>%(AdditionalOptions) /FI\"F:/srs/trunk/ide/srs_msvc/force_include.h\" /wd4996 /wd4267 /wd4244 /wd4018 /bigobj /utf-8</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>st-srs\Debug\st-srs.lib;ws2_32.lib;iphlpapi.lib;userenv.lib;crypt32.lib;bcrypt.lib;ntdll.lib;C:\Program Files\OpenSSL-Win64\lib\VC\x64\MDd\libssl.lib;C:\Program Files\OpenSSL-Win64\lib\VC\x64\MDd\libcrypto.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>F:/srs/trunk/ide/srs_msvc/build-notc/Debug/srs.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>F:/srs/trunk/ide/srs_msvc/build-notc/Debug/srs.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Program Files/OpenSSL-Win64/include" /bigobj /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DisableSpecificWarnings>4996;4267;4244;4018</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <ForcedIncludeFiles>"F:/srs/trunk/ide/srs_msvc/force_include.h"</ForcedIncludeFiles>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <IncludePaths>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(IncludePaths)</IncludePaths>
+      <AdditionalOptions>%(AdditionalOptions) /FI\"F:/srs/trunk/ide/srs_msvc/force_include.h\" /wd4996 /wd4267 /wd4244 /wd4018 /bigobj /utf-8</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>st-srs\Release\st-srs.lib;ws2_32.lib;iphlpapi.lib;userenv.lib;crypt32.lib;bcrypt.lib;ntdll.lib;C:\Program Files\OpenSSL-Win64\lib\VC\x64\MD\libssl.lib;C:\Program Files\OpenSSL-Win64\lib\VC\x64\MD\libcrypto.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>F:/srs/trunk/ide/srs_msvc/build-notc/Release/srs.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>F:/srs/trunk/ide/srs_msvc/build-notc/Release/srs.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Program Files/OpenSSL-Win64/include" /bigobj /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DisableSpecificWarnings>4996;4267;4244;4018</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <ForcedIncludeFiles>"F:/srs/trunk/ide/srs_msvc/force_include.h"</ForcedIncludeFiles>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <IncludePaths>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(IncludePaths)</IncludePaths>
+      <AdditionalOptions>%(AdditionalOptions) /FI\"F:/srs/trunk/ide/srs_msvc/force_include.h\" /wd4996 /wd4267 /wd4244 /wd4018 /bigobj /utf-8</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>st-srs\MinSizeRel\st-srs.lib;ws2_32.lib;iphlpapi.lib;userenv.lib;crypt32.lib;bcrypt.lib;ntdll.lib;C:\Program Files\OpenSSL-Win64\lib\VC\x64\MD\libssl.lib;C:\Program Files\OpenSSL-Win64\lib\VC\x64\MD\libcrypto.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>F:/srs/trunk/ide/srs_msvc/build-notc/MinSizeRel/srs.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>F:/srs/trunk/ide/srs_msvc/build-notc/MinSizeRel/srs.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Program Files/OpenSSL-Win64/include" /bigobj /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;4267;4244;4018</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <ForcedIncludeFiles>"F:/srs/trunk/ide/srs_msvc/force_include.h"</ForcedIncludeFiles>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=8192;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <IncludePaths>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(IncludePaths)</IncludePaths>
+      <AdditionalOptions>%(AdditionalOptions) /FI\"F:/srs/trunk/ide/srs_msvc/force_include.h\" /wd4996 /wd4267 /wd4244 /wd4018 /bigobj /utf-8</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>F:\srs\trunk\ide\srs_msvc\compat;F:\srs\trunk\objs;F:\srs\trunk\src\core;F:\srs\trunk\src\kernel;F:\srs\trunk\src\protocol;F:\srs\trunk\src\app;F:\srs\trunk\src\service;F:\srs\trunk\src\main;F:\srs\trunk\src\utest;F:\srs\trunk\3rdparty\st-srs;F:\srs\trunk\ide\srs_msvc;F:\srs\trunk\3rdparty\ffmpeg-4-fit;F:\srs\trunk\3rdparty\libsrtp-2-fit\include;F:\srs\trunk\3rdparty\srt-1-fit\headers;C:\Program Files\OpenSSL-Win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>st-srs\RelWithDebInfo\st-srs.lib;ws2_32.lib;iphlpapi.lib;userenv.lib;crypt32.lib;bcrypt.lib;ntdll.lib;C:\Program Files\OpenSSL-Win64\lib\VC\x64\MD\libssl.lib;C:\Program Files\OpenSSL-Win64\lib\VC\x64\MD\libcrypto.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>F:/srs/trunk/ide/srs_msvc/build-notc/RelWithDebInfo/srs.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>F:/srs/trunk/ide/srs_msvc/build-notc/RelWithDebInfo/srs.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="F:\srs\trunk\ide\srs_msvc\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule F:/srs/trunk/ide/srs_msvc/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SF:/srs/trunk/ide/srs_msvc -BF:/srs/trunk/ide/srs_msvc/build-notc --check-stamp-file F:/srs/trunk/ide/srs_msvc/build-notc/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindOpenSSL.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeASM_MASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\SelectLibraryConfigurations.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeASM_MASMCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeCCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeCXXCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeRCCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule F:/srs/trunk/ide/srs_msvc/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SF:/srs/trunk/ide/srs_msvc -BF:/srs/trunk/ide/srs_msvc/build-notc --check-stamp-file F:/srs/trunk/ide/srs_msvc/build-notc/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindOpenSSL.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeASM_MASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\SelectLibraryConfigurations.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeASM_MASMCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeCCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeCXXCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeRCCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule F:/srs/trunk/ide/srs_msvc/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SF:/srs/trunk/ide/srs_msvc -BF:/srs/trunk/ide/srs_msvc/build-notc --check-stamp-file F:/srs/trunk/ide/srs_msvc/build-notc/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindOpenSSL.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeASM_MASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\SelectLibraryConfigurations.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeASM_MASMCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeCCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeCXXCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeRCCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule F:/srs/trunk/ide/srs_msvc/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SF:/srs/trunk/ide/srs_msvc -BF:/srs/trunk/ide/srs_msvc/build-notc --check-stamp-file F:/srs/trunk/ide/srs_msvc/build-notc/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindOpenSSL.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeASM_MASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\SelectLibraryConfigurations.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeASM_MASMCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeCCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeCXXCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeRCCompiler.cmake;F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\4.3.2\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">F:\srs\trunk\ide\srs_msvc\build-notc\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_autofree.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_deprecated.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_performance.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_platform.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_time.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_version.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_version3.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_version4.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_version5.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_version6.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\core\srs_core_version7.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_aac.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_balance.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_buffer.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_codec.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_consts.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_error.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_factory.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_file.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_flv.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_hourglass.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_io.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_kbps.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_log.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_mp3.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_mp4.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_packet.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_pithy_print.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_ps.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_resource.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_rtc_queue.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_rtc_rtcp.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_rtc_rtp.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_st.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_stream.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_ts.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\kernel\srs_kernel_utility.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_amf0.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_conn.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_format.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_http_client.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_http_conn.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_http_stack.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_http_stack_llhttp.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_http_stack_llhttpadapter.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_http_stack_llhttpapi.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_http_stack_llhttphttp.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_io.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_json.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_log.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_protobuf.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_raw_avc.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_rtc_stun.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_rtmp_conn.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_rtmp_handshake.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_rtmp_msg_array.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_rtmp_stack.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_rtp.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_sdp.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_st.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_stream.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\protocol\srs_protocol_utility.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_async_call.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_caster_flv.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_circuit_breaker.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_config.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_coworkers.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_dash.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_dvr.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_edge.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_encoder.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_factory.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_ffmpeg.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_forward.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_fragment.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_gb28181.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_hds.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_heartbeat.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_hls.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_http_api.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_http_client.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_http_conn.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_http_hooks.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_http_static.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_http_stream.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_ingest.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_latest_version.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_listener.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_log.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_mpegts_udp.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_ng_exec.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_process.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_recv_thread.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_refer.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_reload.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_rtmp_conn.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_rtmp_source.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_security.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_server.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_st.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_statistic.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_stream_bridge.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_stream_token.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\app\srs_app_utility.cpp" />
+    <ClCompile Include="F:\srs\trunk\src\main\srs_main_server.cpp" />
+    <ClCompile Include="F:\srs\trunk\ide\srs_msvc\ffmpeg_stubs\ffmpeg_stubs.c" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="F:\srs\trunk\ide\srs_msvc\build-notc\ZERO_CHECK.vcxproj">
+      <Project>{02485540-2222-395B-BEF3-940ECBE3F2B5}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="F:\srs\trunk\ide\srs_msvc\build-notc\st-srs\st-srs.vcxproj">
+      <Project>{43D25933-4570-39AA-8A56-7490B822F9AA}</Project>
+      <Name>st-srs</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

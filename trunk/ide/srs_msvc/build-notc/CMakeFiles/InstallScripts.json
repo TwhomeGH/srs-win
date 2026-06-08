@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"F:/srs/trunk/ide/srs_msvc/build-notc/cmake_install.cmake",
+		"F:/srs/trunk/ide/srs_msvc/build-notc/st-srs/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="F:\srs\trunk\3rdparty\st-srs\sched.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\srs\trunk\3rdparty\st-srs\stk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\srs\trunk\3rdparty\st-srs\sync.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\srs\trunk\3rdparty\st-srs\key.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\srs\trunk\3rdparty\st-srs\io.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\srs\trunk\3rdparty\st-srs\event.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\srs\trunk\3rdparty\st-srs\common.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="F:\srs\trunk\3rdparty\st-srs\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="F:\srs\trunk\3rdparty\st-srs\md_win64.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9CD3CEA6-F91A-3200-914D-4A34C2382BF0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
