@@ -27,7 +27,7 @@ Write-Host "[3/3] Ready!" -ForegroundColor Cyan
 $env:SRS_PID = "$OutDir\objs\srs.pid"
 
 if ($Run) {
-    Write-Host "Starting SRS..." -ForegroundColor Yellow
+    Write-Host "Starting SRS with config: $ConfSrc" -ForegroundColor Yellow
     $proc = Start-Process -FilePath $SrsExe -ArgumentList "-c `"$ConfSrc`"" -NoNewWindow -PassThru
     Start-Sleep -Seconds 4
     if ($proc.HasExited) {
