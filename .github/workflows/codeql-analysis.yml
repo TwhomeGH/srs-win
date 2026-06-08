@@ -1,7 +1,7 @@
 name: "CodeQL"
 
-# @see https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestbranchestags
-on: [push, pull_request]
+# Disabled: Linux CodeQL analysis fails on Windows fork (see windows-nightly.yml instead).
+on: workflow_dispatch
 
 # See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
 permissions: write-all
