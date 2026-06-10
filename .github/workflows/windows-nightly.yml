@@ -1,8 +1,6 @@
 name: "Windows Nightly"
 
 on:
-  schedule:
-    - cron: "0 20 * * *"
   push:
     branches: [develop]
   workflow_dispatch:
@@ -49,6 +47,7 @@ jobs:
           $ConfSrc = "trunk/conf/test.conf"
           if (-not (Test-Path $SrsExe)) { throw "srs.exe not found" }
           Remove-Item -Path "objs/srs.pid" -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Path objs -Force | Out-Null
           $proc = Start-Process -FilePath $SrsExe -ArgumentList "-c `"$ConfSrc`"" -NoNewWindow -PassThru
           Start-Sleep -Seconds 5
           if ($proc.HasExited) { throw "SRS exited with code $($proc.ExitCode)" }
