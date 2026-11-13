@@ -30,9 +30,19 @@ jobs:
         with:
           python-version: "3.12"
 
-      # 套件尚未上 PyPI，從固定 tag 安裝以確保可重現。
+      # 套件尚未上 PyPI：每次解析最新 tag，自動跟上 changelogkit 的更新。
+      # 需要可重現的建置時，在 repo 變數設定 CHANGELOGKIT_REF=<tag> 覆寫。
       - name: Install changelogkit
-        run: python -m pip install "git+https://github.com/TwhomeGH/ChangeLogKit.git@v0.12.7"
+        env:
+          CHANGELOGKIT_REF: ${{ vars.CHANGELOGKIT_REF }}
+        run: |
+          ref="${CHANGELOGKIT_REF:-}"
+          if [ -z "$ref" ]; then
+            ref="$(git ls-remote --tags --refs https://github.com/TwhomeGH/ChangeLogKit.git \
+              | awk -F/ '{print $NF}' | grep -E '^v[0-9]+(\.[0-9]+)*$' | sort -V | tail -1)"
+          fi
+          echo "Installing changelogkit@$ref"
+          python -m pip install "git+https://github.com/TwhomeGH/ChangeLogKit.git@$ref"
 
       - name: Export static site
         run: changelogkit --locale zh-TW export _site --branch develop
