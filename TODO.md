@@ -22,7 +22,7 @@
 - [x] 接入 changelogkit（`.changelog.toml` ＋ `Docs/ChangeHistory.md`）
 - [x] 建立主 `TODO.md`
 - [x] 新增 Pages workflow（`changelogkit export` → GitHub Pages）
-- [ ] 首次部署後確認 Pages 網址可瀏覽、文件分組正確
+- [x] 首次部署後確認 Pages 網址可瀏覽、文件分組正確
 
 ## 已知限制改善
 

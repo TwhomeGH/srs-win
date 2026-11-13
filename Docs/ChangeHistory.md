@@ -21,7 +21,7 @@ Nightly 的 smoke test 對 `http://localhost:1985/api/v1/versions` 逾時；本�
 
 ### 驗證
 - 本機以 11985/11935 獨立埠測試：HTTP API 連續 3 次 200、RTMP handshake 回傳 16 bytes、9 秒內 CPU 僅 0.14 秒。
-- Nightly smoke test 仍待推送後由 GitHub Actions 驗證。
+- Nightly smoke test 已於 push 後通過（run `43460487604`，含 Build 與 Smoke test）。
 
 ## 2026.11.13 14:30 接入 changelogkit、建立主待辦與 Pages 靜態站
 
