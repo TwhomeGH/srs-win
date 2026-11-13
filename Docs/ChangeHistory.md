@@ -17,6 +17,7 @@ CI 修正的來龍去脈只存在 commit 訊息與對話裡；待辦同時散落
 - 新增 `Docs/ChangeHistory.md`（本檔）作為變更紀錄來源。
 - 新增 `TODO.md` 作為主待辦清單，changelogkit 解析 `- [ ]`／`- [x]`。
 - 新增 `.github/workflows/pages.yml`：push `develop` 時匯出唯讀靜態站並部署 GitHub Pages。
+- Pages 安裝 changelogkit 時解析最新 tag，不釘死版本；需要可重現時用 repo 變數 `CHANGELOGKIT_REF` 覆寫。
 
 ---
 
