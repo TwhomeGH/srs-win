@@ -65,3 +65,6 @@ test_open.c
 # Visual Studio Code local config
 .vscode/
 
+# changelogkit 靜態匯出產物
+_site/
+

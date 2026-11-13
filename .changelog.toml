@@ -1,0 +1,24 @@
+# changelogkit 設定：變更歷史（Docs/ChangeHistory.md）與開發索引。
+# 本機用法：python -m changelogkit serve（PYTHONPATH 指向 ChangeLogTools/src）
+[tool.changelog]
+title    = "SRS-Win 變更歷史"
+project  = "SRS-Win"
+history  = "Docs/ChangeHistory.md"
+todo     = "TODO.md"
+# 不索引第三方原始碼與說明文件（避免文件／符號索引被 vendor 內容淹沒）。
+exclude  = ["trunk/3rdparty/**"]
+
+# Documents 分頁的文件分組。
+[[tool.changelog.docs.groups]]
+id    = "guide"
+title = "建置與使用"
+color = "green"
+order = 10
+paths = ["Docs/建置與執行說明.md", "Docs/項目概覽說明.md"]
+
+[[tool.changelog.docs.groups]]
+id    = "design"
+title = "設計與限制"
+color = "violet"
+order = 20
+paths = ["Docs/Windows移植技術文件.md", "Docs/已知限制與待辦事項.md"]
