@@ -6,7 +6,8 @@
 
 - [ ] 逐模組檢查 Windows 相容層的設計缺口（`force_include.h`、`srs_win32_compat.h`、`compat/`）
 - [ ] 確認 POSIX 相容層的錯誤碼轉換一致（`errno` ↔ `GetLastError()`）
-- [ ] 檢查 socket／`select()` 事件層在 `FD_SETSIZE` 邊界與關閉流程的行為
+- [x] 檢查 socket／`select()` 事件層在 `FD_SETSIZE` 邊界（已修正 ST 閒置執行緒堆疊不足與 context 堆疊指標）
+- [ ] 檢查連線關閉流程（fd 回收、half-close、`select()` 例外集）
 - [ ] 檢查 pid 檔與服務生命週期的設計（避免殘留 pid 造成啟動失敗）
 
 ## CI／發佈
@@ -26,7 +27,7 @@
 ## 已知限制改善
 
 - [ ] 以 `CreateProcess()` 實作行程管理（讓 exec／ingest 可用）
-- [ ] 以 `SetConsoleCtrlHandler()` 取代 POSIX 訊號 stub（優雅關閉）
+- [x] 以 `SetConsoleCtrlHandler()` 取代 POSIX 訊號 stub（優雅關閉）
 - [ ] 評估以 IOCP 取代 `select()` 的可行性
 - [ ] 支援 ARM64 Windows（需 `md_win64_arm64.asm` 與 vcpkg 驗證）
 - [ ] 減少 `force_include.h` 與 `srs_win32_compat.h` 的重複定義

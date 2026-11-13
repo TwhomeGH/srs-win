@@ -194,7 +194,12 @@ extern void _st_md_cxt_restore(_st_jmp_buf_t env, int val);
     #define MD_HAVE_SELECT
 
     #if defined(_M_AMD64) || defined(_M_X64) || defined(__amd64__) || defined(__x86_64__)
-        #define MD_GET_SP(_t) *((long *)&((_t)->context[0].__jmpbuf[6]))
+        // Windows `long` is 32-bit, but md_win64.asm saves JB_RSP as a full
+        // 64-bit slot at __jmpbuf[6]. Using `long *` here wrote the stack
+        // pointer to offset 24 instead of 48, leaving every coroutine's
+        // initial RSP at the creator's stack (or zero) and breaking the ST
+        // scheduler as soon as a coroutine yielded.
+        #define MD_GET_SP(_t) (((long long *)((_t)->context[0].__jmpbuf))[6])
     #else
         #error Unknown CPU architecture for Windows port
     #endif

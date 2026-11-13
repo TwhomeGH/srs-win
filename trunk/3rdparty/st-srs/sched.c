@@ -222,9 +222,15 @@ int st_init(void)
     _st_this_vp.last_clock = st_utime();
     
     /*
-     * Create idle thread
+     * Create idle thread.
+     *
+     * The select() event system keeps three fd_set copies on this thread's
+     * stack. With FD_SETSIZE=8192 on Windows each fd_set is ~64KB
+     * (4 + 8192 * sizeof(SOCKET)), so the default 64KB stack overflows as
+     * soon as the idle thread dispatches. Give it enough room for the three
+     * sets plus the scheduler frames.
      */
-    _st_this_vp.idle_thread = st_thread_create(_st_idle_thread_start, NULL, 0, 0);
+    _st_this_vp.idle_thread = st_thread_create(_st_idle_thread_start, NULL, 0, 256 * 1024);
     if (!_st_this_vp.idle_thread)
         return -1;
     _st_this_vp.idle_thread->flags = _ST_FL_IDLE_THREAD;
@@ -696,7 +702,7 @@ _st_thread_t *st_thread_create(void *(*start)(void *arg), void *arg, int joinabl
     if (_st_md_cxt_save(thread->context)) {
         _st_thread_main();
     }
-    MD_GET_SP(thread) = (long)(stack->sp);
+    MD_GET_SP(thread) = (long long)(stack->sp);
 
     /* If thread is joinable, allocate a termination condition variable */
     if (joinable) {

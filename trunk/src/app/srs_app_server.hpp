@@ -314,6 +314,10 @@ private:
     // Signal catching function.
     // Converts signal event to I/O event.
     static void sig_catcher(int signo);
+#ifdef _WIN32
+    // Console control handler used instead of the POSIX signal pipe.
+    static BOOL WINAPI console_ctrl_handler(DWORD ctrl_type);
+#endif
 };
 
 // Auto reload by inotify.

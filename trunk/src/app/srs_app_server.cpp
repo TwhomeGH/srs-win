@@ -1675,6 +1675,19 @@ srs_error_t SrsSignalManager::start()
 {
     srs_error_t err = srs_success;
 
+#ifdef _WIN32
+    // A CRT pipe is not a socket while ST reads every fd with recv(), so the
+    // POSIX signal pipe cannot deliver a byte on Windows. Console control
+    // events are delivered on their own thread, so install a handler instead
+    // of polling the pipe. The pipe is still created in initialize() so the
+    // destructor's cleanup path stays unchanged.
+    if (!SetConsoleCtrlHandler(SrsSignalManager::console_ctrl_handler, TRUE)) {
+        return srs_error_new(ERROR_SYSTEM_CREATE_PIPE, "install console ctrl handler");
+    }
+
+    srs_trace("console ctrl handler installed for graceful shutdown");
+    return err;
+#else
     /**
      * Note that if multiple processes are used (see below),
      * the signal pipe should be initialized after the fork(2) call
@@ -1721,7 +1734,31 @@ srs_error_t SrsSignalManager::start()
     }
 
     return err;
+#endif
 }
+
+#ifdef _WIN32
+BOOL WINAPI SrsSignalManager::console_ctrl_handler(DWORD ctrl_type)
+{
+    SrsSignalManager *manager = SrsSignalManager::instance;
+    if (!manager || !manager->server_) {
+        return FALSE;
+    }
+
+    switch (ctrl_type) {
+    case CTRL_C_EVENT:
+    case CTRL_BREAK_EVENT:
+        manager->server_->on_signal(SIGINT);
+        return TRUE;
+    case CTRL_CLOSE_EVENT:
+    case CTRL_SHUTDOWN_EVENT:
+        manager->server_->on_signal(SIGTERM);
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+#endif
 
 srs_error_t SrsSignalManager::cycle()
 {
@@ -1732,13 +1769,27 @@ srs_error_t SrsSignalManager::cycle()
             return srs_error_wrap(err, "signal manager");
         }
 
-        int signo;
+        int signo = 0;
 
+#ifdef _WIN32
+        // The CRT signal pipe is not a socket, while ST reads every fd with
+        // recv(). Polling it always fails, and ignoring that failure starved
+        // the ST scheduler. Keep the coroutine alive but do not touch the pipe;
+        // console control events arrive through SetConsoleCtrlHandler().
+        srs_usleep(100 * SRS_UTIME_MILLISECONDS);
+#else
         /* Read the next signal from the pipe */
-        srs_read(signal_read_stfd_, &signo, sizeof(int), SRS_UTIME_NO_TIMEOUT);
+        ssize_t nn = srs_read(signal_read_stfd_, &signo, sizeof(int), SRS_UTIME_NO_TIMEOUT);
+        if (nn != (ssize_t)sizeof(int)) {
+            // Never dispatch an uninitialized signo; a failed read is a
+            // transient error, so yield and retry instead of spinning.
+            srs_usleep(10 * SRS_UTIME_MILLISECONDS);
+            continue;
+        }
 
         /* Process signal synchronously */
         server_->on_signal(signo);
+#endif
     }
 
     return err;

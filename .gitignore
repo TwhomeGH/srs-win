@@ -68,3 +68,4 @@ test_open.c
 # changelogkit 靜態匯出產物
 _site/
 
+/objs/
