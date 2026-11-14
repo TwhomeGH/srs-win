@@ -11,13 +11,15 @@
       pwsh dev/check.ps1
       pwsh dev/check.ps1 -Full
       pwsh dev/check.ps1 -Docs
+      pwsh dev/check.ps1 -Ui
       pwsh dev/check.ps1 -NoTests
 #>
 [CmdletBinding()]
 param(
     [switch]$Full,
     [switch]$Docs,
-    [switch]$NoTests
+    [switch]$NoTests,
+    [switch]$Ui
 )
 
 $ErrorActionPreference = 'Stop'
@@ -86,6 +88,16 @@ if (-not $NoTests) {
 
 if ($Docs) {
     & (Join-Path $PSScriptRoot 'build-docs.ps1')
+}
+
+if ($Ui) {
+    Step 'run Web console unit tests'
+    Push-Location (Join-Path $repoRoot 'ui')
+    try {
+        Invoke-Checked { npm test } 'npm test'
+    } finally {
+        Pop-Location
+    }
 }
 
 $stopwatch.Stop()

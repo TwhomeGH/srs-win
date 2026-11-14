@@ -2,6 +2,29 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 08:00 Web 控制台：離線保留、推流診斷、唯讀 config API、單元測試
+
+**類型**: 功能／修復／測試 · **檔案**: `trunk/src/app/srs_app_http_api.*`, `srs_app_server.cpp`, `ui/`
+
+### 問題
+- 伺服器離線時，原本的頁面會被錯誤畫面蓋掉，已顯示的資料消失；`ERR_NETWORK` 也沒有清楚的離線說明。
+- `/api/v1/raw` 需要管理員開啟，且可寫入；設定頁不應該依賴它。
+- 缺少推流診斷，排查 FLV／編碼／GOP 問題只能看伺服器日誌。
+- UI 沒有單元測試，FLV 解析與錯誤分類只能靠手動驗證。
+
+### 修改
+- 新增 `ApiNotice`：離線時保留原頁面與最後資料，只顯示警告卡、最後更新時間與重試；`api.jsx` 攔截 response-less 錯誤，導覽列同步顯示 `API 離線`。
+- 新增唯讀 REST `GET /api/v1/config`：回傳 version／build、listeners（RTMP／HTTP API／HTTP server／SRT／RTC）、enabled、crossdomain、limits、raw API 狀態與 RTC candidates；不含帳密或完整設定文字。
+- Config 頁改用 `/api/v1/config`＋`/vhosts/`＋`/features`，raw API 只顯示狀態，不需要開啟。
+- 新增推流診斷頁：從 `/api/v1/streams/` 選串流或手動輸入 FLV URL，以 `fetch` 讀取 HTTP-FLV，解析 tag、視訊／音訊 codec、關鍵影格、GOP、位元率與健康狀態；預設 URL 從 config 的 http_server 埠產生。
+- 新增 `ui/tests/`（Vitest）：FLV 解析（含 AAC sample rate、AVC config 排除、分段讀取）與 API 錯誤分類。
+- Nightly 增加 `npm test` 與 `/api/v1/config` smoke；`dev/check.ps1 -Ui` 可本機跑同一組。
+
+### 驗證
+- `npm test`：2 個檔、6 個測試通過；`dev/check.ps1 -Ui`：C++ ctest＋Vitest 通過。
+- Playwright：設定頁顯示 version／listeners／features／vhost；推流診斷對 `pushdiag-test` 顯示 H.264、227 封包、271.6 KB、370.7 kbps。
+- 停止 SRS 後頁面仍保留串流表，顯示「伺服器離線」與重試；導覽列變 `API 離線`。
+
 ## 2026.11.15 07:40 更新 GitHub Actions 到 Node.js 24 版本
 
 **類型**: CI · **檔案**: `.github/workflows/windows-nightly.yml`, `.github/workflows/release.yml`

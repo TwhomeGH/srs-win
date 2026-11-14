@@ -14,6 +14,7 @@
 | 找 SRT | `SrsSrtServer`、`SrsSrtListener`、`SrsSrtSocket` |
 | 找設定解析 | `SrsConfig`、`SrsConfDirective` |
 | 找 console／API 的資料格式 | `SrsStatistic`、`SrsHttpApi`（`/api/v1/*`） |
+| 找唯讀設定摘要 | `SrsGoApiConfig`（`/api/v1/config`） |
 
 ## 模組地圖
 

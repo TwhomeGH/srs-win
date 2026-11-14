@@ -46,11 +46,17 @@ jobs:
           ctest --test-dir trunk/ide/srs_msvc/build -C Debug -R st-event-loop-test --output-on-failure
           if ($LASTEXITCODE -ne 0) { throw "st event loop test failed" }
 
+      - name: Install web console deps
+        working-directory: ui
+        run: npm ci --no-audit --no-fund
+
+      - name: Test web console
+        working-directory: ui
+        run: npm test
+
       - name: Build web console
         working-directory: ui
-        run: |
-          npm ci --no-audit --no-fund
-          npm run build
+        run: npm run build
 
       - name: Install web console
         shell: pwsh
@@ -94,6 +100,10 @@ jobs:
             $console = Invoke-WebRequest -Uri "http://localhost:1985/console/" -UseBasicParsing -TimeoutSec 15
             if ($console.StatusCode -ne 200) { throw "console returned $($console.StatusCode)" }
             Write-Host "Console OK: /console/" -ForegroundColor Green
+
+            $config = Invoke-RestMethod -Uri "http://localhost:1985/api/v1/config" -TimeoutSec 15
+            if ($config.code -ne 0 -or -not $config.data.version) { throw "config API returned invalid data" }
+            Write-Host "Config API OK: $($config.data.version)" -ForegroundColor Green
           } finally {
             Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
           }

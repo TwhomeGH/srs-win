@@ -19,15 +19,17 @@
 | Vhosts | `/api/v1/vhosts/` | vhost 狀態、串流／連線數、HLS |
 | Streams | `/api/v1/streams/` | 發布狀態、視訊／音訊、流量、踢除 publisher |
 | Clients | `/api/v1/clients/` | 連線類型、IP、存活時間、踢除 |
-| Configs | `/api/v1/raw` | 原始設定；未啟用時顯示 code 1061 提示 |
+| Configs | `/api/v1/config`、`/vhosts/`、`/features` | 唯讀的 listeners、限制、建置能力與 vhost 摘要；不使用 raw API |
+| Push Diag | `/api/v1/streams/`、HTTP-FLV | 選目前串流或手動輸入 URL，分析 FLV 標籤流、位元率、封包、關鍵影格與 GOP |
 
 ## 架構
 
 ```text
 ui/ (React 18 + Vite 6 + Bootstrap 5)
 ├── src/api.jsx          axios → /api/v1
-├── src/pages/*          Overview/Vhosts/Streams/Clients/Configs
+├── src/pages/*          Overview/Vhosts/Streams/Clients/Configs/PushDiag
 ├── src/usePolling.jsx   3 秒輪詢，頁面隱藏時暫停
+├── src/flvAnalyzer.js   FLV header/tag 解析（推流診斷）
 └── src/i18n.jsx         zh-TW / en
 ```
 
@@ -59,6 +61,7 @@ ui/ (React 18 + Vite 6 + Bootstrap 5)
 
 ## 已知限制
 
-- `/api/v1/raw` 預設可能關閉（code 1061），Configs 頁只顯示提示。
+- `/api/v1/raw` 預設關閉；控制台改用唯讀 `/api/v1/config`，不需要開啟可寫入的 raw API。
+- 推流診斷需要瀏覽器能讀取 HTTP-FLV；若 HTTP server 在另一個來源，請開啟 `http_server.crossdomain`（或用同源反向代理）。
 - RTC／SRT 媒體驗證仍以 API 為準；播放器（WHEP／SRT player）尚未接入。
 - 尚未提供登入／權限管理；請在反向代理或 SRS API 層處理。

@@ -19,9 +19,9 @@ export function Col({ xs, md, xl, className = '', children }) {
   return <div className={classes.join(' ')}>{children}</div>;
 }
 
-export function Card({ title, children }) {
+export function Card({ title, className = '', children }) {
   return (
-    <div className="card h-100">
+    <div className={`card h-100 ${className}`.trim()}>
       {title && <div className="card-header">{title}</div>}
       {children}
     </div>
@@ -37,8 +37,8 @@ export function Badge({ variant = 'secondary', children, title }) {
   return <span className={`badge text-bg-${variant}`} title={title}>{children}</span>;
 }
 
-export function Alert({ variant = 'info', children }) {
-  return <div className={`alert alert-${variant}`} role="alert">{children}</div>;
+export function Alert({ variant = 'info', className = '', children }) {
+  return <div className={`alert alert-${variant} ${className}`.trim()} role="alert">{children}</div>;
 }
 
 export function Button({ variant = 'secondary', size, className = '', children, ...rest }) {

@@ -143,6 +143,21 @@ public:
     virtual srs_error_t serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r);
 };
 
+/**
+ * @brief Read-only effective config summary.
+ * @details Exposes listeners, feature switches, limits and raw-API status;
+ * never credentials or the full config text. 控制台設定頁使用這個端點。
+ */
+class SrsGoApiConfig : public ISrsHttpHandler
+{
+public:
+    SrsGoApiConfig();
+    virtual ~SrsGoApiConfig();
+
+public:
+    virtual srs_error_t serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r);
+};
+
 class SrsGoApiRequests : public ISrsHttpHandler
 {
 public:

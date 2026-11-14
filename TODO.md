@@ -39,7 +39,12 @@
 - [x] 快速增量檢查（`dev/check.ps1`）與本機 API 產生（`dev/build-docs.ps1`）
 - [x] Windows VSCode launch／tasks／IntelliSense 設定
 - [x] Web 控制台 MVP（React/Vite，Overview／Vhosts／Streams／Clients／Configs）
-- [ ] Web 控制台：RTC／SRT 播放器、Basic Auth 登入、Configs raw API 降級提示
+- [x] 唯讀 `/api/v1/config` 與設定頁（listeners／limits／features，不再依賴 raw API）
+- [x] 推流診斷（HTTP-FLV 標籤串流、位元率、封包、關鍵影格／GOP）
+- [x] Web 控制台離線時保留最後資料，只顯示警告卡＋重試
+- [x] UI 單元測試（Vitest：FLV 解析、API 錯誤分類）
+- [ ] Web 控制台：RTC／SRT 播放器、Basic Auth 登入、Playwright E2E 收錄
+- [ ] 選擇性接入 `trunk/src/utest` 的 protocol／kernel 測試
 - [x] 首次部署後確認 Pages 網址可瀏覽、文件分組正確
 
 ## 已知限制改善

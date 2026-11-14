@@ -264,6 +264,7 @@ srs_error_t SrsGoApiV1::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r
     urls->set("meminfos", SrsJsonAny::str("the meminfo of system"));
     urls->set("authors", SrsJsonAny::str("the license, copyright, authors and contributors"));
     urls->set("features", SrsJsonAny::str("the supported features of SRS"));
+    urls->set("config", SrsJsonAny::str("read-only effective listeners, features, and limits"));
     urls->set("requests", SrsJsonAny::str("the request itself, for http debug"));
     urls->set("vhosts", SrsJsonAny::str("manage all vhosts or specified vhost"));
     urls->set("streams", SrsJsonAny::str("manage all streams or specified stream"));
@@ -642,6 +643,78 @@ srs_error_t SrsGoApiFeatures::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMess
 #else
     features->set("mr", SrsJsonAny::boolean(false));
 #endif
+
+    return srs_api_response(w, r, obj->dumps());
+}
+
+static void srs_config_add_listens(SrsJsonObject *obj, const char *name, std::vector<std::string> listens)
+{
+    SrsJsonArray *arr = SrsJsonAny::array();
+    for (size_t i = 0; i < listens.size(); i++) {
+        arr->append(SrsJsonAny::str(listens.at(i).c_str()));
+    }
+    obj->set(name, arr);
+}
+
+SrsGoApiConfig::SrsGoApiConfig()
+{
+}
+
+SrsGoApiConfig::~SrsGoApiConfig()
+{
+}
+
+// Read-only effective config summary. Unlike /api/v1/raw, this endpoint
+// exposes only listeners, feature switches, and limits; it never returns
+// credentials, paths, or the full config text.
+srs_error_t SrsGoApiConfig::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r)
+{
+    SrsStatistic *stat = SrsStatistic::instance();
+
+    SrsUniquePtr<SrsJsonObject> obj(SrsJsonAny::object());
+    obj->set("code", SrsJsonAny::integer(ERROR_SUCCESS));
+    obj->set("server", SrsJsonAny::str(stat->server_id().c_str()));
+    obj->set("service", SrsJsonAny::str(stat->service_id().c_str()));
+    obj->set("pid", SrsJsonAny::str(stat->service_pid().c_str()));
+
+    SrsJsonObject *data = SrsJsonAny::object();
+    obj->set("data", data);
+
+    data->set("version", SrsJsonAny::str(RTMP_SIG_SRS_VERSION));
+    data->set("build", SrsJsonAny::str(SRS_BUILD_DATE));
+    data->set("build_ts", SrsJsonAny::str(SRS_BUILD_TS));
+    data->set("max_connections", SrsJsonAny::integer(_srs_config->get_max_connections()));
+
+    SrsJsonObject *listeners = SrsJsonAny::object();
+    data->set("listeners", listeners);
+    srs_config_add_listens(listeners, "rtmp", _srs_config->get_listens());
+    srs_config_add_listens(listeners, "http_api", _srs_config->get_http_api_listens());
+    srs_config_add_listens(listeners, "http_server", _srs_config->get_http_stream_listens());
+    srs_config_add_listens(listeners, "srt", _srs_config->get_srt_listens());
+    srs_config_add_listens(listeners, "rtc", _srs_config->get_rtc_server_listens());
+    srs_config_add_listens(listeners, "rtc_tcp", _srs_config->get_rtc_server_tcp_listens());
+
+    SrsJsonObject *enabled = SrsJsonAny::object();
+    data->set("enabled", enabled);
+    enabled->set("http_api", SrsJsonAny::boolean(_srs_config->get_http_api_enabled()));
+    enabled->set("http_server", SrsJsonAny::boolean(_srs_config->get_http_stream_enabled()));
+    enabled->set("srt", SrsJsonAny::boolean(_srs_config->get_srt_enabled()));
+    enabled->set("rtc", SrsJsonAny::boolean(_srs_config->get_rtc_server_enabled()));
+
+    SrsJsonObject *crossdomain = SrsJsonAny::object();
+    data->set("crossdomain", crossdomain);
+    crossdomain->set("http_api", SrsJsonAny::boolean(_srs_config->get_http_api_crossdomain()));
+    crossdomain->set("http_server", SrsJsonAny::boolean(_srs_config->get_http_stream_crossdomain()));
+
+    SrsJsonObject *raw = SrsJsonAny::object();
+    data->set("raw_api", raw);
+    raw->set("enabled", SrsJsonAny::boolean(_srs_config->get_raw_api()));
+    raw->set("allow_reload", SrsJsonAny::boolean(_srs_config->get_raw_api_allow_reload()));
+    raw->set("allow_query", SrsJsonAny::boolean(_srs_config->get_raw_api_allow_query()));
+    raw->set("allow_update", SrsJsonAny::boolean(_srs_config->get_raw_api_allow_update()));
+
+    data->set("http_server_dir", SrsJsonAny::str(_srs_config->get_http_stream_dir().c_str()));
+    data->set("rtc_candidates", SrsJsonAny::str(_srs_config->get_rtc_server_candidates().c_str()));
 
     return srs_api_response(w, r, obj->dumps());
 }

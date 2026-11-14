@@ -1,12 +1,14 @@
 import React from 'react';
-import { Alert, Badge, Button, Card, Col, Row } from '../components/Layout';
-import { apiGet, apiErrorMessage } from '../api';
+import { Alert, Badge, Card, Col, Row } from '../components/Layout';
+import { ApiNotice } from '../components/ApiNotice';
+import { apiGet } from '../api';
 import { fmtBytes, fmtFixed, fmtKbps, fmtPercent, fmtUptime } from '../format';
 
 export default function Overview({ t }) {
   const [env, setEnv] = React.useState(null);
   const [error, setError] = React.useState(null);
   const [rates, setRates] = React.useState(null);
+  const [updatedAt, setUpdatedAt] = React.useState(null);
   const previous = React.useRef(null);
 
   const load = React.useCallback(async () => {
@@ -29,6 +31,7 @@ export default function Overview({ t }) {
       previous.current = data;
       setEnv(data);
       setError(null);
+      setUpdatedAt(new Date());
     } catch (e) {
       setError(e);
     }
@@ -48,16 +51,14 @@ export default function Overview({ t }) {
     };
   }, [load]);
 
-  if (error && !env) {
+  if (!env) {
     return (
-      <Alert variant="danger">
-        {apiErrorMessage(error, t)}
-        <Button variant="outline-secondary" size="sm" className="ms-2" onClick={load}>{t('retry')}</Button>
-      </Alert>
+      <>
+        <ApiNotice error={error} onRetry={load} t={t} />
+        <Alert variant="info">{t('loading')}</Alert>
+      </>
     );
   }
-
-  if (!env) return <Alert variant="info">{t('loading')}</Alert>;
 
   const self = env.self || {};
   const system = env.system || {};
@@ -75,7 +76,7 @@ export default function Overview({ t }) {
 
   return (
     <>
-      {error && <Alert variant="warning">{apiErrorMessage(error, t)}</Alert>}
+      <ApiNotice error={error} onRetry={load} t={t} updatedAt={updatedAt} />
       <Row className="g-3">
         <Col xs={12} md={6} xl={3}>
           <Card title={`SRS ${self.version || ''}`}>

@@ -762,6 +762,9 @@ srs_error_t SrsServer::http_handle()
     if ((err = http_api_mux_->handle("/api/v1/features", new SrsGoApiFeatures())) != srs_success) {
         return srs_error_wrap(err, "handle features");
     }
+    if ((err = http_api_mux_->handle("/api/v1/config", new SrsGoApiConfig())) != srs_success) {
+        return srs_error_wrap(err, "handle config");
+    }
     if ((err = http_api_mux_->handle("/api/v1/vhosts/", new SrsGoApiVhosts())) != srs_success) {
         return srs_error_wrap(err, "handle vhosts");
     }
