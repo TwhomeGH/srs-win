@@ -9,7 +9,7 @@ hide_table_of_contents: false
 
 SRS 5.0.89+ supports Windows(Cygwin64).
 
-SRS 7.0.60+ remove the supports for Windows, because it's too complex to maintain.
+SRS 7.0.60 removed the support for Windows(Cygwin64), because it's too complex to maintain. Native MSVC/CMake support is provided by the SRS-Win fork, based on SRS 7.0.89.
 
 Please use WSL(Windows Subsystem for Linux) which starts a Ubuntu in Windows, 
 so you can simply build and run SRS by:
