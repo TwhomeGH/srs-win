@@ -36,6 +36,12 @@ ui/ (React 18 + Vite 6 + Bootstrap 5)
 - **錯誤處理**：`ErrorBoundary` 接住渲染錯誤；輪詢失敗保留上一筆資料，只顯示警告，不清空畫面。
 - **認證**：目前沿用 SRS API 本身；若前面有反向代理認證，瀏覽器會帶其 session。尚未實作 Basic Auth 登入表單。
 
+## 依賴策略
+
+- 只使用 **Bootstrap CSS** 與原生 HTML／React markup，不引入 `react-bootstrap`、`react-aria` 或整套 icon 套件；目前 `node_modules` 約 3 千個檔案，主要是 Vite／Babel／browserslist 的建置期依賴。
+- `node_modules` 與 `build/` 都不進版控；CI 用 `npm ci` 重建，執行期只輸出 `ui/build/` 的 3 個靜態檔。
+- 套件清單以 `package.json` 為準；新增套件前先確認是否只是為了幾個元件，能用手寫 markup 就不引入。
+
 ## 與 Oryx 的差異
 
 | Oryx | 本專案 |

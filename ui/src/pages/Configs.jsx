@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Button } from 'react-bootstrap';
+import { Alert, Button } from '../components/Layout';
 import { apiErrorMessage, apiGet } from '../api';
 
 export default function Configs({ t }) {
@@ -23,7 +23,7 @@ export default function Configs({ t }) {
     return (
       <Alert variant="warning">
         {t('configDisabled')}
-        <Button size="sm" variant="outline-secondary" className="ms-2" onClick={load}>{t('retry')}</Button>
+        <Button variant="outline-secondary" size="sm" className="ms-2" onClick={load}>{t('retry')}</Button>
       </Alert>
     );
   }
@@ -31,7 +31,7 @@ export default function Configs({ t }) {
     return (
       <Alert variant="danger">
         {apiErrorMessage(error, t)}
-        <Button size="sm" variant="outline-secondary" className="ms-2" onClick={load}>{t('retry')}</Button>
+        <Button variant="outline-secondary" size="sm" className="ms-2" onClick={load}>{t('retry')}</Button>
       </Alert>
     );
   }

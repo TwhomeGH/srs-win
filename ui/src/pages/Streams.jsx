@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Badge, Button, Table } from 'react-bootstrap';
+import { Alert, Badge, Button, Table } from '../components/Layout';
 import { apiDelete, apiErrorMessage, apiGet } from '../api';
 import { buildStreamUrl, fmtAudio, fmtKbps, fmtVideo } from '../format';
 import { usePolling } from '../usePolling';
@@ -30,7 +30,7 @@ export default function Streams({ t }) {
   if (data.length === 0) return <Alert variant="info">{t('noStreams')}</Alert>;
 
   return (
-    <Table responsive size="sm" striped bordered hover>
+    <Table responsive>
       <thead>
         <tr>
           <th>{t('id')}</th>
@@ -53,7 +53,7 @@ export default function Streams({ t }) {
             <td>{s.name}</td>
             <td>{s.app}</td>
             <td className="text-break"><code>{buildStreamUrl(s.ownerName, s)}</code></td>
-            <td>{s.publish?.active ? <Badge bg="success">{t('publishing')}</Badge> : <Badge bg="secondary">{t('idle')}</Badge>}</td>
+            <td>{s.publish?.active ? <Badge variant="success">{t('publishing')}</Badge> : <Badge variant="secondary">{t('idle')}</Badge>}</td>
             <td>{s.clients ?? 0}</td>
             <td>{fmtKbps(s.kbps?.recv_30s)}</td>
             <td>{fmtKbps(s.kbps?.send_30s)}</td>
@@ -61,8 +61,8 @@ export default function Streams({ t }) {
             <td className="small">{fmtAudio(s.audio)}</td>
             <td>
               <Button
-                size="sm"
                 variant="outline-danger"
+                size="sm"
                 disabled={!s.publish?.active || !s.publish?.cid}
                 onClick={() => kick(s.publish?.cid)}
               >

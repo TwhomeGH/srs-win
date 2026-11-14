@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Badge, Table } from 'react-bootstrap';
+import { Alert, Badge, Table } from '../components/Layout';
 import { apiGet, apiErrorMessage } from '../api';
 import { fmtKbps } from '../format';
 import { usePolling } from '../usePolling';
@@ -16,7 +16,7 @@ export default function Vhosts({ t }) {
   if (data.length === 0) return <Alert variant="info">{t('noData')}</Alert>;
 
   return (
-    <Table responsive size="sm" striped bordered hover>
+    <Table responsive>
       <thead>
         <tr>
           <th>{t('id')}</th>
@@ -34,12 +34,12 @@ export default function Vhosts({ t }) {
           <tr key={v.id}>
             <td><code>{v.id}</code></td>
             <td>{v.name}</td>
-            <td>{v.enabled ? <Badge bg="success">{t('enabled')}</Badge> : <Badge bg="secondary">{t('disabled')}</Badge>}</td>
+            <td>{v.enabled ? <Badge variant="success">{t('enabled')}</Badge> : <Badge variant="secondary">{t('disabled')}</Badge>}</td>
             <td>{v.streams ?? 0}</td>
             <td>{v.clients ?? 0}</td>
             <td>{fmtKbps(v.kbps?.recv_30s)}</td>
             <td>{fmtKbps(v.kbps?.send_30s)}</td>
-            <td>{v.hls?.enabled ? <Badge bg="success">{t('enabled')}</Badge> : <Badge bg="secondary">{t('disabled')}</Badge>}</td>
+            <td>{v.hls?.enabled ? <Badge variant="success">{t('enabled')}</Badge> : <Badge variant="secondary">{t('disabled')}</Badge>}</td>
           </tr>
         ))}
       </tbody>

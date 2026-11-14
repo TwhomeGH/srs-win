@@ -14,7 +14,7 @@ id    = "guide"
 title = "建置與使用"
 color = "green"
 order = 10
-paths = ["Docs/建置與執行說明.md", "Docs/VSCode除錯手冊.md", "Docs/文件索引.md", "Docs/Web控制台.md", "Docs/項目概覽說明.md"]
+paths = ["Docs/建置與執行說明.md", "Docs/VSCode除錯手冊.md", "Docs/文件索引.md", "Docs/Web控制台.md", "Docs/API導讀.md", "Docs/項目概覽說明.md"]
 
 [[tool.changelog.docs.groups]]
 id    = "design"

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Button, Table } from 'react-bootstrap';
+import { Alert, Button, Table } from '../components/Layout';
 import { apiDelete, apiErrorMessage, apiGet } from '../api';
 import { fmtKbps, fmtUptime } from '../format';
 import { usePolling } from '../usePolling';
@@ -26,7 +26,7 @@ export default function Clients({ t }) {
   if (data.length === 0) return <Alert variant="info">{t('noClients')}</Alert>;
 
   return (
-    <Table responsive size="sm" striped bordered hover>
+    <Table responsive>
       <thead>
         <tr>
           <th>{t('id')}</th>
@@ -52,7 +52,7 @@ export default function Clients({ t }) {
             <td>{fmtKbps(c.kbps?.recv_30s)}</td>
             <td>{fmtKbps(c.kbps?.send_30s)}</td>
             <td>
-              <Button size="sm" variant="outline-danger" onClick={() => kick(c.id)}>{t('kick')}</Button>
+              <Button variant="outline-danger" size="sm" onClick={() => kick(c.id)}>{t('kick')}</Button>
             </td>
           </tr>
         ))}

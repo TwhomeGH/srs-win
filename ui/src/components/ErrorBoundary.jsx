@@ -1,5 +1,4 @@
 import React from 'react';
-import { Alert, Button, Container } from 'react-bootstrap';
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -19,15 +18,15 @@ export class ErrorBoundary extends React.Component {
     if (!this.state.error) return this.props.children;
 
     return (
-      <Container fluid className="py-3">
-        <Alert variant="danger">
-          <Alert.Heading>Console error</Alert.Heading>
+      <div className="container-fluid py-3">
+        <div className="alert alert-danger" role="alert">
+          <h2 className="h5">Console error</h2>
           <div className="small mb-2">{String(this.state.error?.message || this.state.error)}</div>
-          <Button size="sm" variant="outline-secondary" onClick={() => this.setState({ error: null })}>
+          <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => this.setState({ error: null })}>
             Retry
-          </Button>
-        </Alert>
-      </Container>
+          </button>
+        </div>
+      </div>
     );
   }
 }

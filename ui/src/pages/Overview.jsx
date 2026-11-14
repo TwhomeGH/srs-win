@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Button, Card, Col, Row, Table, Badge } from 'react-bootstrap';
+import { Alert, Badge, Button, Card, Col, Row } from '../components/Layout';
 import { apiGet, apiErrorMessage } from '../api';
 import { fmtBytes, fmtFixed, fmtKbps, fmtPercent, fmtUptime } from '../format';
 
@@ -52,7 +52,7 @@ export default function Overview({ t }) {
     return (
       <Alert variant="danger">
         {apiErrorMessage(error, t)}
-        <Button size="sm" variant="outline-secondary" className="ms-2" onClick={load}>{t('retry')}</Button>
+        <Button variant="outline-secondary" size="sm" className="ms-2" onClick={load}>{t('retry')}</Button>
       </Alert>
     );
   }
@@ -67,68 +67,61 @@ export default function Overview({ t }) {
       <td>{value ?? '-'}</td>
     </tr>
   );
+  const info = (rows) => (
+    <table className="table table-sm table-striped table-hover mb-0">
+      <tbody>{rows}</tbody>
+    </table>
+  );
 
   return (
     <>
       {error && <Alert variant="warning">{apiErrorMessage(error, t)}</Alert>}
       <Row className="g-3">
         <Col xs={12} md={6} xl={3}>
-          <Card>
-            <Card.Header>SRS {self.version || ''}</Card.Header>
-            <Table size="sm" striped hover className="mb-0">
-              <tbody>
-                {row(t('uptime'), fmtUptime(self.srs_uptime))}
-                {row(t('cpu'), fmtPercent(self.cpu_percent))}
-                {row(t('memory'), `${fmtPercent(self.mem_percent)} (${fmtBytes(Number(self.mem_kbyte) * 1024)})`)}
-                {row(t('connections'), system.conn_srs)}
-                {row(t('networkIn'), rates ? fmtKbps(rates.inSrs) : '-')}
-                {row(t('networkOut'), rates ? fmtKbps(rates.outSrs) : '-')}
-              </tbody>
-            </Table>
+          <Card title={`SRS ${self.version || ''}`}>
+            {info(<>
+              {row(t('uptime'), fmtUptime(self.srs_uptime))}
+              {row(t('cpu'), fmtPercent(self.cpu_percent))}
+              {row(t('memory'), `${fmtPercent(self.mem_percent)} (${fmtBytes(Number(self.mem_kbyte) * 1024)})`)}
+              {row(t('connections'), system.conn_srs)}
+              {row(t('networkIn'), rates ? fmtKbps(rates.inSrs) : '-')}
+              {row(t('networkOut'), rates ? fmtKbps(rates.outSrs) : '-')}
+            </>)}
           </Card>
         </Col>
 
         <Col xs={12} md={6} xl={3}>
-          <Card>
-            <Card.Header>{t('system')}</Card.Header>
-            <Table size="sm" striped hover className="mb-0">
-              <tbody>
-                {row(t('uptime'), fmtUptime(system.uptime))}
-                {row(t('cpu'), fmtPercent(system.cpu_percent))}
-                {row(t('memory'), fmtPercent(system.mem_ram_percent))}
-                {row(t('load'), `${fmtFixed(system.load_1m)} / ${fmtFixed(system.load_5m)} / ${fmtFixed(system.load_15m)}`)}
-                {row(t('processors'), `${system.cpus ?? '-'} (${system.cpus_online ?? '-'} online)`)}
-              </tbody>
-            </Table>
+          <Card title={t('system')}>
+            {info(<>
+              {row(t('uptime'), fmtUptime(system.uptime))}
+              {row(t('cpu'), fmtPercent(system.cpu_percent))}
+              {row(t('memory'), fmtPercent(system.mem_ram_percent))}
+              {row(t('load'), `${fmtFixed(system.load_1m)} / ${fmtFixed(system.load_5m)} / ${fmtFixed(system.load_15m)}`)}
+              {row(t('processors'), `${system.cpus ?? '-'} (${system.cpus_online ?? '-'} online)`)}
+            </>)}
           </Card>
         </Col>
 
         <Col xs={12} md={6} xl={3}>
-          <Card>
-            <Card.Header>{t('networkIn')} / {t('networkOut')}</Card.Header>
-            <Table size="sm" striped hover className="mb-0">
-              <tbody>
-                {row(`SRS ${t('networkIn')}`, rates ? fmtKbps(rates.inSrs) : '-')}
-                {row(`SRS ${t('networkOut')}`, rates ? fmtKbps(rates.outSrs) : '-')}
-                {row(`OS ${t('networkIn')}`, rates ? fmtKbps(rates.inSys) : '-')}
-                {row(`OS ${t('networkOut')}`, rates ? fmtKbps(rates.outSys) : '-')}
-                {row(t('connections'), `${system.conn_srs ?? '-'} / ${system.conn_sys ?? '-'}`)}
-              </tbody>
-            </Table>
+          <Card title={`${t('networkIn')} / ${t('networkOut')}`}>
+            {info(<>
+              {row(`SRS ${t('networkIn')}`, rates ? fmtKbps(rates.inSrs) : '-')}
+              {row(`SRS ${t('networkOut')}`, rates ? fmtKbps(rates.outSrs) : '-')}
+              {row(`OS ${t('networkIn')}`, rates ? fmtKbps(rates.inSys) : '-')}
+              {row(`OS ${t('networkOut')}`, rates ? fmtKbps(rates.outSys) : '-')}
+              {row(t('connections'), `${system.conn_srs ?? '-'} / ${system.conn_sys ?? '-'}`)}
+            </>)}
           </Card>
         </Col>
 
         <Col xs={12} md={6} xl={3}>
-          <Card>
-            <Card.Header>{t('process')}</Card.Header>
-            <Table size="sm" striped hover className="mb-0">
-              <tbody>
-                {row(t('pid'), self.pid)}
-                {row(t('ppid'), self.ppid)}
-                {row(t('healthy'), env.ok ? <Badge bg="success">{t('healthy')}</Badge> : <Badge bg="danger">-</Badge>)}
-                {row(t('disk'), `${system.disk_read_KBps ?? '-'} / ${system.disk_write_KBps ?? '-'} KB/s`)}
-              </tbody>
-            </Table>
+          <Card title={t('process')}>
+            {info(<>
+              {row(t('pid'), self.pid)}
+              {row(t('ppid'), self.ppid)}
+              {row(t('healthy'), env.ok ? <Badge variant="success">{t('healthy')}</Badge> : <Badge variant="danger">-</Badge>)}
+              {row(t('disk'), `${system.disk_read_KBps ?? '-'} / ${system.disk_write_KBps ?? '-'} KB/s`)}
+            </>)}
           </Card>
         </Col>
       </Row>

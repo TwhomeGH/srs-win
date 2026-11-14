@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Tab, Tabs } from 'react-bootstrap';
+import { Container } from './components/Layout';
 import { apiGet } from './api';
 import { makeT } from './i18n';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -11,6 +11,14 @@ import Configs from './pages/Configs';
 import Footer from './components/Footer';
 
 const LANG_KEY = 'srs.console.lang';
+
+const TABS = [
+  { key: 'overview', label: 'overview', Page: Overview },
+  { key: 'vhosts', label: 'vhosts', Page: Vhosts },
+  { key: 'streams', label: 'streams', Page: Streams },
+  { key: 'clients', label: 'clients', Page: Clients },
+  { key: 'configs', label: 'configs', Page: Configs },
+];
 
 export default function App() {
   const [lang, setLang] = React.useState(() => localStorage.getItem(LANG_KEY) || 'zh');
@@ -31,6 +39,9 @@ export default function App() {
     return () => { cancelled = true; };
   }, []);
 
+  const active = TABS.find((item) => item.key === tab) || TABS[0];
+  const Page = active.Page;
+
   return (
     <div className="min-vh-100 bg-body-tertiary">
       <nav className="navbar navbar-dark bg-dark px-3">
@@ -39,20 +50,31 @@ export default function App() {
         <span className={`badge me-auto ${apiError ? 'text-bg-danger' : 'text-bg-success'}`}>
           {apiError ? t('apiError') : 'API OK'}
         </span>
-        <Button size="sm" variant="outline-light" onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')}>
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-light"
+          onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')}
+        >
           {lang === 'zh' ? 'EN' : '中文'}
-        </Button>
+        </button>
       </nav>
 
       <Container fluid className="py-3">
         <ErrorBoundary>
-          <Tabs activeKey={tab} onSelect={(k) => setTab(k || 'overview')} className="mb-3">
-            <Tab eventKey="overview" title={t('overview')}><Overview t={t} /></Tab>
-            <Tab eventKey="vhosts" title={t('vhosts')}><Vhosts t={t} /></Tab>
-            <Tab eventKey="streams" title={t('streams')}><Streams t={t} /></Tab>
-            <Tab eventKey="clients" title={t('clients')}><Clients t={t} /></Tab>
-            <Tab eventKey="configs" title={t('configs')}><Configs t={t} /></Tab>
-          </Tabs>
+          <ul className="nav nav-tabs mb-3">
+            {TABS.map((item) => (
+              <li className="nav-item" key={item.key}>
+                <button
+                  type="button"
+                  className={`nav-link ${item.key === tab ? 'active' : ''}`}
+                  onClick={() => setTab(item.key)}
+                >
+                  {t(item.label)}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <Page t={t} />
         </ErrorBoundary>
         <Footer />
       </Container>
