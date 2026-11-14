@@ -54,6 +54,11 @@
 #include <errno.h>
 #include "common.h"
 
+#ifdef _WIN32
+void *_st_primordial_stack_base = NULL;
+void *_st_primordial_stack_limit = NULL;
+#endif
+
 /* merge from https://github.com/toffaletti/state-threads/commit/7f57fc9acc05e657bca1223f1e5b9b1a45ed929b */
 #ifdef MD_VALGRIND
 #include <valgrind/valgrind.h>
@@ -179,6 +184,14 @@ int st_init(void)
         /* Already initialized */
         return 0;
     }
+
+#ifdef _WIN32
+    {
+        NT_TIB *tib = (NT_TIB *)NtCurrentTeb();
+        _st_primordial_stack_base = tib->StackBase;
+        _st_primordial_stack_limit = tib->StackLimit;
+    }
+#endif
 
 #ifdef _WIN32
     /* Initialize Winsock */

@@ -46,6 +46,7 @@ cmake-build-debug
 
 # Windows build artifacts
 trunk/ide/srs_msvc/build/
+trunk/ide/srs_msvc/build-full/
 trunk/build/
 trunk/trunk/
 
@@ -70,3 +71,4 @@ _site/
 
 /objs/
 dev/runtime/
+doxygen-warnings.log

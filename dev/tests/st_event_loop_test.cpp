@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdexcept>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -268,6 +269,27 @@ static void test_select_roundtrip(void)
     printf("select round-trip: %d loopback connections\n", CLIENTS);
 }
 
+static void *exception_worker(void *opaque)
+{
+    int *caught = (int *)opaque;
+    try {
+        throw std::runtime_error("expected");
+    } catch (const std::exception &) {
+        *caught = 1;
+    }
+    return NULL;
+}
+
+static void test_coroutine_exception(void)
+{
+    int caught = 0;
+    st_thread_t t = st_thread_create(exception_worker, &caught, 1, 0);
+    CHECK(t != NULL, "failed to create throwing coroutine");
+    if (t) st_thread_join(t, NULL);
+    CHECK(caught == 1, "C++ exception did not unwind through a coroutine stack");
+    printf("coroutine exception: caught=%d\n", caught);
+}
+
 int main(void)
 {
 #ifdef _WIN32
@@ -285,6 +307,7 @@ int main(void)
     }
 
     test_context_switch();
+    test_coroutine_exception();
     test_select_roundtrip();
 
     st_destroy();

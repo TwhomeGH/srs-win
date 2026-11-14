@@ -7,6 +7,7 @@
 #include <srs_protocol_srt.hpp>
 
 #include <sstream>
+#include <exception>
 
 using namespace std;
 
@@ -773,6 +774,15 @@ srs_error_t SrsSrtSocket::accept(srs_srt_t *client_srt_fd)
     srs_error_t err = srs_success;
 
     while (true) {
+        // Wait for a pending connection before calling srt_accept. SRT's C
+        // API throws CUDTException when the nonblocking accept queue is empty,
+        // and C++ exceptions cannot unwind through ST coroutine stacks on
+        // Windows (the coroutine stack is not the thread's stack). Waiting for
+        // the epoll event first keeps the normal path exception-free.
+        if ((err = wait_readable()) != srs_success) {
+            return srs_error_wrap(err, "wait readable");
+        }
+
         sockaddr_storage inaddr; // Use sockaddr_storage to support both IPv4 and IPv6
         int addrlen = sizeof(inaddr);
         // @see https://github.com/Haivision/srt/blob/master/docs/API/API-functions.md#srt_accept
@@ -787,11 +797,6 @@ srs_error_t SrsSrtSocket::accept(srs_srt_t *client_srt_fd)
         // Got something error, return immediately.
         if (srt_getlasterror(NULL) != SRT_EASYNCRCV) {
             return srs_error_new(ERROR_SRT_IO, "srt_accept, err=%s", srt_getlasterror_str());
-        }
-
-        // Accept would block, wait until new client connect or error.
-        if ((err = wait_readable()) != srs_success) {
-            return srs_error_wrap(err, "wait readable");
         }
     }
 

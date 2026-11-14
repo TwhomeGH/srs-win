@@ -502,10 +502,36 @@ static inline void _st_switch_context(_st_thread_t *thread)
  * Restore a thread context that was saved by _st_switch_context or
  * initialized by _ST_INIT_CONTEXT
  */
+#ifdef _WIN32
+extern void *_st_primordial_stack_base;
+extern void *_st_primordial_stack_limit;
+
+static inline void _st_update_teb_stack(_st_thread_t *thread)
+{
+    NT_TIB *tib = (NT_TIB *)NtCurrentTeb();
+
+    if (thread->flags & _ST_FL_PRIMORDIAL) {
+        tib->StackBase = _st_primordial_stack_base;
+        tib->StackLimit = _st_primordial_stack_limit;
+    } else if (thread->stack) {
+        tib->StackBase = (PVOID)thread->stack->stk_top;
+        tib->StackLimit = (PVOID)thread->stack->stk_bottom;
+    }
+}
+#endif
+
 static inline void _st_restore_context(_st_thread_t *from, _st_thread_t *thread)
 {
 #ifdef MD_ASAN
     _st_asan_start_switch(from, thread);
+#endif
+#ifdef _WIN32
+    // MSVC C++ exception unwinding validates the stack against the TEB
+    // StackBase/StackLimit. A manually switched coroutine stack is outside
+    // the thread's original range, so update the TEB before restoring it;
+    // otherwise any throw (SRT's C API throws on nonblocking accept) becomes
+    // an unhandled second-chance exception.
+    _st_update_teb_stack(thread);
 #endif
     _st_this_thread = thread;
     _st_md_cxt_restore(thread->context, 1);

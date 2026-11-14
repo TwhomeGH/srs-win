@@ -47,6 +47,13 @@ jobs:
       - name: Export static site
         run: changelogkit --locale zh-TW export _site --branch develop
 
+      - name: Generate API reference
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen
+          doxygen Doxyfile
+          test -f _site/api/index.html
+
       - name: Configure Pages
         uses: actions/configure-pages@v6
 

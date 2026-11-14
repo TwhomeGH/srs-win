@@ -2,6 +2,33 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 05:00 修正協程內 C++ 例外、啟用 Windows 全功能 RTC／SRT，補 API 文件產生
+
+**類型**: 修復／功能／文件 · **檔案**: `trunk/3rdparty/st-srs/common.h`, `sched.c`, `trunk/src/protocol/srs_protocol_srt.cpp`, `trunk/ide/srs_msvc/CMakeLists.txt`, `CMakePresets.json`, `Doxyfile`, `.github/workflows/pages.yml`
+
+### 問題
+- Windows 全功能建置（libsrtp＋SRT）啟動即退出，`srt_accept` 的例外變成 second-chance exception；SRT 推流也會讓程式消失。
+- `st-event-loop-test` 加入「協程內 throw/catch」後同樣以 0xE06D7363 結束。
+- 全功能與預設建置共用 `trunk/objs/srs_auto_headers.hpp`，先建全功能再建預設會把 RTC／RTSP 巨集帶進來，連結失敗。
+- 手寫文件沒有 API 參考，找類別／函式只能全檔搜尋。
+
+### 根因
+- st-srs 手動切換協程堆疊，但沒有同步 TEB 的 `StackBase`／`StackLimit`；MSVC C++ 例外 unwind 會驗證堆疊範圍，因此任何 throw（SRT C API 在非阻塞 accept 無連線時會 throw）都無法被 catch。
+- CMake 產生的 feature header 寫在原始碼樹，兩個 build dir 互相覆蓋。
+
+### 修改
+- `st-srs` 在 context restore 前更新 TEB 堆疊界線，回到 primordial 時還原；`st-event-loop-test` 加入協程例外測試。
+- `SrsSrtSocket::accept` 先等 SRT epoll 事件再呼叫 `srt_accept`，避免常態 no-pending 例外。
+- `srs_auto_headers.hpp` 改產生在 `${CMAKE_BINARY_DIR}`，預設與全功能建置互不干擾。
+- 新增 `CMakePresets.json`（`windows-default`／`windows-full`）；全功能用 vcpkg `libsrtp` 2.8.1、`libsrt` 1.5.7、`opus` 1.6.1。
+- 新增 `Doxyfile` 與 `Docs/文件索引.md`；Pages 在 changelogkit 之後產生 `/api/` Doxygen 站。
+
+### 驗證
+- 預設與全功能 `ctest` 皆 1/1 passed（含協程例外）。
+- 全功能 Windows：HTTP 200、RTMP 16 bytes、SRT 推流成功（`/api/v1/streams` 顯示 H264 320x240、recv_bytes 29328）。
+- Doxygen 本機以 Ubuntu 容器產生 `_site/api/index.html`（`<title>SRS-Win: 首页</title>`）。
+- RTC 監聽埠（UDP 19000）已綁定；WHIP／WHEP 媒體路徑尚待驗證。
+
 ## 2026.11.15 04:30 Docker 車道改用系統 libsrtp／SRT／FFmpeg 6，補上 st 事件迴圈測試
 
 **類型**: 修復／測試 · **檔案**: `dev/docker/Dockerfile`, `dev/docker/docker-compose.yml`, `dev/tests/st_event_loop_test.cpp`, `trunk/src/core/srs_core.hpp`, `trunk/src/protocol/srs_protocol_st.cpp`, `trunk/src/app/srs_app_rtmp_conn.cpp`, `.github/workflows/windows-nightly.yml`

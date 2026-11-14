@@ -35,8 +35,8 @@
 | RTMP | `11935` | `11935 → 1935` |
 | HTTP API | `11985` | `11985 → 1985` |
 | HTTP 靜態／HLS | `18088` | `18088 → 8088` |
-| SRT（UDP） | `11980` | `11980 → 10080` |
-| WebRTC（UDP） | `18000` | `18000 → 8000` |
+| SRT（UDP） | `19980` | `11980 → 10080` |
+| WebRTC（UDP） | `19000` | `18000 → 8000` |
 
 驗證：
 
@@ -70,7 +70,29 @@ WebRTC listen at udp://0.0.0.0:8000
 
 原始碼變更後要重新 `-Build`；只改 `dev/docker/dev.conf` 時，`-Stop` 後 `-Run` 即可（設定檔以唯讀 volume 掛入）。
 
-> Windows 車道的 RTC／SRT 仍需要 MSVC 可用的 libsrtp／libsrt（目前 CMake 顯示 `RTC=FALSE, SRT=FALSE`）；Docker 車道則已實際啟用兩者。
+> Windows 車道的 RTC／SRT 預設關閉；要測試全功能，使用 vcpkg 與 `windows-full` preset（見下方）。Docker 車道已預設啟用兩者。
+
+## Windows 全功能（RTC／SRT）
+
+```powershell
+$env:VCPKG_ROOT = "H:\vcpkg"
+& "$env:VCPKG_ROOT\vcpkg.exe" install libsrtp libsrt opus --triplet x64-windows
+
+cd trunk/ide/srs_msvc
+cmake --preset windows-full
+cmake --build --preset windows-full-debug
+ctest --preset windows-full-test
+```
+
+輸出在 `trunk/ide/srs_msvc/build-full/Debug`；RTC／SRT 監聽埠沿用 `dev/windows/dev.conf` 的 `19980`／`19000`（UDP）。
+
+SRT 推流驗證（需 FFmpeg）：
+
+```powershell
+ffmpeg -re -f lavfi -i testsrc=size=320x240:rate=10 -t 5 `
+  -c:v libx264 -preset ultrafast -f mpegts `
+  "srt://127.0.0.1:19980?streamid=#!::r=live/srt-test,m=publish"
+```
 
 ## 為什麼放在 repo 內
 

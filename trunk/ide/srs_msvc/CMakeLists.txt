@@ -236,7 +236,8 @@ include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/compat)
 
 # SRS source paths
 include_directories(
-    ${SRS_TRUNK}/objs                    # For generated srs_auto_headers.hpp
+    ${CMAKE_BINARY_DIR}                 # Generated srs_auto_headers.hpp for this build
+    ${SRS_TRUNK}/objs                    # Legacy generated headers (if any)
     ${SRS_TRUNK}/src/core
     ${SRS_TRUNK}/src/kernel
     ${SRS_TRUNK}/src/protocol
@@ -289,8 +290,7 @@ include_directories(${SRS_TRUNK}/3rdparty/srt-1-fit/headers)
 # ============================================================
 # Generate srs_auto_headers.hpp for Windows
 # ============================================================
-set(SRS_AUTO_HEADERS ${SRS_TRUNK}/objs/srs_auto_headers.hpp)
-
+set(SRS_AUTO_HEADERS ${CMAKE_BINARY_DIR}/srs_auto_headers.hpp)
 # Generate the auto headers file for Windows build
 set(_srs_rtc_enabled FALSE)
 set(_srs_srt_enabled FALSE)
