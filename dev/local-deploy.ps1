@@ -102,6 +102,11 @@ if (-not $Service) { $Service = if ($saved['service']) { $saved['service'] } els
 if (-not $ComposeDir) { $ComposeDir = if ($saved['composeDir']) { $saved['composeDir'] } else { $defaultComposeDir } }
 if (-not $Container) { $Container = $saved['container'] }
 
+# Keep relative paths anchored to the repository, not the caller's current directory.
+if (-not [IO.Path]::IsPathRooted($ComposeDir)) {
+    $ComposeDir = Join-Path $repoRoot $ComposeDir
+}
+
 if ($Save) {
     $ini = @(
         '# local-deploy settings (generated, gitignored).',
