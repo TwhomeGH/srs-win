@@ -2,6 +2,22 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 07:40 更新 GitHub Actions 到 Node.js 24 版本
+
+**類型**: CI · **檔案**: `.github/workflows/windows-nightly.yml`, `.github/workflows/release.yml`
+
+### 問題
+- Nightly 仍使用 `actions/checkout@v4`／`actions/upload-artifact@v4`，GitHub 標記 Node.js 20 deprecated，runner 強制改用 Node.js 24。
+
+### 修改
+- `actions/checkout@v4` → `@v7`（`runs.using: node24`）。
+- `actions/upload-artifact@v4` → `@v7`（`runs.using: node24`）。
+- Release 的 `softprops/action-gh-release@v2` → `@v3`（Node.js 24）。
+- Pages 已使用 `checkout@v7`、`setup-python@v7`、`configure-pages@v6`、`upload-pages-artifact@v5`、`deploy-pages@v5`，不需變更。
+
+### 驗證
+- 三個 YAML 可解析；Windows Nightly 與 Pages 重新跑過。`test.yml`／`codeql-analysis.yml` 目前是 `workflow_dispatch` 停用狀態，保留舊版 action，不影響自動流程。
+
 ## 2026.11.15 07:20 Doxygen 增加中文首頁與雙語 API 註解
 
 **類型**: 文件 · **檔案**: `Doxyfile`, `Docs/API導讀.md`, `srs_app_server.hpp`, `srs_app_rtmp_source.hpp`, `srs_app_rtmp_conn.hpp`
