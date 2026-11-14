@@ -366,8 +366,10 @@ struct flock {
 #endif
 #endif
 
-// fcntl() — Windows SDK has _open/_fcntl but no POSIX fcntl().
-// Provide a basic stub for F_GETFD, F_SETFD, F_SETLK operations.
+// POSIX advisory lock support is intentionally not emulated on Windows.
+// F_GETFD/F_SETFD/F_GETFL/F_SETFL are safe no-ops because CRT descriptors
+// have no close-on-exec flag on Windows. Lock requests must fail explicitly:
+// returning 0 here would make callers believe the file is locked.
 #ifndef HAVE_FCNTL_STUB
 static inline int srs_fcntl(int fd, int cmd, ...) {
     (void)fd;
@@ -375,7 +377,8 @@ static inline int srs_fcntl(int fd, int cmd, ...) {
     if (cmd == F_SETFD) return 0;
     if (cmd == F_GETFL) return 0;
     if (cmd == F_SETFL) return 0;
-    if (cmd == F_SETLK || cmd == F_SETLKW) return 0;
+    // A real implementation must use LockFileEx; do not pretend success.
+    if (cmd == F_SETLK || cmd == F_SETLKW) { errno = ENOSYS; return -1; }
     errno = ENOSYS; return -1;
 }
 #define fcntl srs_fcntl
@@ -421,6 +424,7 @@ static inline int srs_getppid(void) { return 0; }
 #ifndef getppid
 #define getppid() srs_getppid()
 #endif
+// closefrom is used by daemonization code that is not available on Windows.
 static inline void srs_closefrom(int lowfd) { (void)lowfd; }
 #ifndef closefrom
 #define closefrom(lowfd) srs_closefrom((lowfd))

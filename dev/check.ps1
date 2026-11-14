@@ -68,14 +68,14 @@ if ($Full) {
     Step 'build srs + st-event-loop-test (windows-full)'
     Push-Location $sourceDir
     try {
-        Invoke-Checked { cmake --build --preset windows-full-debug --target srs st-event-loop-test path-rename-test file-share-test -- /m:2 } 'cmake build'
+        Invoke-Checked { cmake --build --preset windows-full-debug --target srs st-event-loop-test path-rename-test file-share-test win-compat-test -- /m:2 } 'cmake build'
     } finally {
         Pop-Location
     }
 } else {
     Step 'build srs + st-event-loop-test (windows-default)'
     Invoke-Checked {
-        cmake --build $buildDir --config Debug --target srs st-event-loop-test path-rename-test file-share-test -- /m:2
+        cmake --build $buildDir --config Debug --target srs st-event-loop-test path-rename-test file-share-test win-compat-test -- /m:2
     } 'cmake build'
 }
 
@@ -89,7 +89,7 @@ if (-not $NoTests) {
             Pop-Location
         }
     } else {
-        Invoke-Checked { ctest --test-dir $buildDir -C Debug -R 'st-event-loop-test|path-rename-test|file-share-test' --output-on-failure } 'ctest'
+        Invoke-Checked { ctest --test-dir $buildDir -C Debug -R 'st-event-loop-test|path-rename-test|file-share-test|win-compat-test' --output-on-failure } 'ctest'
     }
 }
 
@@ -109,3 +109,5 @@ if ($Ui) {
 
 $stopwatch.Stop()
 Write-Host ("check OK: {0:N1}s ({1})" -f $stopwatch.Elapsed.TotalSeconds, $(if ($Full) { 'full' } else { 'default' })) -ForegroundColor Green
+
+

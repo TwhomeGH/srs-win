@@ -212,6 +212,24 @@ Windows 使用 **`select()`** 作為 I/O 多工機制，而非 Linux 的 epoll�
 
 - 使用 `TlsGetValue` / `TlsSetValue` 替代 `pthread_getspecific` / `pthread_setspecific`
 
+### 5.6 Windows 不支援／降級清單
+
+這些不是「看起來可用但其實沒做」的相容層；呼叫端必須能從回傳值或設定驗證看到失敗。
+
+| API／功能 | Windows 行為 | 防護 |
+|-----------|--------------|------|
+| `fork()`／`kill()` | `-1` + `ENOSYS` | 功能不可用；不要把 daemon／signal 邏輯當成可用 |
+| `fcntl(F_SETLK/F_SETLKW)` | `-1` + `ENOSYS` | 需要互斥的地方改用 `LockFileEx`（pid 檔已改） |
+| `fcntl(F_GETFD/F_SETFD/F_GETFL/F_SETFL)` | `0`（no-op） | Windows CRT fd 沒有 close-on-exec；不可用來做鎖 |
+| `epoll_create/ctl/wait` | `-1` + `ENOSYS` | Windows 使用 `select()`；`srs_st_epoll_is_supported()` 只在 Linux 使用 |
+| `inotify_init1`／`inotify_add_watch` | `-1` + `ENOSYS` | `inotify_auto_reload on` 在設定檢查階段直接拒絕 |
+| `getppid()` | `0` | `asprocess on` 在設定檢查階段直接拒絕 |
+| `getitimer()`／`setitimer()` | no-op 回 `0`（無現行呼叫端） | 不可依賴；若未來使用需改成明確失敗或實作 |
+| `getrlimit()`／`setrlimit()` | 回報無限／no-op（無現行呼叫端） | 不可用來做資源限制 |
+| `waitpid()` | 部分實作（用 process handle） | 只用 `WNOHANG` 與 exit code；完整 POSIX 語意不保證 |
+
+> 新 stub 若無法正確實作，一律回 `-1` 並設定 `errno`，或在設定檢查時拒絕；不要回 `0` 假裝成功。
+
 ## 6. 原始碼修改摘要
 
 ### 6.1 `srs_core_platform.hpp` (core)

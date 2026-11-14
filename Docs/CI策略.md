@@ -39,7 +39,7 @@ pwsh dev/build-docs.ps1
 ## Nightly 的責任
 
 - 建置 Release（預設 RTC／SRT 關閉）。
-- 跑 `st-event-loop-test`、`path-rename-test`、`file-share-test`。
+- 跑 `st-event-loop-test`、`path-rename-test`、`file-share-test`、`win-compat-test`。
 - 跑 UI Vitest、建置 console。
 - Smoke：HTTP API、RTMP handshake、`/console/`、`/api/v1/config`。
 - 上傳 artifact 保留 14 天。

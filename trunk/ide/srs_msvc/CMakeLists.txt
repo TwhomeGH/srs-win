@@ -474,6 +474,13 @@ endif()
     add_executable(file-share-test ${SRS_TRUNK}/../dev/tests/file_share_test.cpp)
     target_include_directories(file-share-test PRIVATE ${SRS_TRUNK}/src/kernel)
     add_test(NAME file-share-test COMMAND file-share-test)
+
+    add_executable(win-compat-test ${SRS_TRUNK}/../dev/tests/win_compat_test.cpp)
+    if(WIN32)
+        target_compile_options(win-compat-test PRIVATE /FI"${CMAKE_CURRENT_SOURCE_DIR}/force_include.h")
+        target_link_libraries(win-compat-test PRIVATE ws2_32)
+    endif()
+    add_test(NAME win-compat-test COMMAND win-compat-test)
 endif()
 
 # Apply force_include.h to all translation units for POSIX compat on Windows

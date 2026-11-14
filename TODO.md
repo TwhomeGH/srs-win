@@ -7,6 +7,7 @@
 - [ ] 逐模組檢查 Windows 相容層的設計缺口（`force_include.h`、`srs_win32_compat.h`、`compat/`）
 - [ ] 每次修改區塊同步補齊公開 API 的 Doxygen 註解（change-scoped，不做全域大改）
 - [ ] 確認 POSIX 相容層的錯誤碼轉換一致（`errno` ↔ `GetLastError()`）
+- [x] 已使用的 POSIX stub fail-loud（`fcntl`／`epoll`／`inotify`／`asprocess`／`inotify_auto_reload`）
 - [x] 檢查 socket／`select()` 事件層在 `FD_SETSIZE` 邊界（已修正 ST 閒置執行緒堆疊不足與 context 堆疊指標）
 - [ ] 檢查連線關閉流程（fd 回收、half-close、`select()` 例外集）
 - [x] 檢查 pid 檔與服務生命週期的設計（Windows 改用 `LockFileEx`，stale pid 可重啟）

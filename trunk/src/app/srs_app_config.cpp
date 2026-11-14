@@ -2456,6 +2456,18 @@ srs_error_t SrsConfig::check_normal_config()
         return srs_error_new(ERROR_SYSTEM_CONFIG_INVALID, "daemon conflicts with asprocess");
     }
 
+#ifdef _WIN32
+    // These features depend on POSIX parent-death and inotify semantics that
+    // this port does not emulate. Fail at config validation instead of starting
+    // a server that silently ignores the request.
+    if (get_asprocess()) {
+        return srs_error_new(ERROR_SYSTEM_CONFIG_INVALID, "asprocess is not supported on Windows");
+    }
+    if (inotify_auto_reload()) {
+        return srs_error_new(ERROR_SYSTEM_CONFIG_INVALID, "inotify_auto_reload is not supported on Windows");
+    }
+#endif
+
     return err;
 }
 

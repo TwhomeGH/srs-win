@@ -21,14 +21,17 @@ struct epoll_event {
 };
 static inline int epoll_create(int size) {
     (void)size;
+    errno = ENOSYS;
     return -1;
 }
 static inline int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event) {
     (void)epfd; (void)op; (void)fd; (void)event;
+    errno = ENOSYS;
     return -1;
 }
 static inline int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout) {
     (void)epfd; (void)events; (void)maxevents; (void)timeout;
+    errno = ENOSYS;
     return -1;
 }
 #endif

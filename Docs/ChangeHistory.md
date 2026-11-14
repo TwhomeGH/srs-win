@@ -2,6 +2,26 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 12:05 1C 第一輪：POSIX stub fail-loud 與設定檢查
+
+**類型**: 根基／修復 · **檔案**: `force_include.h`, `compat/sys/epoll.h`, `srs_app_config.cpp`, `dev/tests/win_compat_test.cpp`
+
+### 問題
+- `fcntl(F_SETLK)` 在 Windows 回 0，讓呼叫端以為取得了檔案鎖。
+- `epoll_*` 回 -1 但沒有設定 `errno`，除錯時看不到原因。
+- `asprocess`／`inotify_auto_reload` 需要 POSIX 的 parent-death／inotify 語意，Windows 版本卻可能啟動成功後才失效。
+
+### 修改
+- `srs_fcntl` 對 `F_SETLK`／`F_SETLKW` 明確回 `-1` + `ENOSYS`；`F_GETFD`／`F_SETFD` 等維持安全的 no-op 並加註。
+- `epoll_create`／`epoll_ctl`／`epoll_wait` 設定 `errno = ENOSYS`。
+- `SrsConfig::check_normal_config()` 在 Windows 拒絕 `asprocess` 與 `inotify_auto_reload`，不再等到啟動後才失敗。
+- 新增 `dev/tests/win_compat_test.cpp`：驗證 fcntl／epoll／inotify 的失敗契約；接入 ctest、`dev/check.ps1`、Nightly。
+- `Docs/Windows移植技術文件.md` 增加 Windows 不支援／降級清單。
+
+### 驗證
+- `win-compat-test`：`win compat stubs: PASS`。
+- 帶 `asprocess on;` 的設定啟動時以 code 1023 拒絕，訊息為 `asprocess is not supported on Windows`。
+
 ## 2026.11.15 11:35 修正 Release 協程 context switch 的 ABI 暫存器缺漏
 
 **類型**: 根基／修復 · **檔案**: `md_win64.asm`, `md.h`, `CMakeLists.txt`, `Docs/Windows移植技術文件.md`
