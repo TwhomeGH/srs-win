@@ -38,6 +38,8 @@
 - [x] 固定 dev 容器部署腳本（`dev/local-deploy.ps1` ＋ `local-deploy.ini`）
 - [x] 快速增量檢查（`dev/check.ps1`）與本機 API 產生（`dev/build-docs.ps1`）
 - [x] Windows VSCode launch／tasks／IntelliSense 設定
+- [x] Web 控制台 MVP（React/Vite，Overview／Vhosts／Streams／Clients／Configs）
+- [ ] Web 控制台：RTC／SRT 播放器、Basic Auth 登入、Configs raw API 降級提示
 - [x] 首次部署後確認 Pages 網址可瀏覽、文件分組正確
 
 ## 已知限制改善

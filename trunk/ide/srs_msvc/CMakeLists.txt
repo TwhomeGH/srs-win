@@ -474,6 +474,7 @@ if(WIN32)
         crypt32
         bcrypt
         ntdll
+        psapi
     )
     target_compile_options(srs PRIVATE /wd4996 /wd4267 /wd4244 /wd4018 /bigobj /utf-8)
 endif()

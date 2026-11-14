@@ -3,6 +3,7 @@
 #define SRS_COMPAT_SYS_RESOURCE_H
 #include <winsock2.h>
 #include <windows.h>
+#include <psapi.h>
 #define RUSAGE_SELF 0
 #define RUSAGE_CHILDREN -1
 struct rusage {
@@ -39,10 +40,15 @@ static inline int getrusage(int who, struct rusage *usage) {
     usage->ru_utime.tv_usec = (long)(((ULARGE_INTEGER*)&ut)->QuadPart % 10000000 / 10);
     usage->ru_stime.tv_sec = (long)(((ULARGE_INTEGER*)&kt)->QuadPart / 10000000);
     usage->ru_stime.tv_usec = (long)(((ULARGE_INTEGER*)&kt)->QuadPart % 10000000 / 10);
-    MEMORYSTATUSEX ms;
-    ms.dwLength = sizeof(ms);
-    GlobalMemoryStatusEx(&ms);
-    usage->ru_maxrss = (long)(ms.ullTotalPhys / 1024);
+    // Linux reports ru_maxrss in KB. Use the process working set, not the
+    // machine's total RAM, or self.mem_percent becomes meaningless.
+    PROCESS_MEMORY_COUNTERS pmc;
+    pmc.cb = sizeof(pmc);
+    if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+        usage->ru_maxrss = (long)(pmc.WorkingSetSize / 1024);
+    } else {
+        usage->ru_maxrss = 0;
+    }
     return 0;
 }
 static inline int getrlimit(int resource, struct rlimit *rlim) {

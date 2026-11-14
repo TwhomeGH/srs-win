@@ -68,6 +68,14 @@
             "detail": "Build _site/api with Doxygen and open it."
         },
         {
+            "label": "build-ui",
+            "type": "shell",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/build-ui.ps1"],
+            "problemMatcher": [],
+            "detail": "Build the React console into objs/nginx/html/console."
+        },
+        {
             "label": "deploy-dev-container",
             "type": "shell",
             "command": "pwsh",

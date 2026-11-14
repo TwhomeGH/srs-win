@@ -73,3 +73,7 @@ _site/
 dev/runtime/
 doxygen-warnings.log
 dev/local-deploy.ini
+ui/node_modules/
+ui/build/
+srs-console*.png
+.playwright-mcp/

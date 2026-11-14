@@ -73,6 +73,15 @@ pwsh dev/build-docs.ps1 -Open
 
 有本機 `doxygen` 就直接用；否則用 `ubuntu:24.04` 容器安裝 Doxygen 後產生 `_site/api/index.html`。
 
+## Web 控制台
+
+```powershell
+pwsh dev/serve-ui.ps1      # Vite HMR，http://127.0.0.1:5173/console/
+pwsh dev/build-ui.ps1      # 建置並安裝到 objs/nginx/html/console/
+```
+
+建置後可直接開 `http://127.0.0.1:11985/console/`；API 同源，不需要 CORS。細節見 [`ui/README.md`](../ui/README.md)。
+
 ## Windows 車道
 
 `-Build` 會：

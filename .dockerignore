@@ -7,5 +7,7 @@ dev/runtime
 objs
 trunk/objs
 trunk/ide/srs_msvc/build
+ui/node_modules
+ui/build
 Docs
 proxy

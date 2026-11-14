@@ -2,6 +2,28 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 06:30 新增 SRS Web 控制台（React/Vite），修正程序記憶體指標
+
+**類型**: 功能／修復 · **檔案**: `ui/`, `dev/build-ui.ps1`, `dev/serve-ui.ps1`, `trunk/ide/srs_msvc/compat/sys/resource.h`, `.github/workflows/windows-nightly.yml`
+
+### 問題
+- SRS 只有舊的 AngularJS console；Oryx 有完整的 React console 參考，但它綁定 `/terraform/v1`、bearer token、Redis 與 forwarding，不能直接給 SRS 用。
+- 總覽的「記憶體」顯示 63GB，因為 Windows 的 `getrusage().ru_maxrss` 回傳機器總實體記憶體，不是程序工作集。
+
+### 根因
+- 沒有獨立的 SRS API SPA；舊 console 與新 API 的資料模型脫節。
+- `compat/sys/resource.h` 的 `getrusage` 用 `GlobalMemoryStatusEx().ullTotalPhys` 填 `ru_maxrss`，語義與 Linux 的 KB 工作集不同。
+
+### 修改
+- 新增 `ui/`（React 18 + Vite 6 + Bootstrap 5）：Overview／Vhosts／Streams／Clients／Configs，同源呼叫 `/api/v1`，支援 zh-TW／en、自動刷新、錯誤邊界與踢除連線；參考 Oryx `SrsConsole.js` 的資料模型但移除平台耦合。
+- `dev/serve-ui.ps1`（Vite HMR + `/api` proxy）與 `dev/build-ui.ps1`（建置並安裝到 `objs/nginx/html/console/`）。
+- Nightly 建置 console、複製到 SRS 的 `/console/`、加入 artifact，smoke 增加 `/console/` 200 檢查；smoke 改從 `build/Debug` 執行以使用打包的 `test.conf` 與 `objs`。
+- `getrusage.ru_maxrss` 改用 `GetProcessMemoryInfo().WorkingSetSize / 1024`，並連結 `psapi`。
+
+### 驗證
+- Playwright：`http://127.0.0.1:11985/console/` 載入成功、API 全部 200、無 console error；RTMP 推流後 Streams 顯示 `console-test`（H264 640x352）、可 Kick；語言切換正常。
+- 記憶體修正後 `/api/v1/summaries` 的 `mem_kbyte` 由 ~66,451,144 降為 ~27,328。
+
 ## 2026.11.15 05:30 新增固定 dev 容器部署、快速檢查腳本與 Windows VSCode 偵錯設定
 
 **類型**: 工具鏈／文件 · **檔案**: `dev/local-deploy.ps1`, `dev/local-deploy.ini.example`, `dev/check.ps1`, `dev/build-docs.ps1`, `.vscode/*`
