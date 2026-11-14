@@ -84,7 +84,7 @@ cmake --build trunk/ide/srs_msvc/build --config Debug
 | [Docs/項目概覽說明.md](Docs/項目概覽說明.md) | 專案簡介、目錄結構、移植範圍 |
 | [Docs/Windows移植技術文件.md](Docs/Windows移植技術文件.md) | CMake 系統、POSIX 相容層、st-srs 移植細節 |
 | [Docs/組件盤點與技術債.md](Docs/組件盤點與技術債.md) | 目前使用的組件、版本、功能現況與需重新設計的項目 |
-| [ui/README.md](ui/README.md) | Web 控制台：本機開發、建置、SRS API 對接 |
+| [ui/README.md](ui/README.md) | Web 控制台快速入口；完整說明見 [Docs/Web控制台.md](Docs/Web控制台.md) |
 | [Docs/建置與執行說明.md](Docs/建置與執行說明.md) | 環境需求、建置步驟、設定、驗證 |
 | [Docs/VSCode除錯手冊.md](Docs/VSCode除錯手冊.md) | VSCode 中斷點、`launch.json`／`tasks.json`、生產版 `.exe` 偵錯 |
 | [Docs/已知限制與待辦事項.md](Docs/已知限制與待辦事項.md) | 已知限制與改善建議 |
