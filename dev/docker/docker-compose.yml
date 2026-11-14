@@ -12,6 +12,9 @@ services:
       - "18000:8000/udp"
     volumes:
       - ./dev.conf:/srs/trunk/conf/dev.conf:ro
+      # Keep HLS output in the repository's ignored runtime area instead of
+      # inside the container filesystem (or a Windows temp directory).
+      - ../runtime/docker/hls:/srs/trunk/objs/nginx/html/hls
     command: ["./objs/srs", "-c", "conf/dev.conf"]
     working_dir: /srs/trunk
     restart: "no"

@@ -2,6 +2,24 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 09:45 HLS 輸出路徑移到可預期的 runtime 目錄
+
+**類型**: 設定／可用性 · **檔案**: `dev/windows/dev.conf`, `dev/docker/dev.conf`, `dev/docker/docker-compose.yml`, `dev/local-deploy.ps1`, `srs_app_http_api.cpp`, `ui/src/pages/Configs.jsx`
+
+### 問題
+- HLS 預設 `hls_path=./objs/nginx/html` 是相對於**工作目錄**；若從 `%TEMP%` 或其他目錄啟動，輸出就會跑到那裡，不利排查。Docker 車道的 HLS 也只存在容器內，主機看不到。
+
+### 修改
+- Windows dev lane：`dev/windows/dev.conf` 明確設定 `hls_path ./objs/nginx/html/hls`；`srs-dev.ps1` 的 cwd 固定在 `dev/runtime/windows`，輸出為 `dev/runtime/windows/objs/nginx/html/hls/<app>/`。
+- Docker lane：`dev/docker/dev.conf` 使用 `/srs/trunk/objs/nginx/html/hls`，compose bind mount 到 `dev/runtime/docker/hls`；`local-deploy.ps1 -Deploy` 會先建立該目錄。
+- `GET /api/v1/config` 增加 `hls_path`；設定頁顯示 HLS 輸出位置。
+- 文件標註「相對於工作目錄」，不是 Windows `%TEMP%`；要改位置用 `work_dir`／`hls_path` 或絕對路徑。
+
+### 驗證
+- `docker compose config` 顯示 bind source `F:\srs\dev\runtime\docker\hls`。
+- `/api/v1/config` 回應 `hls_path: ./objs/nginx/html/hls`；UI 測試 6/6、建置成功。
+- `srs-dev.ps1 -Build -Run` 可啟動並回應 API 200。
+
 ## 2026.11.15 09:20 修正 Windows HLS／DASH／設定持久化的 rename 覆寫失敗
 
 **類型**: 修復 · **檔案**: `srs_kernel_file_rename.hpp`, `srs_kernel_utility.cpp`, `srs_app_hls.cpp`, `srs_app_fragment.cpp`, `srs_app_dash.cpp`, `srs_app_config.cpp`

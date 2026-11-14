@@ -63,6 +63,8 @@ export default function Configs({ t }) {
               <Card title={t('configHttpServer')}>
                 <div className="card-body">
                   <div className="small font-monospace text-break">{config.http_server_dir || '-'}</div>
+                  <div className="text-secondary small mt-2">{t('configHlsPath')}</div>
+                  <div className="small font-monospace text-break">{config.hls_path || '-'}</div>
                   {config.rtc_candidates && <div className="text-secondary small mt-2">RTC: {config.rtc_candidates}</div>}
                 </div>
               </Card>

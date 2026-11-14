@@ -244,6 +244,12 @@ function Invoke-Deploy {
         Write-Host "[DryRun] SRS_DEV_IMAGE=$Image docker compose -f $composeFile -p $Project up -d --force-recreate"
         return
     }
+
+    # The compose file bind-mounts HLS output from ../runtime/docker/hls.
+    # Create it first so Docker Desktop does not make a root-owned directory.
+    $hlsDir = Join-Path (Split-Path $ComposeDir -Parent) 'runtime/docker/hls'
+    New-Item -ItemType Directory -Path $hlsDir -Force | Out-Null
+
     $env:SRS_DEV_IMAGE = $Image
     docker compose -f $composeFile -p $Project up -d --force-recreate
     if ($LASTEXITCODE -ne 0) { throw 'docker compose up failed' }

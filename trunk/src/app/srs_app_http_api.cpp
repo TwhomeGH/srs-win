@@ -714,6 +714,7 @@ srs_error_t SrsGoApiConfig::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessag
     raw->set("allow_update", SrsJsonAny::boolean(_srs_config->get_raw_api_allow_update()));
 
     data->set("http_server_dir", SrsJsonAny::str(_srs_config->get_http_stream_dir().c_str()));
+    data->set("hls_path", SrsJsonAny::str(_srs_config->get_hls_path("__defaultVhost__").c_str()));
     data->set("rtc_candidates", SrsJsonAny::str(_srs_config->get_rtc_server_candidates().c_str()));
 
     return srs_api_response(w, r, obj->dumps());

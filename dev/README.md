@@ -93,7 +93,15 @@ pwsh dev/build-ui.ps1      # 建置並安裝到 objs/nginx/html/console/
 
 日誌：`dev/runtime/windows/srs-dev.out.log`、`srs-dev.err.log`；pid：`srs-dev.pid`。
 
+HLS 輸出：`dev/runtime/windows/objs/nginx/html/hls/<app>/`。`hls_path` 是相對於
+`dev/runtime/windows` 工作目錄，不是 `%TEMP%`；直接用 `srs-dev.ps1` 啟動就不會
+把 HLS 散落到系統暫存。
+
 ## Docker 車道
+
+HLS 輸出會 bind mount 到 `dev/runtime/docker/hls/<app>/`（容器內是
+`/srs/trunk/objs/nginx/html/hls`），可直接從 repo 找到；不會留在 container
+內部或 Windows 暫存目錄。
 
 `-Build` 會用 `dev/docker/Dockerfile` 從本地 `trunk/` 建置**上游 Linux 版**（Ubuntu 24.04），不是 Windows 移植版。映像刻意使用發行版套件而非 vendored 舊版：OpenSSL 3、libsrtp 2.5+、SRT 1.5+、FFmpeg 6.1+，configure 帶 `--use-sys-srtp=on --use-sys-srt=on --use-sys-ffmpeg=on`。
 
