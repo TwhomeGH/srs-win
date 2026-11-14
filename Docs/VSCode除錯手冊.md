@@ -12,6 +12,14 @@
 
 > Windows 請用 `cppvsdbg`，不要用 `cppdbg`——後者需要 gdb／lldb。
 
+## 找不到 `/installed/x64-windows/include`
+
+這通常不是少裝套件，而是 **`VCPKG_ROOT` 沒有定義**：`${env:VCPKG_ROOT}` 會展開成空字串，路徑就變成 `/installed/x64-windows/include`。本機的 vcpkg 在 `H:\vcpkg`，`H:\vcpkg\installed\x64-windows\include` 已存在。
+
+- `.vscode/c_cpp_properties.json` 已改用固定的 `H:/vcpkg/...`，重開 VSCode 後 IntelliSense 不再回報這個錯誤。
+- 要把 vcpkg 搬到別的位置：修改 `c_cpp_properties.json` 的 includePath，並在 PowerShell 設定 `$env:VCPKG_ROOT`（或永久使用者環境變數）後重開 VSCode。
+- 全功能建置仍需要 `VCPKG_ROOT`；`dev/check.ps1 -Full` 會在未設定時自動尋找 `H:\vcpkg`／`C:\vcpkg`，其他位置請自行指定。
+
 ## 建置
 
 ```powershell

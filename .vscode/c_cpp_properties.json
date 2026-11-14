@@ -11,7 +11,6 @@
                 "${workspaceFolder}/trunk/ide/srs_msvc",
                 "${workspaceFolder}/trunk/ide/srs_msvc/build",
                 "${workspaceFolder}/trunk/3rdparty/st-srs",
-                "${env:VCPKG_ROOT}/installed/x64-windows/include",
                 "H:/vcpkg/installed/x64-windows/include",
                 "C:/Program Files/OpenSSL-Win64/include"
             ],
@@ -33,7 +32,6 @@
                 "${workspaceFolder}/trunk/ide/srs_msvc",
                 "${workspaceFolder}/trunk/ide/srs_msvc/build-full",
                 "${workspaceFolder}/trunk/3rdparty/st-srs",
-                "${env:VCPKG_ROOT}/installed/x64-windows/include",
                 "H:/vcpkg/installed/x64-windows/include",
                 "C:/Program Files/OpenSSL-Win64/include"
             ],

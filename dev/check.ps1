@@ -40,6 +40,17 @@ function Invoke-Checked([scriptblock]$action, [string]$what) {
 }
 
 if ($Full -and -not $env:VCPKG_ROOT) {
+    # The repository's documented vcpkg location is H:\vcpkg, but keep the
+    # override working; only auto-fill when the toolchain actually exists.
+    foreach ($candidate in @('H:\vcpkg', 'C:\vcpkg')) {
+        if (Test-Path (Join-Path $candidate 'scripts\buildsystems\vcpkg.cmake')) {
+            $env:VCPKG_ROOT = $candidate
+            break
+        }
+    }
+}
+
+if ($Full -and -not $env:VCPKG_ROOT) {
     throw 'VCPKG_ROOT is not set; set it to the vcpkg installation (for example H:\vcpkg) for -Full.'
 }
 
