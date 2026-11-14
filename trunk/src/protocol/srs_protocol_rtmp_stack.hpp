@@ -375,32 +375,52 @@ private:
 
 // incoming chunk stream maybe interlaced,
 // Use the chunk stream to cache the input RTMP chunk streams.
+/**
+ * @brief Cached state for one incoming RTMP chunk stream.
+ * @details RTMP interleaves chunks from several chunk streams on the same connection. This object keeps the last message header, partially received message, and extended timestamp for one cid.
+ */
 class SrsChunkStream
 {
 public:
-    // Represents the basic header fmt,
-    // which used to identify the variant message header type.
+    /**
+     * @brief Basic header format (0-3), which selects the message-header fields present in the next chunks.
+     */
     char fmt_;
-    // Represents the basic header cid,
-    // which is the chunk stream id.
+    /**
+     * @brief Chunk stream id (cid) carried by the basic header.
+     */
     int cid_;
-    // Cached message header
+    /**
+     * @brief Cached RTMP message header, updated by the most recent chunk on this stream.
+     */
     SrsMessageHeader header_;
-    // Whether the chunk message header has extended timestamp.
+    /**
+     * @brief Whether this chunk stream uses the RTMP extended timestamp field.
+     */
     bool has_extended_timestamp_;
-    // The partially read message.
+    /**
+     * @brief Message currently being reassembled; NULL when no message is pending.
+     */
     SrsRtmpCommonMessage *msg_;
-    // Current writing position of message.
+    /**
+     * @brief Current write position inside the pending message payload.
+     */
     char *writing_pos_;
-    // Decoded msg count, to identify whether the chunk stream is fresh.
+    /**
+     * @brief Number of fully decoded messages, used to decide whether the stream is fresh.
+     */
     int64_t msg_count_;
-    // Because the extended timestamp may be a delta timestamp, it can differ
-    // from the timestamp in the header, so it should be stored as a distinct field
-    // for comparison with the extended timestamp of subsequent chunks.
-    // See https://github.com/ossrs/srs/pull/4356 for details.
+    /**
+     * @brief Extended timestamp saved separately because it may be a delta that differs from the header timestamp.
+     * @see https://github.com/ossrs/srs/pull/4356
+     */
     int32_t extended_timestamp_;
 
 public:
+    /**
+     * @brief Create state for one chunk stream.
+     * @param _cid RTMP chunk stream id; 0 and 1 are reserved for protocol control messages.
+     */
     SrsChunkStream(int _cid);
     virtual ~SrsChunkStream();
 };

@@ -2,6 +2,25 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 11:10 本地優先的 CI 分層與 API 欄位註解
+
+**類型**: 文件／CI · **檔案**: `.github/workflows/windows-nightly.yml`, `.github/workflows/pages.yml`, `Docs/CI策略.md`, `Docs/API註解指南.md`, `srs_protocol_rtmp_stack.hpp`
+
+### 問題
+- Nightly 與 Pages 每次 push 都跑，沒有改動也會消耗 CI；Pages 的每日排程也難以理解為什麼要固定產出。
+- Doxygen 頁面上的公開欄位只有型別／名稱，因為原始碼使用一般 `//` 註解，Doxygen 不會採用；函式也缺 `@param`。
+
+### 修改
+- Nightly 移除 push 觸發，改為每日 03:00（台北）＋手動；schedule 會先比對上次成功 nightly 的 commit，沒有新 commit 就跳過 Windows runner。
+- Pages 移除無條件每日排程，改為文件／API 標頭變更的 path filter＋手動。
+- 新增 `Docs/CI策略.md`，明確區分本機、Nightly、Release、Pages。
+- `SrsChunkStream` 的公開欄位與建構子改成 Doxygen 註解；新增 `Docs/API註解指南.md` 說明 `/** */`、`///`、`@param` 的用法。
+- Nightly 暫時維持 Debug：`st-event-loop-test` 的 Release 組態目前會 segfault，修好前不把 Release 產物稱為穩定 nightly。
+
+### 驗證
+- `doxygen` 重新產生後，`classSrsChunkStream.html` 顯示 `cid_`、`header_`、`fmt_` 的說明與建構子 `_cid` 參數。
+- 兩個 workflow YAML 可解析；本地 Release native test 的 segfault 已記錄為待辦。
+
 ## 2026.11.15 10:50 用 LockFileEx 實作 Windows pid 檔互斥
 
 **類型**: 修復／根基 · **檔案**: `srs_app_server.cpp`, `srs_app_server.hpp`

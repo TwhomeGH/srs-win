@@ -12,7 +12,7 @@
 
 ## CI／發佈
 
-- [x] Nightly 改為僅 push 觸發（移除固定排程）
+- [x] Nightly 改為每晚排程＋手動觸發；有 commit 變更才建置，push 不再觸發
 - [x] Smoke test 設定檔與埠號一致（`test.conf`／1985）
 - [x] 建置輸出含 OpenSSL DLL、`test.conf`、`objs/`（artifact 可直接執行）
 - [x] Smoke test 增加 RTMP handshake（HTTP API 之外）
@@ -21,7 +21,7 @@
 - [x] SRT 推流 Windows 端到端驗證（ffmpeg → SRS，H264/320x240）
 - [ ] RTC 媒體（WHIP／WHEP）Windows 端到端驗證
 - [ ] 全功能（RTC／SRT）CI job 與 vcpkg 快取
-- [ ] Nightly 產出 Release artifact（避免 Debug CRT 相依）
+- [ ] Nightly 產出 Release artifact（目前 `st-event-loop-test` Release 會 segfault，Debug 正常）
 - [ ] Nightly 與 Release 共用同一份 smoke test 腳本（避免兩份漂移）
 
 ## 工具鏈

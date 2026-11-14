@@ -1,15 +1,56 @@
 name: "Windows Nightly"
 
+# Local-first: normal development uses dev/check.ps1, dev/srs-dev.ps1 and
+# dev/local-deploy.ps1. This workflow is the stable nightly channel, not a
+# per-push build gate. Use workflow_dispatch for an on-demand build.
 on:
-  push:
-    branches: [develop]
+  schedule:
+    # 03:00 Asia/Taipei (UTC+8).
+    - cron: '0 19 * * *'
   workflow_dispatch:
 
 permissions: read-all
 
+concurrency:
+  group: windows-nightly
+  cancel-in-progress: true
+
 jobs:
+  # A scheduled run still needs a reason to burn a Windows runner. Build only
+  # when develop has moved since the last successful nightly, or when a human
+  # explicitly dispatches the workflow.
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+    steps:
+      - name: Check for changes since last successful nightly
+        id: check
+        uses: actions/github-script@v9
+        with:
+          script: |
+            if (context.eventName === 'workflow_dispatch') {
+              core.setOutput('changed', 'true');
+              core.info('Manual dispatch: build unconditionally.');
+              return;
+            }
+            const { data } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'windows-nightly.yml',
+              branch: 'develop',
+              status: 'success',
+              per_page: 1
+            });
+            const last = data.workflow_runs[0];
+            const changed = !last || last.head_sha !== context.sha;
+            core.info(`last=${last ? last.head_sha : 'none'} current=${context.sha} changed=${changed}`);
+            core.setOutput('changed', String(changed));
+
   build-windows:
     name: build-windows-x64
+    needs: gate
+    if: needs.gate.outputs.changed == 'true'
     runs-on: windows-2022
 
     steps:
@@ -112,11 +153,11 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: srs-win-x64-debug
+          name: srs-win-nightly-x64-debug
           path: |
             trunk/ide/srs_msvc/build/Debug/srs.exe
             trunk/ide/srs_msvc/build/Debug/srs.pdb
             trunk/ide/srs_msvc/build/Debug/*.conf
             trunk/ide/srs_msvc/build/Debug/*.dll
             trunk/ide/srs_msvc/build/Debug/objs/nginx/html/console/**
-          retention-days: 7
+          retention-days: 14

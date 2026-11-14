@@ -3,8 +3,19 @@
 name: "Pages"
 
 on:
+  # Local-first: docs are published when documentation/source comments change,
+  # or on demand. There is no unconditional daily Pages run.
   push:
     branches: [develop]
+    paths:
+      - 'Docs/**'
+      - 'README.md'
+      - 'TODO.md'
+      - '.changelog.toml'
+      - 'Doxyfile'
+      - 'trunk/src/**/*.hpp'
+      - 'trunk/src/**/*.h'
+      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:
