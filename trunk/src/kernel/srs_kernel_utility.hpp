@@ -131,6 +131,7 @@ extern srs_error_t srs_os_mkdir_all(std::string dir);
 
 // Whether path exists.
 extern bool srs_path_exists(std::string path);
+#include <srs_kernel_file_rename.hpp>
 // Get the dirname of path, for instance, dirname("/live/livestream")="/live"
 extern std::string srs_path_filepath_dir(std::string path);
 // Get the basename of path, for instance, basename("/live/livestream")="livestream"

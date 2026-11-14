@@ -938,7 +938,7 @@ srs_error_t SrsHlsFmp4Muxer::refresh_m3u8()
 
     std::string temp_m3u8 = m3u8_ + ".temp";
     if ((err = _refresh_m3u8(temp_m3u8)) == srs_success) {
-        if (rename(temp_m3u8.c_str(), m3u8_.c_str()) < 0) {
+        if (srs_path_rename(temp_m3u8, m3u8_) < 0) {
             err = srs_error_new(ERROR_HLS_WRITE_FAILED, "hls: rename m3u8 file failed. %s => %s", temp_m3u8.c_str(), m3u8_.c_str());
         }
     }
@@ -1776,7 +1776,7 @@ srs_error_t SrsHlsMuxer::refresh_m3u8()
 
     std::string temp_m3u8 = m3u8_ + ".temp";
     if ((err = _refresh_m3u8(temp_m3u8)) == srs_success) {
-        if (rename(temp_m3u8.c_str(), m3u8_.c_str()) < 0) {
+        if (srs_path_rename(temp_m3u8, m3u8_) < 0) {
             err = srs_error_new(ERROR_HLS_WRITE_FAILED, "hls: rename m3u8 file failed. %s => %s", temp_m3u8.c_str(), m3u8_.c_str());
         }
     }

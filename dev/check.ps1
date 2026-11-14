@@ -61,19 +61,19 @@ if ($Full) {
     Step 'build srs + st-event-loop-test (windows-full)'
     Push-Location $sourceDir
     try {
-        Invoke-Checked { cmake --build --preset windows-full-debug --target srs st-event-loop-test -- /m:2 } 'cmake build'
+        Invoke-Checked { cmake --build --preset windows-full-debug --target srs st-event-loop-test path-rename-test -- /m:2 } 'cmake build'
     } finally {
         Pop-Location
     }
 } else {
     Step 'build srs + st-event-loop-test (windows-default)'
     Invoke-Checked {
-        cmake --build $buildDir --config Debug --target srs st-event-loop-test -- /m:2
+        cmake --build $buildDir --config Debug --target srs st-event-loop-test path-rename-test -- /m:2
     } 'cmake build'
 }
 
 if (-not $NoTests) {
-    Step 'run st-event-loop-test'
+    Step 'run st-event-loop-test and path-rename-test'
     if ($Full) {
         Push-Location $sourceDir
         try {
@@ -82,7 +82,7 @@ if (-not $NoTests) {
             Pop-Location
         }
     } else {
-        Invoke-Checked { ctest --test-dir $buildDir -C Debug -R st-event-loop-test --output-on-failure } 'ctest'
+        Invoke-Checked { ctest --test-dir $buildDir -C Debug -R 'st-event-loop-test|path-rename-test' --output-on-failure } 'ctest'
     }
 }
 

@@ -4,10 +4,12 @@
 // SPDX-License-Identifier: MIT
 //
 
+#include <srs_kernel_file_rename.hpp>
 #include <srs_kernel_utility.hpp>
 
 #ifdef _WIN32
 #include <winsock2.h>
+#include <windows.h>
 #endif
 
 #include <arpa/inet.h>

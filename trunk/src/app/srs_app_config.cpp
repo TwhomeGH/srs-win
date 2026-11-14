@@ -1674,7 +1674,7 @@ srs_error_t SrsConfig::persistence()
     }
 
     // rename the config file.
-    if (::rename(path.c_str(), config_file_.c_str()) < 0) {
+    if (srs_path_rename(path, config_file_) < 0) {
         ::unlink(path.c_str());
         return srs_error_new(ERROR_SYSTEM_CONFIG_PERSISTENCE, "rename %s=>%s", path.c_str(), config_file_.c_str());
     }

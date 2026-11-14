@@ -312,7 +312,7 @@ srs_error_t SrsMpdWriter::write(SrsFormat *format, SrsFragmentWindow *afragments
         return srs_error_wrap(err, "Write MPD file=%s failed", full_path.c_str());
     }
 
-    if (::rename(full_path_tmp.c_str(), full_path.c_str()) < 0) {
+    if (srs_path_rename(full_path_tmp, full_path) < 0) {
         return srs_error_new(ERROR_DASH_WRITE_FAILED, "Rename %s to %s failed", full_path_tmp.c_str(), full_path.c_str());
     }
 

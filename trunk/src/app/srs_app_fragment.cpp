@@ -133,7 +133,7 @@ srs_error_t SrsFragment::rename()
         full_path = srs_strings_replace(full_path, "[duration]", ss.str());
     }
 
-    int r0 = ::rename(tmp_file.c_str(), full_path.c_str());
+    int r0 = srs_path_rename(tmp_file, full_path);
     if (r0 < 0) {
         return srs_error_new(ERROR_SYSTEM_FRAGMENT_RENAME, "rename %s to %s", tmp_file.c_str(), full_path.c_str());
     }

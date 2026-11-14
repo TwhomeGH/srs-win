@@ -2,6 +2,26 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 09:20 修正 Windows HLS／DASH／設定持久化的 rename 覆寫失敗
+
+**類型**: 修復 · **檔案**: `srs_kernel_file_rename.hpp`, `srs_kernel_utility.cpp`, `srs_app_hls.cpp`, `srs_app_fragment.cpp`, `srs_app_dash.cpp`, `srs_app_config.cpp`
+
+### 問題
+- Windows HLS 寫入時出現 `rename ./objs/nginx/html/live/test.m3u8.temp => .../test.m3u8` 失敗（errno=17），接著 segment 的 `test-1.ts.tmp => test-1.ts` 失敗（errno=4），推流被 `ERROR_HLS_WRITE_FAILED`／`ERROR_SYSTEM_FRAGMENT_RENAME` 中斷。
+
+### 根因
+- Windows CRT 的 `rename()` 在目的檔已存在時回傳 `EEXIST`，不像 POSIX `rename()` 會原子覆寫。HLS 每次 segment 都重新整理同一個 m3u8，第二次 refresh 就必然失敗；舊的 ts 目標也可能已存在。
+- 同樣的寫法也存在於 fMP4 m3u8、DASH MPD、片段 `SrsFragment::rename()` 與設定持久化。
+
+### 修改
+- 新增 `srs_path_rename()`（`srs_kernel_file_rename.hpp`）：Windows 用 `MoveFileExA(..., MOVEFILE_REPLACE_EXISTING)`，POSIX 用 `::rename()`；Windows 錯誤碼映射回 `errno`。
+- HLS／fMP4／DASH／fragment／config persistence 全部改走這個 helper，不再直接呼叫 CRT `rename`。
+- 新增 `dev/tests/path_rename_test.cpp`，覆蓋「目的檔已存在要覆寫」與「來源不存在要失敗」兩種情況，並接入 ctest。
+
+### 驗證
+- `ctest`：`st-event-loop-test`、`path-rename-test` 2/2 通過。
+- 先放置 stale 的 `hls-rename-test3.m3u8`／`-0.ts` 再推流：m3u8 被更新為有效內容、ts 被覆寫為 315464 bytes，log 無 `rename`／`HlsWriteFile`／`ERROR_HLS`。
+
 ## 2026.11.15 08:00 Web 控制台：離線保留、推流診斷、唯讀 config API、單元測試
 
 **類型**: 功能／修復／測試 · **檔案**: `trunk/src/app/srs_app_http_api.*`, `srs_app_server.cpp`, `ui/`

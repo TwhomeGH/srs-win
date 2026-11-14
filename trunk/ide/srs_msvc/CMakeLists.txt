@@ -457,6 +457,10 @@ if(SRS_BUILD_ST_TESTS)
         target_link_libraries(st-event-loop-test PRIVATE ws2_32)
     endif()
     add_test(NAME st-event-loop-test COMMAND st-event-loop-test)
+
+    add_executable(path-rename-test ${SRS_TRUNK}/../dev/tests/path_rename_test.cpp)
+    target_include_directories(path-rename-test PRIVATE ${SRS_TRUNK}/src/kernel)
+    add_test(NAME path-rename-test COMMAND path-rename-test)
 endif()
 
 # Apply force_include.h to all translation units for POSIX compat on Windows
