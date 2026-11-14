@@ -68,7 +68,7 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          cmake --build trunk/ide/srs_msvc/build --config Debug --verbose *> build.log
+          cmake --build trunk/ide/srs_msvc/build --config Release --verbose *> build.log
           $exitCode = $LASTEXITCODE
           Get-Content build.log
           if ($exitCode -ne 0) { throw "Build failed, see build.log artifact" }
@@ -84,7 +84,7 @@ jobs:
       - name: st event loop test
         shell: pwsh
         run: |
-          ctest --test-dir trunk/ide/srs_msvc/build -C Debug -R 'st-event-loop-test|path-rename-test|file-share-test' --output-on-failure
+          ctest --test-dir trunk/ide/srs_msvc/build -C Release -R 'st-event-loop-test|path-rename-test|file-share-test' --output-on-failure
           if ($LASTEXITCODE -ne 0) { throw "native tests failed" }
 
       - name: Install web console deps
@@ -102,15 +102,15 @@ jobs:
       - name: Install web console
         shell: pwsh
         run: |
-          $dst = "trunk/ide/srs_msvc/build/Debug/objs/nginx/html/console"
+          $dst = "trunk/ide/srs_msvc/build/Release/objs/nginx/html/console"
           New-Item -ItemType Directory -Path $dst -Force | Out-Null
           Copy-Item "ui/build/*" $dst -Recurse -Force
 
       - name: Smoke test
         shell: pwsh
         run: |
-          $SrsExe = (Resolve-Path "trunk/ide/srs_msvc/build/Debug/srs.exe").Path
-          $WorkDir = (Resolve-Path "trunk/ide/srs_msvc/build/Debug").Path
+          $SrsExe = (Resolve-Path "trunk/ide/srs_msvc/build/Release/srs.exe").Path
+          $WorkDir = (Resolve-Path "trunk/ide/srs_msvc/build/Release").Path
           $ConfFile = Join-Path $WorkDir "test.conf"
           if (-not (Test-Path $ConfFile)) { throw "test.conf not found" }
           Remove-Item -Path (Join-Path $WorkDir "objs/srs.pid") -ErrorAction SilentlyContinue
@@ -153,11 +153,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: srs-win-nightly-x64-debug
+          name: srs-win-nightly-x64
           path: |
-            trunk/ide/srs_msvc/build/Debug/srs.exe
-            trunk/ide/srs_msvc/build/Debug/srs.pdb
-            trunk/ide/srs_msvc/build/Debug/*.conf
-            trunk/ide/srs_msvc/build/Debug/*.dll
-            trunk/ide/srs_msvc/build/Debug/objs/nginx/html/console/**
+            trunk/ide/srs_msvc/build/Release/srs.exe
+            trunk/ide/srs_msvc/build/Release/*.conf
+            trunk/ide/srs_msvc/build/Release/*.dll
+            trunk/ide/srs_msvc/build/Release/objs/nginx/html/console/**
           retention-days: 14

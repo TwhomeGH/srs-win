@@ -71,7 +71,15 @@ typedef struct _st_jmp_buf {
      * Linux    __loongarch64           long[12]
      * Cygwin64 __amd64__/__x86_64__    long[8]
      */
+#ifdef _WIN32
+    // Each XMM non-volatile register needs two 8-byte slots. The layout is:
+    // 0-5 GPRs, 6 RSP, 7 PC, 8..26 XMM6-15 (two slots each),
+    // 28 MXCSR, 29 x87 CW, 30-31 RDI/RSI. Do not compact XMM entries to one
+    // slot: XMM15 then overlaps MXCSR and the ABI probe reports corruption.
+    long long __jmpbuf[32];
+#else
     long __jmpbuf[22];
+#endif
 } _st_jmp_buf_t[1];
 
 /* Defined in *.S file and implemented by ASM. */

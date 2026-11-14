@@ -47,6 +47,7 @@ cmake-build-debug
 # Windows build artifacts
 trunk/ide/srs_msvc/build/
 trunk/ide/srs_msvc/build-full/
+trunk/ide/srs_msvc/build-rel/
 trunk/build/
 trunk/trunk/
 

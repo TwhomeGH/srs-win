@@ -450,11 +450,20 @@ add_executable(srs ${SRS_SOURCES} ${SRS_FFMPEG_STUBS})
 # a runnable test next to the build instead of relying on manual smoke tests.
 if(SRS_BUILD_ST_TESTS)
     add_executable(st-event-loop-test ${SRS_TRUNK}/../dev/tests/st_event_loop_test.cpp)
+if(WIN32)
+    target_sources(st-event-loop-test PRIVATE ${SRS_TRUNK}/../dev/tests/st_abi_probe.asm)
+endif()
     target_link_libraries(st-event-loop-test PRIVATE st-srs)
     target_include_directories(st-event-loop-test PRIVATE ${SRS_TRUNK}/3rdparty/st-srs)
     if(WIN32)
         target_compile_options(st-event-loop-test PRIVATE /FI"${CMAKE_CURRENT_SOURCE_DIR}/force_include.h")
         target_link_libraries(st-event-loop-test PRIVATE ws2_32)
+    endif()
+    if(MSVC)
+        # Keep Release line information so a CI/nightly failure can be
+        # symbolized instead of only showing st_event_loop_test+0x....
+        target_compile_options(st-event-loop-test PRIVATE "$<$<CONFIG:Release>:/Zi>")
+        target_link_options(st-event-loop-test PRIVATE "$<$<CONFIG:Release>:/DEBUG>")
     endif()
     add_test(NAME st-event-loop-test COMMAND st-event-loop-test)
 

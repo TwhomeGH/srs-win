@@ -290,6 +290,22 @@ static void test_coroutine_exception(void)
     printf("coroutine exception: caught=%d\n", caught);
 }
 
+#ifdef _WIN32
+extern "C" unsigned int st_abi_probe(void);
+
+// Directly verifies that md_win64.asm preserves the complete Windows x64
+// non-volatile register set (GPRs, XMM6-15, MXCSR and x87 control).
+static void test_context_switch_abi(void)
+{
+    unsigned int mask = st_abi_probe();
+    CHECK(mask == 0, "context switch did not preserve the Windows x64 ABI state");
+    if (mask) {
+        fprintf(stderr, "abi probe: failing register mask=0x%08x\n", mask);
+    }
+    printf("context switch ABI: mask=0x%08x\n", mask);
+}
+#endif
+
 int main(void)
 {
 #ifdef _WIN32
@@ -307,6 +323,9 @@ int main(void)
     }
 
     test_context_switch();
+#ifdef _WIN32
+    test_context_switch_abi();
+#endif
     test_coroutine_exception();
     test_select_roundtrip();
 

@@ -2,6 +2,26 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 11:35 修正 Release 協程 context switch 的 ABI 暫存器缺漏
+
+**類型**: 根基／修復 · **檔案**: `md_win64.asm`, `md.h`, `CMakeLists.txt`, `Docs/Windows移植技術文件.md`
+
+### 問題
+- `st-event-loop-test` 在 Release 會 segfault，Debug 正常；cdb 顯示 `st_cond_timedwait` 讀到損壞指標。
+- `_st_md_cxt_save`／`restore` 只保存 RBX、RBP、R12-R15，漏了 Windows x64 ABI 的 RDI／RSI（也漏 XMM6–XMM15、MXCSR／x87 control）。Debug 沒觸發，Release 最佳化後才踩到。
+
+### 修改
+- 補齊 RDI／RSI、XMM6–XMM15、MXCSR、x87 control word 的保存與還原。
+- Windows 的 `__jmpbuf` 改成 8-byte slots（`long long[32]`）；XMM 每個需要 2 個 slot，若壓成 1 個會讓 XMM15 與 MXCSR 重疊。
+- 新增 `dev/tests/st_abi_probe.asm`：在 context switch 前把完整 non-volatile 集合載入 sentinel，yield 後逐項比對並回傳失敗 bitmask；`st-event-loop-test` 在 Debug／Release 都執行。
+- Release 的 `st-event-loop-test` 加上 `/Zi`／`/DEBUG`，CI 失敗時可直接 symbolize。
+- `Docs/Windows移植技術文件.md` 補上「為什麼需要組合語言」、ABI 暫存器表與 jmp_buf 佈局。
+
+### 驗證
+- Release／Debug `st-event-loop-test` 都顯示 `context switch ABI: mask=0x00000000`。
+- ABI probe 在未修正 XMM layout 時抓到 `mask=0x00020000`（XMM15 與 MXCSR 重疊），證明檢查不是只看函式有沒有回傳。
+- Nightly 改回 Release 組態；artifact 名稱 `srs-win-nightly-x64`。
+
 ## 2026.11.15 11:10 本地優先的 CI 分層與 API 欄位註解
 
 **類型**: 文件／CI · **檔案**: `.github/workflows/windows-nightly.yml`, `.github/workflows/pages.yml`, `Docs/CI策略.md`, `Docs/API註解指南.md`, `srs_protocol_rtmp_stack.hpp`

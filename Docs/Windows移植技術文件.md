@@ -163,17 +163,38 @@ State Threads 是 SRS 的協程程式庫，原設計僅支援 POSIX 系統。
 4. **`stk.c`** — 使用 `VirtualAlloc` 替代 `mmap`
 5. **`io.c` / `sched.c` / `sync.c` / `event.c`** — Winsock API 適配
 
-### 5.2 上下文切換 ASM (`md_win64.asm`)
+### 5.2 為什麼需要組合語言
 
-**路徑**: `trunk/3rdparty/st-srs/md_win64.asm` (67 行)
+`st` 是 **stackful coroutine**：暫停一個協程時，CPU 的暫存器、堆疊指標（RSP）與返回位址（PC）必須完整保存；恢復另一個協程時，再把另一組狀態放回 CPU 並跳回它的 PC。這件事不是一般 C 函式呼叫，也沒有可攜的 C 語法可以表達「換到另一條堆疊後繼續執行」。
+
+- `setjmp`／`longjmp` 只能保存／還原**同一條堆疊**上的環境，不能建立協程的初始堆疊，也不能指定新的 PC。
+- MSVC x64 **不支援 inline assembly**，所以只能用 MASM（`.asm`）；Linux／Cygwin 則有對應的 `.S`。
+- 組合語言只負責**很窄的 ABI 邊界**：保存與還原 non-volatile 暫存器、RSP、PC。排程、佇列、事件迴圈仍在 C（`sched.c`／`event.c`），不是把整個函式庫手寫成組語。
+
+Windows x64 ABI 的 non-volatile 狀態包括：
+
+| 類別 | 暫存器 |
+|------|--------|
+| 整數 | RBX、RBP、RDI、RSI、R12–R15 |
+| 向量 | XMM6–XMM15 |
+| 控制 | MXCSR、x87 control word |
+
+任何一個漏存，Debug 可能剛好沒事，Release 最佳化後就會踩到。實際案例：`md_win64.asm` 原本漏了 RDI／RSI（也漏了 XMM6–15），`st_event_loop_test` 在 Release 的 `st_cond_timedwait` 讀到損壞的指標而 segfault；補齊後 Release 測試通過。
+
+### 5.3 上下文切換 ASM (`md_win64.asm`)
+
+**路徑**: `trunk/3rdparty/st-srs/md_win64.asm`
 
 - **平台**: x64 Windows MSVC (ml64.exe)
 - **函式**: `_st_md_cxt_save` / `_st_md_cxt_restore`
 - **呼叫慣例**: Microsoft x64 (rcx, rdx, r8, r9 → stack)
-- **保留暫存器**: RBX, RBP, R12-R15 (non-volatile)
-- **jmp_buf 佈局**: 8 個 entry (JB_RBX=0, JB_RBP=1, JB_R12=2, JB_R13=3, JB_R14=4, JB_R15=5, JB_RSP=6, JB_PC=7)
+- **保留暫存器**: RBX、RBP、RDI、RSI、R12–R15、XMM6–XMM15；另有 MXCSR／x87 control
+- **jmp_buf 佈局**: RSP=6、PC=7、XMM6–15=8–26（每個 2 slot）、MXCSR=28、x87CW=29、RDI=30、RSI=31；每個 entry 8 bytes
+- **注意**: XMM 是 16 bytes，不能用單一 8-byte index 壓縮；否則 XMM15 會與 MXCSR 重疊，ABI probe 會抓到損壞。
 - **`_st_md_cxt_save`**: 儲存 non-volatile 暫存器、堆疊指標（跳過 return address）、程式計數器；回傳 0
 - **`_st_md_cxt_restore`**: 回存暫存器、確保回傳值非零（val 或 1）、跳躍至 saved PC
+
+> 這是整條協程機制中唯一需要組合語言的地方；除錯時先確認 ABI 暫存器表，再看 C 排程邏輯。
 
 ### 5.3 事件系統
 
