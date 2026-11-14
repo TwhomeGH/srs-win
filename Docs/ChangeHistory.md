@@ -2,6 +2,22 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 10:50 用 LockFileEx 實作 Windows pid 檔互斥
+
+**類型**: 修復／根基 · **檔案**: `srs_app_server.cpp`, `srs_app_server.hpp`
+
+### 問題
+- Windows 相容層的 `fcntl(F_SETLK)` 是 no-op，pid 檔其實沒有鎖；第二個 SRS 實例可以同時啟動，造成埠號衝突或兩個 process 同時寫入。
+
+### 修改
+- `SrsPidFileLocker` 在 Windows 改用 `CreateFileA` + `LockFileEx(LOCKFILE_EXCLUSIVE_LOCK | LOCKFILE_FAIL_IMMEDIATELY)`；鎖持有到 process 結束。
+- 鎖檔存在但 process 已結束時，下一次啟動可直接取得鎖並覆寫 pid；不需要手動刪 pid。
+- 保留 POSIX 的 `fcntl` 路徑不變。
+
+### 驗證
+- 同一 pid 檔啟動兩個實例：第一個存活，第二個以 code 1034 拒絕啟動。
+- 強制結束第一個 process 後直接啟動第二個：成功啟動並 `GET /api/v1/versions` 回 200。
+
 ## 2026.11.15 10:35 Windows HLS 檔案讀取分享與 rename 競態
 
 **類型**: 修復 · **檔案**: `srs_kernel_file_open.hpp`, `srs_kernel_file_rename.hpp`, `srs_kernel_file.cpp`, `dev/tests/file_share_test.cpp`

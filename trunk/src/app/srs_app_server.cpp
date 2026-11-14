@@ -1961,6 +1961,9 @@ srs_error_t SrsInotifyWorker::cycle()
 SrsPidFileLocker::SrsPidFileLocker()
 {
     pid_fd_ = -1;
+#ifdef _WIN32
+    pid_handle_ = INVALID_HANDLE_VALUE;
+#endif
 }
 
 SrsPidFileLocker::~SrsPidFileLocker()
@@ -1978,6 +1981,50 @@ srs_error_t SrsPidFileLocker::acquire()
     // 644
     int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 
+#ifdef _WIN32
+    // fcntl(F_SETLK) is a no-op in the Windows compatibility layer, so use
+    // LockFileEx directly. The handle stays open for the process lifetime;
+    // a failed lock means another SRS instance owns this pid file.
+    pid_handle_ = CreateFileA(
+        pid_file_.c_str(),
+        GENERIC_READ | GENERIC_WRITE,
+        FILE_SHARE_READ,
+        NULL,
+        OPEN_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL);
+    if (pid_handle_ == INVALID_HANDLE_VALUE) {
+        return srs_error_new(ERROR_SYSTEM_PID_ACQUIRE, "open pid file=%s", pid_file_.c_str());
+    }
+
+    OVERLAPPED overlap;
+    memset(&overlap, 0, sizeof(overlap));
+    if (!LockFileEx(pid_handle_, LOCKFILE_EXCLUSIVE_LOCK | LOCKFILE_FAIL_IMMEDIATELY, 0,
+                    MAXDWORD, MAXDWORD, &overlap)) {
+        DWORD lock_error = GetLastError();
+        CloseHandle(pid_handle_);
+        pid_handle_ = INVALID_HANDLE_VALUE;
+        if (lock_error == ERROR_LOCK_VIOLATION) {
+            srs_error("srs is already running!");
+            return srs_error_new(ERROR_SYSTEM_PID_ALREADY_RUNNING, "srs is already running");
+        }
+        return srs_error_new(ERROR_SYSTEM_PID_LOCK, "lock pid=%s, error=%lu", pid_file_.c_str(), lock_error);
+    }
+
+    if (SetFilePointer(pid_handle_, 0, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER || !SetEndOfFile(pid_handle_)) {
+        return srs_error_new(ERROR_SYSTEM_PID_TRUNCATE_FILE, "truncate pid file=%s", pid_file_.c_str());
+    }
+
+    std::string pid = srs_strconv_format_int(getpid());
+    DWORD written = 0;
+    if (!WriteFile(pid_handle_, pid.c_str(), (DWORD)pid.length(), &written, NULL) || written != (DWORD)pid.length()) {
+        return srs_error_new(ERROR_SYSTEM_PID_WRITE_FILE, "write pid=%s to file=%s", pid.c_str(), pid_file_.c_str());
+    }
+    FlushFileBuffers(pid_handle_);
+
+    srs_trace("write pid=%s to %s success!", pid.c_str(), pid_file_.c_str());
+    return err;
+#else
     int fd;
     // open pid file
     if ((fd = ::open(pid_file_.c_str(), O_WRONLY | O_CREAT, mode)) == -1) {
@@ -2026,12 +2073,23 @@ srs_error_t SrsPidFileLocker::acquire()
     pid_fd_ = fd;
 
     return err;
+#endif
 }
 
 void SrsPidFileLocker::close()
 {
+#ifdef _WIN32
+    if (pid_handle_ != INVALID_HANDLE_VALUE) {
+        OVERLAPPED overlap;
+        memset(&overlap, 0, sizeof(overlap));
+        UnlockFileEx(pid_handle_, 0, MAXDWORD, MAXDWORD, &overlap);
+        CloseHandle(pid_handle_);
+        pid_handle_ = INVALID_HANDLE_VALUE;
+    }
+#else
     if (pid_fd_ > 0) {
         ::close(pid_fd_);
         pid_fd_ = -1;
     }
+#endif
 }

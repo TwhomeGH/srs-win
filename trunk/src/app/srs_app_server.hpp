@@ -9,6 +9,10 @@
 
 #include <srs_core.hpp>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <string>
 #include <vector>
 
@@ -349,6 +353,9 @@ class SrsPidFileLocker
 {
 private:
     int pid_fd_;
+#ifdef _WIN32
+    HANDLE pid_handle_;
+#endif
     std::string pid_file_;
 
 public:

@@ -8,7 +8,7 @@
 - [ ] 確認 POSIX 相容層的錯誤碼轉換一致（`errno` ↔ `GetLastError()`）
 - [x] 檢查 socket／`select()` 事件層在 `FD_SETSIZE` 邊界（已修正 ST 閒置執行緒堆疊不足與 context 堆疊指標）
 - [ ] 檢查連線關閉流程（fd 回收、half-close、`select()` 例外集）
-- [ ] 檢查 pid 檔與服務生命週期的設計（避免殘留 pid 造成啟動失敗）
+- [x] 檢查 pid 檔與服務生命週期的設計（Windows 改用 `LockFileEx`，stale pid 可重啟）
 
 ## CI／發佈
 
