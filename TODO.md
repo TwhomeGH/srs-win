@@ -23,7 +23,7 @@
 - [x] SRT 推流 Windows 端到端驗證（ffmpeg → SRS，H264/320x240）
 - [ ] RTC 媒體（WHIP／WHEP）Windows 端到端驗證
 - [ ] 全功能（RTC／SRT）CI job 與 vcpkg 快取
-- [ ] Nightly 產出 Release artifact（workflow 已改 Release；待 CI 驗證）
+- [x] Nightly 產出 Release artifact（workflow 已改 Release；手動 run 43654341813 驗證通過）
 - [ ] Nightly 與 Release 共用同一份 smoke test 腳本（避免兩份漂移）
 
 ## 工具鏈
