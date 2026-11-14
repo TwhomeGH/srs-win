@@ -224,9 +224,10 @@ Windows 使用 **`select()`** 作為 I/O 多工機制，而非 Linux 的 epoll�
 | `epoll_create/ctl/wait` | `-1` + `ENOSYS` | Windows 使用 `select()`；`srs_st_epoll_is_supported()` 只在 Linux 使用 |
 | `inotify_init1`／`inotify_add_watch` | `-1` + `ENOSYS` | `inotify_auto_reload on` 在設定檢查階段直接拒絕 |
 | `getppid()` | `0` | `asprocess on` 在設定檢查階段直接拒絕 |
-| `getitimer()`／`setitimer()` | no-op 回 `0`（無現行呼叫端） | 不可依賴；若未來使用需改成明確失敗或實作 |
-| `getrlimit()`／`setrlimit()` | 回報無限／no-op（無現行呼叫端） | 不可用來做資源限制 |
-| `waitpid()` | 部分實作（用 process handle） | 只用 `WNOHANG` 與 exit code；完整 POSIX 語意不保證 |
+| `getitimer()`／`setitimer()` | `-1` + `ENOSYS` | 不可依賴；Windows 沒有 POSIX interval timer |
+| `getrlimit()`／`setrlimit()` | `-1` + `ENOSYS` | 不可用假的 infinity 做資源限制 |
+| `wait()` | `-1` + `ENOSYS` | Windows 無法列舉所有子行程；需要特定 pid 時用 `waitpid()` |
+| `waitpid()` | 只支援特定 pid；成功回 pid，逾時回 0 | Windows 沒有 POSIX 訊號狀態，只回 exit code；找不到 pid 時 `errno=ESRCH` |
 
 > 新 stub 若無法正確實作，一律回 `-1` 並設定 `errno`，或在設定檢查時拒絕；不要回 `0` 假裝成功。
 

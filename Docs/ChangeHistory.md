@@ -2,6 +2,25 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 12:30 1C 第二輪：wait／timer／resource stub 與集中 errno 映射
+
+**類型**: 根基／修復 · **檔案**: `compat/sys/wait.h`, `compat/sys/time.h`, `compat/sys/resource.h`, `compat/ifaddrs.h`, `compat/srs_win32_errno.h`
+
+### 問題
+- `wait()` 回 -1 沒設 errno；`waitpid()` 沒有填 `status`，呼叫端讀到未初始化值。
+- `getitimer`／`setitimer`、`getrlimit`／`setrlimit` 回 0，讓呼叫端誤以為成功。
+- Win32 錯誤碼映射散落在檔案 rename／open，其他 compat 函式沒有共用。
+
+### 修改
+- 新增 `compat/srs_win32_errno.h`，集中 Win32 error → errno；file open／rename、wait、ifaddrs 共用。
+- `wait()` 回 `-1` + `ENOSYS`；`waitpid()` 只接受特定 pid，正確處理 `WNOHANG`、設定 POSIX 形式 exit status，並在找不到 pid 時回 `ESRCH`。
+- `getitimer`／`setitimer` 與 `getrlimit`／`setrlimit` 改回 `-1` + `ENOSYS`。
+- `win_compat_test` 擴充上述契約；文件更新 Windows 不支援清單。
+
+### 驗證
+- `win compat stubs: PASS`。
+- `check.ps1` 4/4 ctest 通過；`srs` Debug／Release 可建置。
+
 ## 2026.11.15 12:05 1C 第一輪：POSIX stub fail-loud 與設定檢查
 
 **類型**: 根基／修復 · **檔案**: `force_include.h`, `compat/sys/epoll.h`, `srs_app_config.cpp`, `dev/tests/win_compat_test.cpp`

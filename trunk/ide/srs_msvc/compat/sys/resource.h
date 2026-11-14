@@ -4,6 +4,7 @@
 #include <winsock2.h>
 #include <windows.h>
 #include <psapi.h>
+#include <errno.h>
 #define RUSAGE_SELF 0
 #define RUSAGE_CHILDREN -1
 struct rusage {
@@ -53,13 +54,16 @@ static inline int getrusage(int who, struct rusage *usage) {
 }
 static inline int getrlimit(int resource, struct rlimit *rlim) {
     (void)resource;
-    rlim->rlim_cur = RLIM_INFINITY;
-    rlim->rlim_max = RLIM_INFINITY;
-    return 0;
+    // No POSIX resource-limit model on Windows. Fail explicitly instead of
+    // returning a fake infinity that callers may use for sizing decisions.
+    (void)rlim;
+    errno = ENOSYS;
+    return -1;
 }
 static inline int setrlimit(int resource, const struct rlimit *rlim) {
     (void)resource; (void)rlim;
-    return 0;
+    errno = ENOSYS;
+    return -1;
 }
 #define RLIMIT_NPROC 6
 #define RLIMIT_MEMLOCK 8

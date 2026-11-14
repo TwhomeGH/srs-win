@@ -339,7 +339,11 @@ struct sigaction {
 // We provide sigaction via signal() — the API won't match perfectly but is
 // sufficient for compilation. Use SA_RESTART=0, SA_SIGINFO=2 etc.
 static inline int srs_sigaction(int signum, const struct sigaction *act, struct sigaction *oldact) {
-    if (act) signal(signum, act->sa_handler);
+    (void)oldact;
+    if (act && signal(signum, act->sa_handler) == SIG_ERR) {
+        errno = EINVAL;
+        return -1;
+    }
     return 0;
 }
 #ifndef sigaction

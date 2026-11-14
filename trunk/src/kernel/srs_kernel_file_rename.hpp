@@ -13,34 +13,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
-
-// Map Win32 file errors back to the errno values SRS logs and callers expect.
-inline void srs_win32_error_to_errno(DWORD error)
-{
-    switch (error) {
-        case ERROR_FILE_NOT_FOUND:
-        case ERROR_PATH_NOT_FOUND:
-            errno = ENOENT;
-            break;
-        case ERROR_ACCESS_DENIED:
-        case ERROR_SHARING_VIOLATION:
-            errno = EACCES;
-            break;
-        case ERROR_ALREADY_EXISTS:
-        case ERROR_FILE_EXISTS:
-            errno = EEXIST;
-            break;
-        case ERROR_DISK_FULL:
-            errno = ENOSPC;
-            break;
-        case ERROR_NOT_SAME_DEVICE:
-            errno = EXDEV;
-            break;
-        default:
-            errno = EIO;
-            break;
-    }
-}
+#include <srs_win32_errno.h>
 
 inline std::string srs_rename_backup_path(const std::string &to)
 {

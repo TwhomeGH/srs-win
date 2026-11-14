@@ -11,6 +11,9 @@
 
 #ifdef _WIN32
 #include <sys/epoll.h>
+#include <sys/wait.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 static int check_fcntl_locks(void)
 {
@@ -77,9 +80,53 @@ static int check_inotify(void)
     return 1;
 }
 
+static int check_noop_rejections(void)
+{
+    struct itimerval timer = {};
+    errno = 0;
+    if (setitimer(ITIMER_REAL, &timer, NULL) != -1 || errno != ENOSYS) {
+        fprintf(stderr, "setitimer should fail with ENOSYS, errno=%d\n", errno);
+        return 0;
+    }
+
+    errno = 0;
+    if (getitimer(ITIMER_REAL, &timer) != -1 || errno != ENOSYS) {
+        fprintf(stderr, "getitimer should fail with ENOSYS, errno=%d\n", errno);
+        return 0;
+    }
+
+    struct rlimit limit = {};
+    errno = 0;
+    if (getrlimit(RLIMIT_STACK, &limit) != -1 || errno != ENOSYS) {
+        fprintf(stderr, "getrlimit should fail with ENOSYS, errno=%d\n", errno);
+        return 0;
+    }
+
+    errno = 0;
+    if (setrlimit(RLIMIT_STACK, &limit) != -1 || errno != ENOSYS) {
+        fprintf(stderr, "setrlimit should fail with ENOSYS, errno=%d\n", errno);
+        return 0;
+    }
+
+    int status = 0;
+    errno = 0;
+    if (wait(&status) != -1 || errno != ENOSYS) {
+        fprintf(stderr, "wait should fail with ENOSYS, errno=%d\n", errno);
+        return 0;
+    }
+
+    errno = 0;
+    if (waitpid(-1, &status, WNOHANG) != -1 || errno != ENOSYS) {
+        fprintf(stderr, "waitpid(-1) should fail with ENOSYS, errno=%d\n", errno);
+        return 0;
+    }
+
+    return 1;
+}
+
 int main()
 {
-    int ok = check_fcntl_locks() && check_epoll() && check_inotify();
+    int ok = check_fcntl_locks() && check_epoll() && check_inotify() && check_noop_rejections();
     if (!ok) {
         return 1;
     }

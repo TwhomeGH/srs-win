@@ -4,6 +4,7 @@
 #include <winsock2.h>
 #include <iphlpapi.h>
 #include <stdint.h>
+#include <errno.h>
 struct ifaddrs {
     struct ifaddrs *ifa_next;
     char *ifa_name;
@@ -38,9 +39,16 @@ static inline int getifaddrs(struct ifaddrs **ifap) {
     DWORD bufsize = 0;
     GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, NULL, &bufsize);
     IP_ADAPTER_ADDRESSES *buf = (IP_ADAPTER_ADDRESSES*)malloc(bufsize);
-    if (!buf) return -1;
+    if (!buf) {
+        errno = ENOMEM;
+        return -1;
+    }
     ULONG r = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, buf, &bufsize);
-    if (r != NO_ERROR) { free(buf); return -1; }
+    if (r != NO_ERROR) {
+        free(buf);
+        errno = (r == ERROR_NOT_ENOUGH_MEMORY) ? ENOMEM : EIO;
+        return -1;
+    }
     struct ifaddrs *head = NULL, *tail = NULL;
     for (IP_ADAPTER_ADDRESSES *pa = buf; pa; pa = pa->Next) {
         for (IP_ADAPTER_UNICAST_ADDRESS *ua = pa->FirstUnicastAddress; ua; ua = ua->Next) {

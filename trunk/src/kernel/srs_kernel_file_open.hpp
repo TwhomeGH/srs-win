@@ -14,7 +14,7 @@
 #ifdef _WIN32
 #include <io.h>
 #include <windows.h>
-#include <srs_kernel_file_rename.hpp>
+#include <srs_win32_errno.h>
 #else
 #include <unistd.h>
 #endif

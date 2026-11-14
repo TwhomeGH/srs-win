@@ -3,6 +3,7 @@
 #define SRS_COMPAT_SYS_TIME_H
 #include <winsock2.h>
 #include <windows.h>
+#include <errno.h>
 struct timezone {
     int tz_minuteswest;
     int tz_dsttime;
@@ -34,12 +35,15 @@ struct itimerval {
 };
 static inline int setitimer(int which, const struct itimerval *newv, struct itimerval *oldv) {
     (void)which; (void)newv; (void)oldv;
-    return 0;
+    // Windows has no POSIX interval timers. Do not report success: a caller
+    // would otherwise believe the timer was installed.
+    errno = ENOSYS;
+    return -1;
 }
 static inline int getitimer(int which, struct itimerval *cur) {
     (void)which; (void)cur;
-    memset(cur, 0, sizeof(*cur));
-    return 0;
+    errno = ENOSYS;
+    return -1;
 }
 #endif
 #else
