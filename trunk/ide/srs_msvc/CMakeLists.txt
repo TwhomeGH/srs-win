@@ -473,6 +473,33 @@ if(SRT_FOUND)
 endif()
 
 # ============================================================
+# Runtime bundle: DLLs, config, and writable ./objs next to srs.exe
+# ============================================================
+if(WIN32)
+    # OpenSSL is linked dynamically. Ship the DLLs that match the import
+    # libraries so the exe also runs on machines without OpenSSL installed.
+    if(OpenSSL_FOUND)
+        get_filename_component(_openssl_prefix "${OPENSSL_INCLUDE_DIR}" DIRECTORY)
+        file(GLOB _openssl_runtime_dlls
+            "${_openssl_prefix}/bin/libcrypto-*.dll"
+            "${_openssl_prefix}/bin/libssl-*.dll")
+        if(_openssl_runtime_dlls)
+            add_custom_command(TARGET srs POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_openssl_runtime_dlls} "$<TARGET_FILE_DIR:srs>"
+                COMMENT "Copy OpenSSL runtime DLLs next to srs.exe")
+        else()
+            message(WARNING "OpenSSL DLLs not found under ${_openssl_prefix}/bin; srs.exe will only run where OpenSSL is installed")
+        endif()
+    endif()
+
+    # A runnable bundle also needs the config and a writable objs directory.
+    add_custom_command(TARGET srs POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SRS_TRUNK}/conf/test.conf" "$<TARGET_FILE_DIR:srs>/test.conf"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:srs>/objs"
+        COMMENT "Copy test.conf and create objs next to srs.exe")
+endif()
+
+# ============================================================
 # Copy config file
 # ============================================================
 if(WIN32)

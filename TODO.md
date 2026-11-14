@@ -14,6 +14,8 @@
 
 - [x] Nightly 改為僅 push 觸發（移除固定排程）
 - [x] Smoke test 設定檔與埠號一致（`test.conf`／1985）
+- [x] 建置輸出含 OpenSSL DLL、`test.conf`、`objs/`（artifact 可直接執行）
+- [ ] Nightly 產出 Release artifact（避免 Debug CRT 相依）
 - [ ] Smoke test 增加 RTMP 推拉流驗證（目前只驗 HTTP API）
 - [ ] Nightly 與 Release 共用同一份 smoke test 腳本（避免兩份漂移）
 
@@ -37,3 +39,4 @@
 
 - [ ] `Docs/` 四份文件與現況對齊（埠號、路徑、CI 行為）
 - [ ] `README.md` 補上建置／執行的最短步驟與 Pages 連結
+- [x] VSCode 除錯手冊（含生產版 `.exe`、`launch.json`／`tasks.json`）

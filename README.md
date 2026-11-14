@@ -53,7 +53,7 @@
 驗證服務是否正常：
 
 ```powershell
-curl http://localhost:8080/api/v1/versions
+curl http://localhost:1985/api/v1/versions
 ```
 
 推流測試（需另裝 FFmpeg）：
@@ -83,6 +83,7 @@ cmake --build trunk/ide/srs_msvc/build --config Debug
 | [Docs/項目概覽說明.md](Docs/項目概覽說明.md) | 專案簡介、目錄結構、移植範圍 |
 | [Docs/Windows移植技術文件.md](Docs/Windows移植技術文件.md) | CMake 系統、POSIX 相容層、st-srs 移植細節 |
 | [Docs/建置與執行說明.md](Docs/建置與執行說明.md) | 環境需求、建置步驟、設定、驗證 |
+| [Docs/VSCode除錯手冊.md](Docs/VSCode除錯手冊.md) | VSCode 中斷點、`launch.json`／`tasks.json`、生產版 `.exe` 偵錯 |
 | [Docs/已知限制與待辦事項.md](Docs/已知限制與待辦事項.md) | 已知限制與改善建議 |
 
 ## 已知限制
