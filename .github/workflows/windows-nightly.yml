@@ -43,7 +43,7 @@ jobs:
       - name: st event loop test
         shell: pwsh
         run: |
-          ctest --test-dir trunk/ide/srs_msvc/build -C Debug -R 'st-event-loop-test|path-rename-test' --output-on-failure
+          ctest --test-dir trunk/ide/srs_msvc/build -C Debug -R 'st-event-loop-test|path-rename-test|file-share-test' --output-on-failure
           if ($LASTEXITCODE -ne 0) { throw "native tests failed" }
 
       - name: Install web console deps

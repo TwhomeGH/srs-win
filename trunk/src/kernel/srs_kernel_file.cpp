@@ -6,6 +6,8 @@
 
 #include <srs_kernel_file.hpp>
 
+#include <srs_kernel_file_open.hpp>
+
 // for srs-librtmp, @see https://github.com/ossrs/srs/issues/213
 #include <sys/uio.h>
 #include <unistd.h>
@@ -18,7 +20,7 @@ using namespace std;
 #include <srs_kernel_log.hpp>
 
 // For utest to mock it.
-srs_open_t _srs_open_fn = ::open;
+srs_open_t _srs_open_fn = srs_open_readonly;
 #ifdef _WIN32
 static ssize_t srs_compat_write(int fildes, const void *buf, size_t nbyte) {
     return ::_write(fildes, buf, (unsigned int)nbyte);

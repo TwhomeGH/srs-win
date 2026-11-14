@@ -461,6 +461,10 @@ if(SRS_BUILD_ST_TESTS)
     add_executable(path-rename-test ${SRS_TRUNK}/../dev/tests/path_rename_test.cpp)
     target_include_directories(path-rename-test PRIVATE ${SRS_TRUNK}/src/kernel)
     add_test(NAME path-rename-test COMMAND path-rename-test)
+
+    add_executable(file-share-test ${SRS_TRUNK}/../dev/tests/file_share_test.cpp)
+    target_include_directories(file-share-test PRIVATE ${SRS_TRUNK}/src/kernel)
+    add_test(NAME file-share-test COMMAND file-share-test)
 endif()
 
 # Apply force_include.h to all translation units for POSIX compat on Windows

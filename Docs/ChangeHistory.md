@@ -2,6 +2,24 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 10:35 Windows HLS 檔案讀取分享與 rename 競態
+
+**類型**: 修復 · **檔案**: `srs_kernel_file_open.hpp`, `srs_kernel_file_rename.hpp`, `srs_kernel_file.cpp`, `dev/tests/file_share_test.cpp`
+
+### 問題
+- HLS 在 HTTP 讀取同一個 m3u8 時 refresh，可能撞到 Windows 的 `ERROR_SHARING_VIOLATION`。
+- CRT `_open` 的分享模式不含 `FILE_SHARE_DELETE`；即使加上，Windows 仍可能拒絕直接 `MoveFileEx(..., MOVEFILE_REPLACE_EXISTING)` 覆寫被開啟的目標。
+
+### 修改
+- `SrsFileReader` 在 Windows 改用 `CreateFileA` 開啟唯讀檔，明確加上 `FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE`。
+- `srs_path_rename` 在 Windows 遇到 `ACCESS_DENIED`／`SHARING_VIOLATION` 時走兩段式替換：先把開啟中的舊目標移到唯一的 `.old.N`，再放入新檔，最後盡力刪除舊檔；失敗時嘗試把舊檔放回。
+- Windows 錯誤映射集中到 `srs_win32_error_to_errno`，供開檔與 rename 共用。
+- 新增 `dev/tests/file_share_test.cpp`：在目標仍被開啟時執行 rename，確認新內容成功寫入。
+
+### 驗證
+- `ctest`：`st-event-loop-test`、`path-rename-test`、`file-share-test` 3/3 通過。
+- 實際推流時用另一個 handle 持續開啟 m3u8，HLS 下一次 refresh 無 `rename`／`HlsWriteFile`／`sharing` 錯誤。
+
 ## 2026.11.15 10:10 用 workspace junction 取代固定的 vcpkg 路徑
 
 **類型**: 工具鏈／文件 · **檔案**: `dev/setup-vscode.ps1`, `CMakePresets.json`, `.vscode/c_cpp_properties.json`, `dev/check.ps1`, `rebuild.ps1`, `.markdownlint.json`
