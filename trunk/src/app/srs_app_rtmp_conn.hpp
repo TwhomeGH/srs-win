@@ -119,6 +119,10 @@ public:
     virtual const char *transport_type();
 };
 
+/**
+ * @brief One RTMP client connection (publish, play, or edge).
+ * @details 處理 handshake、publish／play 生命週期、來源掛載與關閉清理。
+ */
 class SrsRtmpConn : public ISrsConnection, public ISrsStartable, public ISrsReloadHandler, public ISrsCoroutineHandler, public ISrsExpire
 {
     // For the thread to directly access any field of connection.

@@ -506,6 +506,10 @@ public:
 // Global singleton instance.
 extern SrsLiveSourceManager *_srs_sources;
 
+/**
+ * @brief Live stream source shared by publishers and consumers.
+ * @details 保存 metadata／音視訊快取、consumer 清單與發布狀態；RTMP、HTTP-FLV、HLS、RTC 都會使用。
+ */
 // The live streaming source.
 class SrsLiveSource : public ISrsReloadHandler
 {

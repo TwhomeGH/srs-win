@@ -2,6 +2,21 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 07:20 Doxygen 增加中文首頁與雙語 API 註解
+
+**類型**: 文件 · **檔案**: `Doxyfile`, `Docs/API導讀.md`, `srs_app_server.hpp`, `srs_app_rtmp_source.hpp`, `srs_app_rtmp_conn.hpp`
+
+### 問題
+- API 站雖然可搜尋，但首頁與類別說明都是英文，維護者需要另外翻譯或猜測模組關係。
+
+### 修改
+- `Docs/API導讀.md` 設為 Doxygen 首頁（`USE_MDFILE_AS_MAINPAGE`），提供中文的模組地圖、啟動生命週期、常見入口與註解語言策略。
+- `OUTPUT_LANGUAGE` 改為 `Chinese`；`SrsServer`、`SrsLiveSource`、`SrsRtmpConn` 的公開註解加上中文 `@details`，Doxygen 類別頁直接顯示中英雙語。
+- 建立慣例：新寫／改動的公開 API 用英文 `@brief` ＋ 中文 `@details`，識別字保持英文；不靠瀏覽器翻譯當唯一方案。
+
+### 驗證
+- `dev/build-docs.ps1` 成功，`_site/api/index.html` 標題為「SRS-Win API 導讀」，`_site/api/classSrsServer.html` 同時出現英文 `@brief` 與中文 `@details`；API 導讀的交叉連結不再產生 Doxygen `\ref` 警告。
+
 ## 2026.11.15 06:30 新增 SRS Web 控制台（React/Vite），修正程序記憶體指標
 
 **類型**: 功能／修復 · **檔案**: `ui/`, `dev/build-ui.ps1`, `dev/serve-ui.ps1`, `trunk/ide/srs_msvc/compat/sys/resource.h`, `.github/workflows/windows-nightly.yml`

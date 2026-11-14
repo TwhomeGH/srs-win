@@ -10,12 +10,13 @@ PROJECT_NAME           = "SRS-Win"
 PROJECT_NUMBER         = "7.0.0"
 PROJECT_BRIEF          = "Windows native port of Simple Realtime Server"
 OUTPUT_DIRECTORY       = _site/api
-OUTPUT_LANGUAGE        = English
+OUTPUT_LANGUAGE        = Chinese
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = YES
 FULL_PATH_NAMES        = NO
 
-INPUT                  = trunk/src
+INPUT                  = trunk/src \
+                         Docs/API導讀.md
 FILE_PATTERNS          = *.hpp *.h *.cpp
 RECURSIVE              = YES
 EXCLUDE                = trunk/src/utest
@@ -32,6 +33,7 @@ WARN_AS_ERROR          = NO
 ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = NO
 SEARCH_INCLUDES        = YES
+USE_MDFILE_AS_MAINPAGE = Docs/API導讀.md
 INCLUDE_PATH           = trunk/src/core trunk/src/kernel trunk/src/protocol trunk/src/app
 PREDEFINED             = _WIN32 SRS_AUTO_SSL SRS_AUTO_SSL_USE SRS_AUTO_RTC_USE SRS_AUTO_SRT_USE SRS_AUTO_H265 SRS_AUTO_H265_USE SRS_FFMPEG_FIT SRS_AUTO_GB28181
 

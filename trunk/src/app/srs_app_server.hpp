@@ -73,6 +73,10 @@ extern srs_error_t srs_global_initialize();
 // SrsServer is the main server class of SRS (Simple Realtime Server) that provides comprehensive
 // streaming media server functionality. It serves as the central orchestrator for all streaming
 // protocols and services in a single-threaded, coroutine-based architecture.
+/**
+ * @brief SRS server lifecycle and listener ownership.
+ * @details 管理設定、pid、listeners、RTC／SRT 與訊號；是啟動與關閉的中心。
+ */
 class SrsServer : public ISrsReloadHandler, // Reload framework for permormance optimization.
                   public ISrsLiveSourceHandler,
                   public ISrsTcpHandler,
