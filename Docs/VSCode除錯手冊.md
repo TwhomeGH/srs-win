@@ -29,6 +29,27 @@ cmake --build trunk/ide/srs_msvc/build --config Debug
 | `objs/` | 執行時寫入 pid／log，必須可寫 |
 | `libcrypto-*.dll`、`libssl-*.dll` | OpenSSL 執行檔，建置時自動複製 |
 
+### 快速檢查（不開 VSCode）
+
+```powershell
+pwsh dev/check.ps1          # 增量建置 srs + 事件迴圈測試，再跑 ctest
+pwsh dev/check.ps1 -Full    # RTC／SRT 全功能（需 VCPKG_ROOT）
+```
+
+`check.ps1` 只重建變更的 target，不會 clean；輸出會顯示耗時。
+
+### 全功能建置（RTC／SRT）
+
+```powershell
+$env:VCPKG_ROOT = "H:\vcpkg"
+cd trunk/ide/srs_msvc
+cmake --preset windows-full
+cmake --build --preset windows-full-debug
+ctest --preset windows-full-test
+```
+
+輸出在 `build-full/Debug`；`launch.json` 的 `SRS Windows (Full RTC/SRT)` 已指向它。
+
 ## `.vscode/launch.json`
 
 ```json
@@ -91,6 +112,26 @@ cmake --build trunk/ide/srs_msvc/build --config Debug
   ]
 }
 ```
+
+## 本機 Docker 部署
+
+固定開發容器用 compose 管理；腳本會把 git revision／version 寫進 image label，並比對「源碼 vs image vs 容器」是否落後：
+
+```powershell
+pwsh dev/local-deploy.ps1 -Check          # 只回報
+pwsh dev/local-deploy.ps1 -Deploy         # 建置＋重建
+pwsh dev/local-deploy.ps1 -Deploy -Test   # 加 HTTP／RTMP smoke
+```
+
+設定在 `dev/local-deploy.ini`（gitignored）；沒有 ini 時使用 repo 相對預設值。
+
+## 本機 API 參考
+
+```powershell
+pwsh dev/build-docs.ps1 -Open
+```
+
+輸出 `_site/api/index.html`；沒有本機 Doxygen 時會用 Ubuntu 容器產生。Pages 的 `/api/` 由同一個 `Doxyfile` 產生。
 
 ## 偵錯生產版 `.exe`
 

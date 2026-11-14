@@ -2,40 +2,50 @@
     "version": "0.2.0",
     "configurations": [
         {
-          "name": "Launch SRS",
-          "type": "cppdbg",
-          "request": "launch",
-          "program": "${workspaceFolder}/trunk/ide/vscode-build/srs",
-          "args": ["-c", "conf/console.conf"],
-          "stopAtEntry": false,
-          "cwd": "${workspaceFolder}/trunk",
-          "environment": [],
-          "externalConsole": false,
-          "linux": {
-            "MIMode": "gdb"
-          },
-          "osx": {
-            "MIMode": "lldb"
-          },
-          "setupCommands": [
-            {
-              "description": "Enable pretty-printing for gdb",
-              "text": "-enable-pretty-printing",
-              "ignoreFailures": true
-            }
-          ],
-          "preLaunchTask": "build",
-          "logging": {
-            "engineLogging": true
-          }
+            "name": "SRS Windows (Debug)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/trunk/ide/srs_msvc/build/Debug/srs.exe",
+            "args": ["-c", "${workspaceFolder}/dev/windows/dev.conf"],
+            "cwd": "${workspaceFolder}/trunk/ide/srs_msvc/build/Debug",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "preLaunchTask": "build-srs-debug"
         },
         {
-          "name": "Launch srs-proxy",
-          "type": "go",
-          "request": "launch",
-          "mode": "auto",
-          "cwd": "${workspaceFolder}/proxy",
-          "program": "${workspaceFolder}/proxy"        
-        }    
+            "name": "SRS Windows (Full RTC/SRT)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/trunk/ide/srs_msvc/build-full/Debug/srs.exe",
+            "args": ["-c", "${workspaceFolder}/dev/windows/dev.conf"],
+            "cwd": "${workspaceFolder}/trunk/ide/srs_msvc/build-full/Debug",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "preLaunchTask": "build-srs-full"
+        },
+        {
+            "name": "SRS event loop test",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/trunk/ide/srs_msvc/build/Debug/st-event-loop-test.exe",
+            "cwd": "${workspaceFolder}/trunk/ide/srs_msvc/build/Debug",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "preLaunchTask": "build-srs-debug"
+        },
+        {
+            "name": "Attach to srs.exe",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "SRS proxy (Go)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "cwd": "${workspaceFolder}/proxy",
+            "program": "${workspaceFolder}/proxy"
+        }
     ]
 }

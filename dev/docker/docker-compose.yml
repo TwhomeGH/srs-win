@@ -3,7 +3,7 @@ services:
     build:
       context: ../..
       dockerfile: dev/docker/Dockerfile
-    image: srs-win-dev-linux:latest
+    image: ${SRS_DEV_IMAGE:-srs-win-dev-linux:local}
     ports:
       - "11935:1935"
       - "11985:1985"

@@ -44,6 +44,35 @@
 curl http://127.0.0.1:11985/api/v1/versions
 ```
 
+## 快速檢查
+
+```powershell
+pwsh dev/check.ps1          # 增量建置 srs + st-event-loop-test，再跑 ctest
+pwsh dev/check.ps1 -Full    # windows-full（RTC/SRT）
+pwsh dev/check.ps1 -Docs    # 同時更新 _site/api
+```
+
+`check.ps1` 不 clean、只重建變更的 target；適合每次改碼後跑。
+
+## 本機部署到固定 Docker 容器
+
+```powershell
+pwsh dev/local-deploy.ps1            # 建置 image + 回報 revision／version
+pwsh dev/local-deploy.ps1 -Check     # 只看狀態，不建置
+pwsh dev/local-deploy.ps1 -Deploy    # 建置並 force-recreate 容器
+pwsh dev/local-deploy.ps1 -Deploy -Test  # 加上 HTTP／RTMP smoke
+```
+
+設定存在 `dev/local-deploy.ini`（已 gitignore）；沒有 ini 時使用 repo 相對預設值。範例見 `dev/local-deploy.ini.example`。
+
+## 本機 API 參考
+
+```powershell
+pwsh dev/build-docs.ps1 -Open
+```
+
+有本機 `doxygen` 就直接用；否則用 `ubuntu:24.04` 容器安裝 Doxygen 後產生 `_site/api/index.html`。
+
 ## Windows 車道
 
 `-Build` 會：

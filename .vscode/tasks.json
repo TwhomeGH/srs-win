@@ -1,17 +1,79 @@
 {
     "version": "2.0.0",
     "tasks": [
-      {
-        "label": "build",
-        "type": "shell",
-        "command": "cmake --build ${workspaceFolder}/trunk/ide/vscode-build",
-        "group": {
-          "kind": "build",
-          "isDefault": true
+        {
+            "label": "build-srs-debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/trunk/ide/srs_msvc/build",
+                "--config",
+                "Debug",
+                "--target",
+                "srs",
+                "st-event-loop-test",
+                "--",
+                "/m:2"
+            ],
+            "problemMatcher": ["$msCompile"],
+            "group": { "kind": "build", "isDefault": true },
+            "detail": "Incremental Windows default build (no clean)."
         },
-        "problemMatcher": ["$gcc"],
-        "detail": "Build SRS by cmake."
-      }
+        {
+            "label": "build-srs-full",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "windows-full-debug",
+                "--target",
+                "srs",
+                "st-event-loop-test"
+            ],
+            "options": { "cwd": "${workspaceFolder}/trunk/ide/srs_msvc" },
+            "problemMatcher": ["$msCompile"],
+            "detail": "Incremental vcpkg build with RTC/SRT (needs VCPKG_ROOT)."
+        },
+        {
+            "label": "test-srs",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--test-dir",
+                "${workspaceFolder}/trunk/ide/srs_msvc/build",
+                "-C",
+                "Debug",
+                "--output-on-failure"
+            ],
+            "problemMatcher": [],
+            "detail": "Run the st-srs event-loop regression test."
+        },
+        {
+            "label": "test-srs-full",
+            "type": "shell",
+            "command": "ctest",
+            "args": ["--preset", "windows-full-test"],
+            "options": { "cwd": "${workspaceFolder}/trunk/ide/srs_msvc" },
+            "problemMatcher": [],
+            "detail": "Run tests against the full RTC/SRT build."
+        },
+        {
+            "label": "docs-api",
+            "type": "shell",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/build-docs.ps1", "-Open"],
+            "problemMatcher": [],
+            "detail": "Build _site/api with Doxygen and open it."
+        },
+        {
+            "label": "deploy-dev-container",
+            "type": "shell",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/local-deploy.ps1", "-Deploy"],
+            "problemMatcher": [],
+            "detail": "Build and recreate the fixed Docker dev container."
+        }
     ]
-  }
-  
+}

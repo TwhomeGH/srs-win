@@ -1,0 +1,10 @@
+# local-deploy 設定範例。
+# 複製為 dev/local-deploy.ini（已 gitignore），或直接執行：
+#   pwsh dev/local-deploy.ps1 -ComposeDir F:\srs\dev\docker -Save
+# 不建立 ini 時，腳本使用下列預設值。
+
+composeDir=dev/docker
+project=srs-dev
+service=srs-dev
+image=srs-win-dev-linux:local
+container=

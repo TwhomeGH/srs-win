@@ -1,96 +1,42 @@
-# Debug with VSCode
+# VSCode（Windows）
 
-Support run and debug with VSCode.
+Windows 除錯設定已改為 `cppvsdbg`（Visual Studio 偵錯器）。完整說明在
+[`Docs/VSCode除錯手冊.md`](../Docs/VSCode除錯手冊.md)；這裡只列常用入口。
 
-## macOS: SRS Server
+## 啟動設定
 
-Install the following extensions:
+| 名稱 | 用途 |
+|------|------|
+| `SRS Windows (Debug)` | 預設建置，`dev/windows/dev.conf` |
+| `SRS Windows (Full RTC/SRT)` | vcpkg 全功能建置（需 `VCPKG_ROOT`） |
+| `SRS event loop test` | st-srs 協程／select 回歸測試 |
+| `Attach to srs.exe` | 附加到已啟動的程式 |
+| `SRS proxy (Go)` | proxy 除錯 |
 
-- CMake Tools
-- CodeLLDB
-- C/C++ Extension Pack
+## 工作
 
-Open the folder like `$HOME/git/srs` in VSCode, after you clone srs to
-`$HOME/git/srs` directory.
+| 工作 | 說明 |
+|------|------|
+| `build-srs-debug` | 增量建置 `srs` 與測試（不 clean） |
+| `build-srs-full` | `windows-full` preset（RTC／SRT） |
+| `test-srs` / `test-srs-full` | 執行 `ctest` |
+| `docs-api` | 產生並開啟 `_site/api` |
+| `deploy-dev-container` | 建置並重建 Docker 開發容器 |
 
-Run commmand to configure the project by pressing `Command+Shift+P`, then type `CMake: Configure` 
-then select `Clang` as the toolchain. Or run the command manually in terminal:
+## 命令列替代方案
 
-```bash
-cmake -S $HOME/git/srs/trunk/ide/srs_clion -B $HOME/git/srs/trunk/ide/vscode-build
+```powershell
+pwsh dev/check.ps1                 # 快速增量建置＋測試
+pwsh dev/check.ps1 -Full           # 全功能（RTC/SRT）
+pwsh dev/local-deploy.ps1 -Deploy  # 固定 Docker dev 容器
+pwsh dev/build-docs.ps1 -Open      # 本機 API 參考
 ```
 
-> Note: Sometimes it may fail to configure when building libsrtp. Just retry, and it will succeed.
+## 前置需求
 
-> Note: Make sure you have `xcode` installed, and run `xcode-select --install` to setup the toolchains.
+- Visual Studio 2022（C++ 桌面開發、MASM）
+- VSCode 擴充：**C/C++**（`ms-vscode.cpptools`）
+- 全功能建置：`$env:VCPKG_ROOT` 指向 vcpkg（例如 `H:\vcpkg`）
+- Docker 車道：Docker Desktop
 
-> Note: The `settings.json` is used to configure the cmake. It will use `$HOME/git/srs/trunk/ide/srs_clion/CMakeLists.txt` 
-> and `$HOME/git/srs/trunk/ide/vscode-build` as the source file and build directory.
-
-Click the `Run > Run Without Debugging` or `Run > Start Debugging` from menu to start or 
-debug the server. It will invoke the `build` task defined in `tasks.json`, or you can run 
-it manually:
-
-```bash
-cmake --build $HOME/git/srs/trunk/ide/vscode-build
-```
-
-> Note: The `launch.json` is used for running and debugging. The build will output the binary to
-> `$HOME/git/srs/trunk/ide/vscode-build/srs`.
-
-## macOS: SRS UTest
-
-Install the following extensions:
-
-- C++ TestMate
-
-Open the folder like `$HOME/git/srs` in VSCode, after you clone srs to
-`$HOME/git/srs` directory.
-
-Run commmand to configure the project by pressing `Command+Shift+P`, then type `CMake: Configure` 
-then select `Clang` as the toolchain. Or run the command manually in terminal:
-
-```bash
-cmake -S $HOME/git/srs/trunk/ide/srs_clion -B $HOME/git/srs/trunk/ide/vscode-build
-```
-
-> Note: Sometimes it may fail to configure when building libsrtp. Just retry, and it will succeed.
-
-Afterwards, build the utest by pressing `Command+Shift+P`, then type `CMake: Build` to run the 
-build command. It will invoke the `build` task defined in `tasks.json`, or you can run it manually:
-
-```bash
-cmake --build $HOME/git/srs/trunk/ide/vscode-build
-```
-
-Then you will discover all the unit testcases from the `View > Testing` panel. You can 
-open utest source file like `trunk/src/utest/srs_utest.cpp`, then click the `Run Test` or `Debug Test`
-on each testcase such as `FastSampleInt64Test`.
-
-## macOS: SRS Regression Test
-
-Follow the [srs-bench](../trunk/3rdparty/srs-bench/README.md) to setup the environment.
-
-Open the test panel by clicking `View > Testing`, run the regression tests under:
-
-```
-+ Go
-  + github.com/ossrs/srs-bench
-    + blackbox
-    + gb28181
-    + srs
-```
-
-## macOS: Proxy
-
-Install the following extensions:
-
-- Go
-
-Open the folder like `~/git/srs` in VSCode.
-
-Click the `View > Run` and select `Launch srs-proxy` to start the proxy server.
-
-Click the `Run > Run Without Debugging` button to start the server.
-
-> Note: The `launch.json` is used for running and debugging.
+文件入口：[`Docs/文件索引.md`](../Docs/文件索引.md)。

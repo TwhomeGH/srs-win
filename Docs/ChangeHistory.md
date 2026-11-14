@@ -2,6 +2,31 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 05:30 新增固定 dev 容器部署、快速檢查腳本與 Windows VSCode 偵錯設定
+
+**類型**: 工具鏈／文件 · **檔案**: `dev/local-deploy.ps1`, `dev/local-deploy.ini.example`, `dev/check.ps1`, `dev/build-docs.ps1`, `.vscode/*`
+
+### 問題
+- 改了碼、建了 image，但 dev 容器可能還跑舊版；只能手動 `docker compose up`，無法回答「容器現在是哪個 revision」。
+- VSCode 的 `launch.json`／`tasks.json`／`settings.json` 仍是 macOS 設定（`vscode-build`、`cppdbg`、`sclion`），Windows 按 F5 直接失敗；IntelliSense 找不到 `src/core` 等標頭與 vcpkg SRT。
+- 每次檢查都要手打完整 CMake／ctest 指令；本機也沒有 API 文件產生入口。
+
+### 根因
+- 沒有像 Oryx `local-deploy.ps1` 那樣把 revision／version 寫進 image label 並比對容器狀態的機制。
+- 開發工具設定仍是上游 macOS 版本，沒有改成 Windows 的 `cppvsdbg` 與 `srs_msvc` 路徑。
+- Doxygen 只在 CI 使用，沒有本機 script。
+
+### 修改
+- `dev/local-deploy.ps1`：建 image（label `srs.revision`／`srs.version`）、回報源碼 vs image vs 容器、`-Deploy` force-recreate、`-Test` 打 HTTP／RTMP；設定可存 `dev/local-deploy.ini`（gitignored，附 `.example`）。
+- `dev/check.ps1`：增量建置 `srs`＋`st-event-loop-test` 後跑 `ctest`，`-Full` 用 vcpkg preset，`-Docs` 順便更新 API。
+- `dev/build-docs.ps1`：有 Doxygen 直接跑，否則用 Ubuntu 容器產生 `_site/api`。
+- `.vscode`：Windows 五個 launch 設定（default／full／event-loop test／attach／proxy）、增量 build／test／docs／deploy tasks、CMake 路徑改 `srs_msvc`、IntelliSense 補 `src/*` 與 vcpkg include。
+
+### 驗證
+- `pwsh dev/check.ps1`：4.1s，ctest 1/1 passed。
+- `pwsh dev/local-deploy.ps1 -Deploy -Test`：image rev 與源碼一致、容器 up to date、HTTP 200、RTMP 16 bytes。
+- `local-deploy.ps1 -Check` 在沒有 image／容器時能正確回報。
+
 ## 2026.11.15 05:00 修正協程內 C++ 例外、啟用 Windows 全功能 RTC／SRT，補 API 文件產生
 
 **類型**: 修復／功能／文件 · **檔案**: `trunk/3rdparty/st-srs/common.h`, `sched.c`, `trunk/src/protocol/srs_protocol_srt.cpp`, `trunk/ide/srs_msvc/CMakeLists.txt`, `CMakePresets.json`, `Doxyfile`, `.github/workflows/pages.yml`
