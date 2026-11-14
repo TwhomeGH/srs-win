@@ -11,16 +11,18 @@
 
 ## 支援的協議
 
-| 協議 | 狀態 | 說明 |
-| ------ | ------ | ------ |
-| **RTMP** | ✅ | 發佈／播放，SRT↔RTMP 橋接 |
-| **HTTP-FLV / HTTP-TS** | ✅ | HTTP 串流 |
-| **HLS** | ✅ | HTTP Live Streaming |
-| **WebRTC (WHIP/WHEP)** | ✅ | RTC over UDP/TCP |
-| **SRT** | ✅ | 可靠 UDP 傳輸 |
-| **GB28181** | ✅ | 中國安防監控 |
-| **MPEG-DASH** | ✅ | HTTP 自適應串流 |
-| **DVR** | ✅ | 錄影至 FLV/MP4 |
+| 協議 | 預設建置 | 全功能建置 | 說明 |
+| --- | --- | --- | --- |
+| **RTMP** | ✅ | ✅ | 發佈／播放 |
+| **HTTP-FLV / HTTP-TS** | ✅ | ✅ | HTTP 串流 |
+| **HLS** | ✅ | ✅ | HTTP Live Streaming |
+| **WebRTC (WHIP/WHEP)** | — | ✅ | 需 `windows-full`＋vcpkg `libsrtp`／`opus`；媒體路徑仍在驗證 |
+| **SRT** | — | ✅ | 需 `windows-full`＋vcpkg `libsrt` |
+| **GB28181** | △ | △ | 巨集已啟用；UDP／媒體路徑尚未端到端驗證 |
+| **MPEG-DASH** | ✅ | ✅ | HTTP 自適應串流 |
+| **DVR** | ✅ | ✅ | 錄影至 FLV/MP4 |
+
+> 「預設建置」是沒有 vcpkg 的 `windows-default`（RTC／SRT 關閉）；「全功能建置」是 `windows-full`。README 不把未啟用的功能標成預設可用。
 
 ## 快速開始
 

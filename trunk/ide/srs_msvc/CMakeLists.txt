@@ -289,8 +289,15 @@ include_directories(${SRS_TRUNK}/3rdparty/srt-1-fit/headers)
 
 # ============================================================
 # Generate srs_auto_headers.hpp for Windows
-# ============================================================
+# Use the configure time as the build identity. The previous hard-coded
+# 2026-06-05 made /api/v1/versions claim every build was the same day.
 set(SRS_AUTO_HEADERS ${CMAKE_BINARY_DIR}/srs_auto_headers.hpp)
+string(TIMESTAMP _srs_build_time "%Y-%m-%d %H:%M:%S" UTC)
+string(TIMESTAMP _srs_build_date "%Y-%m-%d" UTC)
+string(TIMESTAMP _srs_build_ts "%s" UTC)
+if(NOT _srs_build_ts MATCHES "^[0-9]+$")
+    set(_srs_build_ts "0")
+endif()
 # Generate the auto headers file for Windows build
 set(_srs_rtc_enabled FALSE)
 set(_srs_srt_enabled FALSE)
@@ -307,15 +314,15 @@ file(WRITE ${SRS_AUTO_HEADERS}
 #define SRS_AUTO_HEADERS_HPP
 
 // Build info (emulates auto/auto_headers.sh)
-#define SRS_AUTO_BUILD_TS \"${CMAKE_BUILD_TYPE}\"
-#define SRS_AUTO_BUILD_TIME \"${CMAKE_TIMESTAMP}\"
+#define SRS_AUTO_BUILD_TS \"${_srs_build_time}\"
+#define SRS_AUTO_BUILD_TIME \"${_srs_build_time}\"
 #define SRS_AUTO_UNAME \"Windows\"
 #define SRS_AUTO_USER_CONFIGURE \"cmake\"
 #define SRS_PACKAGER \"\"
-#define SRS_BUILD_TS \"0\"
-#define SRS_BUILD_DATE \"2026-06-05\"
-#define SRS_USER_CONFIGURE \"${SRS_AUTO_USER_CONFIGURE}\"
-#define SRS_CONFIGURE \"${SRS_AUTO_CONFIGURE}\"
+#define SRS_BUILD_TS \"${_srs_build_ts}\"
+#define SRS_BUILD_DATE \"${_srs_build_date}\"
+#define SRS_USER_CONFIGURE \"cmake\"
+#define SRS_CONFIGURE \"cmake\"
 #define SRS_DEFAULT_CONFIG \"conf/srs.conf\"
 #define RTMP_SIG_SRS_AUTHORS \"ossrs\"
 

@@ -13,6 +13,23 @@
 - 用語更正：官方是**正式停止支援（drop support）並移除實作**，不只是「不再維護」；「不再維護」是結果，但不足以描述程式碼已被刪除。
 - README、項目概覽與 Windows 技術文件統一這個說法。
 
+## 2026.11.15 13:05 1D：建置資訊與 README 功能宣稱對齊
+
+**類型**: 文件／建置 · **檔案**: `CMakeLists.txt`, `README.md`, `Docs/項目概覽說明.md`, `Docs/組件盤點與技術債.md`
+
+### 問題
+- `srs_auto_headers.hpp` 的 `SRS_BUILD_DATE` 固定為 `2026-06-05`、`SRS_BUILD_TS` 固定 `0`，所有 build 在 API 看起來同一天。
+- README 把 WebRTC／SRT／GB28181 都標成 ✅，但預設 `windows-default` 關閉 RTC／SRT。
+
+### 修改
+- CMake configure 時用 UTC 時間產生 `SRS_BUILD_DATE`、`SRS_BUILD_TS`、`SRS_AUTO_BUILD_TIME`；`SRS_USER_CONFIGURE`／`SRS_CONFIGURE` 明確標為 `cmake`。
+- README 支援矩陣拆成「預設建置／全功能建置」，WebRTC／SRT 僅在 `windows-full` 為 ✅，GB28181 標為未完成端到端驗證。
+- 項目概覽同步說明預設與 full 的差異。
+
+### 驗證
+- `/api/v1/config` 回報 `build=2026-11-14`、`build_ts=1794700572`（實際 configure 時間）。
+- 本機 `srs` Debug 建置成功。
+
 ## 2026.11.15 12:30 1C 第二輪：wait／timer／resource stub 與集中 errno 映射
 
 **類型**: 根基／修復 · **檔案**: `compat/sys/wait.h`, `compat/sys/time.h`, `compat/sys/resource.h`, `compat/ifaddrs.h`, `compat/srs_win32_errno.h`
