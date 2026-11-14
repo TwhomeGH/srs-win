@@ -21,7 +21,7 @@
 - [x] SRT 推流 Windows 端到端驗證（ffmpeg → SRS，H264/320x240）
 - [ ] RTC 媒體（WHIP／WHEP）Windows 端到端驗證
 - [ ] 全功能（RTC／SRT）CI job 與 vcpkg 快取
-- [ ] Nightly 產出 Release artifact（目前 `st-event-loop-test` Release 會 segfault，Debug 正常）
+- [ ] Nightly 產出 Release artifact（workflow 已改 Release；待 CI 驗證）
 - [ ] Nightly 與 Release 共用同一份 smoke test 腳本（避免兩份漂移）
 
 ## 工具鏈
@@ -54,7 +54,7 @@
 - [ ] 評估以 IOCP 取代 `select()` 的可行性
 - [ ] 支援 ARM64 Windows（需 `md_win64_arm64.asm` 與 vcpkg 驗證）
 - [ ] 減少 `force_include.h` 與 `srs_win32_compat.h` 的重複定義（後者目前未被 include）
-- [ ] `rebuild.ps1` 改用相對路徑
+- [x] `rebuild.ps1` 改用相對路徑
 - [ ] 移除 dead 第三方元件（`httpx-static`、`srs-docs`、`gprof`、`gperftools`、`signaling`）
 - [ ] OpenSSL：移除 vendored 1.1.1l，統一使用系統 3.x
 - [ ] FFmpeg：Windows 改接真實 FFmpeg 7.x 或明確改為外部 `ffmpeg.exe`；Linux 使用系統 6.x
