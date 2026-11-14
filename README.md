@@ -6,7 +6,7 @@
 **SRS-Win** 是 [SRS](https://github.com/ossrs/srs) 即時影音串流伺服器的 **Windows 原生移植版**。
 使用 **MSVC (Visual Studio 2022)** + **CMake** 建置，支援 **Windows 10/11 x64**。
 
-> ⚠️ **官方 SRS 的 Windows 支援是 Cygwin64（自 v5.0.89），已於 v7.0.60（2025-08-21，#4447）移除**；不是從 v7.0.60 之後才開始移除。
+> ⚠️ **官方 SRS 的 Windows 支援是 Cygwin64（自 v5.0.89）；官方在 v7.0.60（2025-08-21，#4447）正式停止支援，並實際移除 Cygwin64／Windows 實作、建置設定與 CI**；不是只停止維護、也不是 v7.0.60 之後才移除。
 > 此 Fork 以 **SRS v7.0.89（2025-09-15）** 為基礎，重新建立原生 MSVC/CMake Windows port；官方 SRS 7 本身不提供 Windows 原生支援。
 
 ## 支援的協議

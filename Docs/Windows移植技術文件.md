@@ -5,7 +5,8 @@
 | 項目 | 事實 |
 |------|------|
 | 官方 Windows 支援形式 | **Cygwin64**，不是原生 MSVC；自 SRS v5.0.89 起 |
-| 官方移除點 | **v7.0.60（2025-08-21，#4447）** 移除 Cygwin64／Windows 條件編譯、NSIS 與相關 CI |
+| 官方移除點 | **v7.0.60（2025-08-21，#4447）** 正式停止支援（drop support），並實際移除 Cygwin64／Windows 條件編譯、建置設定、NSIS 與相關 CI |
+| 官方態度 | 不只是「不再維護」；Windows 路徑已從 upstream 程式碼移除，後續版本不再提供任何 Windows 支援承諾 |
 | 本 Fork 基礎 | **SRS v7.0.89（2025-09-15）**，以原生 MSVC/CMake 重新建立 Windows port |
 | 本 Fork 定位 | 不是官方 7.x 的 Windows 延續支援，而是獨立維護的原生移植 |
 
