@@ -1069,7 +1069,7 @@ srs_error_t SrsRtmpConn::acquire_publish(SrsSharedPtr<SrsLiveSource> source)
     // TODO: FIXME: Need to convert RTMP to SRT.
     SrsCompositeBridge *bridge = new SrsCompositeBridge();
 
-#if defined(SRS_FFMPEG_FIT)
+#if defined(SRS_AUTO_RTC_USE) && defined(SRS_FFMPEG_FIT)
     if (rtc.get() && _srs_config->get_rtc_from_rtmp(req->vhost_)) {
         bridge->append(new SrsFrameToRtcBridge(rtc));
     }

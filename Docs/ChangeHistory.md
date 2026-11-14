@@ -2,6 +2,52 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 04:30 Docker 車道改用系統 libsrtp／SRT／FFmpeg 6，補上 st 事件迴圈測試
+
+**類型**: 修復／測試 · **檔案**: `dev/docker/Dockerfile`, `dev/docker/docker-compose.yml`, `dev/tests/st_event_loop_test.cpp`, `trunk/src/core/srs_core.hpp`, `trunk/src/protocol/srs_protocol_st.cpp`, `trunk/src/app/srs_app_rtmp_conn.cpp`, `.github/workflows/windows-nightly.yml`
+
+### 問題 - Linux 車道建不起來，Windows 事件層沒有回歸測試
+Windows checkout 的 CRLF 讓 vendored `libsrtp-2-fit/configure` 變成 `/bin/sh^M`；修掉後又連續出現 `SOCKET`／`rtc` 未宣告，因為 Windows 移植的程式碼沒有在 Linux 編譯過。
+
+### 根因
+- Dockerfile 仍編譯 vendored 2.3.0 libsrtp（2019），且 `dos2unix` 把它的 `configure` 判定為 binary 而跳過。
+- `srs_protocol_st.cpp` 的 `setsockopt((SOCKET)fd, ...)` 沒有 `_WIN32` 守衛。
+- Linux `auto_headers.sh` 產生 `SRS_RTC`／`SRS_SRT`，原始碼卻用 `SRS_AUTO_*_USE`；Windows CMake 兩套都定義，所以只有 Linux 失敗。
+- st-srs 的三個 Windows 缺陷（SP 寬度、閒置堆疊、訊號 pipe 空轉）沒有任何自動測試。
+
+### 修改
+- Docker 基底改 Ubuntu 24.04，安裝系統 OpenSSL 3、libsrtp2、SRT 1.5、FFmpeg 6.1、Opus，configure 加 `--use-sys-srtp=on --use-sys-srt=on --use-sys-ffmpeg=on`；不再編譯 vendored 舊版。
+- `srs_fd_reuseaddr/reuseport/keepalive` 依平台選 `SOCKET` 或 `int`。
+- `srs_core.hpp` 加 `SRS_RTC`→`SRS_AUTO_RTC_USE`、`SRS_SRT`→`SRS_AUTO_SRT_USE` 別名；`srs_app_rtmp_conn.cpp` 的 bridge 改用 `SRS_AUTO_RTC_USE && SRS_FFMPEG_FIT` 守衛。
+- 新增 `dev/tests/st_event_loop_test.cpp`：8 個協程 × 100 次 yield，以及 32 條 loopback TCP 的 accept／read／write；CMake 目標 `st-event-loop-test`，`ctest -R st-event-loop-test` 通過。
+- Nightly 增加 `ctest` 步驟，smoke 增加 RTMP handshake（1537 bytes → 16 bytes）。
+- `dev/docker` 的 dev.conf 加 `srt_server`／`rtc_server`，compose 映射 UDP 11980／18000。
+
+### 驗證
+- Docker：HTTP 200、RTMP handshake 16 bytes；日誌顯示 `srt listen at udp://0.0.0.0:10080`、`WebRTC listen at udp://0.0.0.0:8000`、`RTC: connection manager run`。
+- Windows：`ctest` 1/1 passed（0.18s）；本機以替代埠驗證 HTTP 200、RTMP 16 bytes。
+- 待辦：Windows native 的 RTC／SRT 仍需 MSVC 可用的 libsrtp／libsrt。
+
+## 2026.11.14 04:10 新增 repo 內的 dev 測試環境（Windows srs-dev.exe ＋ Docker Linux）
+
+**類型**: 新增 · **檔案**: `dev/srs-dev.ps1`, `dev/windows/dev.conf`, `dev/docker/`, `dev/README.md`, `.dockerignore`, `.gitignore`
+
+### 問題 - 開發測試沒有固定入口，產物與設定散落在 AppData／暫存目錄
+每次測試都要手動找 `build/Debug/srs.exe`、複製 DLL、改埠號；Linux 版只能另外找方法跑，與 Windows 版的行為差異難以對照。
+
+### 根因 - 專案沒有把「開發測試」視為一級工作流
+建置產物、測試設定與執行時狀態（pid／log）沒有集中位置，也沒有區分 dev 與正式 artifact。
+
+### 修改 - 以 `dev/` 集中兩條車道
+- `dev/srs-dev.ps1`：Windows 建置→複製成 `dev/runtime/windows/srs-dev.exe`（含 DLL、PDB、`objs/`）→啟動／停止／狀態；Docker 則 build／up／down。
+- `dev/windows/dev.conf`（11935／11985／18088）與 `dev/docker/dev.conf`（1935／1985／8088）；主機端都映射到 11935／11985／18088，避開本機已占用的 1985。
+- `dev/docker/Dockerfile` 從本地 `trunk/` 建置上游 Linux 版，`docker-compose.yml` 負責映像、埠與設定掛載。
+- `dev/runtime/` 加入 `.gitignore`；`.dockerignore` 排除產物與文件；changelogkit 的 `exclude` 也排除 `dev/runtime/**`。
+
+### 驗證
+- Windows 車道：`-Build -Run` 後 API 200，`-Stop` 可正常結束。
+- Docker 車道：建置上游 Linux 版並啟動，API 200（待本機 Docker 實測）。
+
 ## 2026.11.14 03:30 建置輸出改為可直接執行的組合（OpenSSL DLL、設定、objs）
 
 **類型**: 修復 · **檔案**: `trunk/ide/srs_msvc/CMakeLists.txt`, `Docs/VSCode除錯手冊.md`, `Docs/建置與執行說明.md`, `README.md`

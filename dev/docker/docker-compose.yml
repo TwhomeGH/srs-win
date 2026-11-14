@@ -1,0 +1,17 @@
+services:
+  srs-dev:
+    build:
+      context: ../..
+      dockerfile: dev/docker/Dockerfile
+    image: srs-win-dev-linux:latest
+    ports:
+      - "11935:1935"
+      - "11985:1985"
+      - "18088:8088"
+      - "11980:10080/udp"
+      - "18000:8000/udp"
+    volumes:
+      - ./dev.conf:/srs/trunk/conf/dev.conf:ro
+    command: ["./objs/srs", "-c", "conf/dev.conf"]
+    working_dir: /srs/trunk
+    restart: "no"

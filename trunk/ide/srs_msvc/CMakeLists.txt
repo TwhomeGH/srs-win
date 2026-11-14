@@ -9,6 +9,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(srs VERSION 7.0.0 LANGUAGES CXX C ASM_MASM)
 
+include(CTest)
+option(SRS_BUILD_ST_TESTS "Build the st-srs event loop regression test" ON)
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 99)
@@ -441,6 +444,20 @@ set(SRS_FFMPEG_STUBS
 
 # Add the main executable with all sources including stubs
 add_executable(srs ${SRS_SOURCES} ${SRS_FFMPEG_STUBS})
+
+# Regression test for the coroutine/select layer. The Windows port had three
+# untested defects there (SP width, idle stack size, signal pipe spin), so keep
+# a runnable test next to the build instead of relying on manual smoke tests.
+if(SRS_BUILD_ST_TESTS)
+    add_executable(st-event-loop-test ${SRS_TRUNK}/../dev/tests/st_event_loop_test.cpp)
+    target_link_libraries(st-event-loop-test PRIVATE st-srs)
+    target_include_directories(st-event-loop-test PRIVATE ${SRS_TRUNK}/3rdparty/st-srs)
+    if(WIN32)
+        target_compile_options(st-event-loop-test PRIVATE /FI"${CMAKE_CURRENT_SOURCE_DIR}/force_include.h")
+        target_link_libraries(st-event-loop-test PRIVATE ws2_32)
+    endif()
+    add_test(NAME st-event-loop-test COMMAND st-event-loop-test)
+endif()
 
 # Apply force_include.h to all translation units for POSIX compat on Windows
 target_compile_options(srs PRIVATE /FI"${CMAKE_CURRENT_SOURCE_DIR}/force_include.h")

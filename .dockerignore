@@ -1,0 +1,11 @@
+# Keep the Docker build context small; trunk/ sources stay included.
+.git
+.github
+.vscode
+_site
+dev/runtime
+objs
+trunk/objs
+trunk/ide/srs_msvc/build
+Docs
+proxy

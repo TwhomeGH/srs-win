@@ -160,7 +160,12 @@ srs_error_t srs_fd_closeexec(int fd)
 srs_error_t srs_fd_reuseaddr(int fd)
 {
     int v = 1;
-    if (setsockopt((SOCKET)fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&v, sizeof(int)) == -1) {
+#ifdef _WIN32
+    SOCKET sfd = (SOCKET)fd;
+#else
+    int sfd = fd;
+#endif
+    if (setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&v, sizeof(int)) == -1) {
         return srs_error_new(ERROR_SOCKET_SETREUSEADDR, "SO_REUSEADDR fd=%d", fd);
     }
 
@@ -171,7 +176,12 @@ srs_error_t srs_fd_reuseport(int fd)
 {
 #if defined(SO_REUSEPORT)
     int v = 1;
-    if (setsockopt((SOCKET)fd, SOL_SOCKET, SO_REUSEPORT, (const char*)&v, sizeof(int)) == -1) {
+#ifdef _WIN32
+    SOCKET sfd = (SOCKET)fd;
+#else
+    int sfd = fd;
+#endif
+    if (setsockopt(sfd, SOL_SOCKET, SO_REUSEPORT, (const char*)&v, sizeof(int)) == -1) {
         srs_warn("SO_REUSEPORT failed for fd=%d", fd);
     }
 #else
@@ -186,7 +196,12 @@ srs_error_t srs_fd_keepalive(int fd)
 {
 #ifdef SO_KEEPALIVE
     int v = 1;
-    if (setsockopt((SOCKET)fd, SOL_SOCKET, SO_KEEPALIVE, (const char*)&v, sizeof(int)) == -1) {
+#ifdef _WIN32
+    SOCKET sfd = (SOCKET)fd;
+#else
+    int sfd = fd;
+#endif
+    if (setsockopt(sfd, SOL_SOCKET, SO_KEEPALIVE, (const char*)&v, sizeof(int)) == -1) {
         return srs_error_new(ERROR_SOCKET_SETKEEPALIVE, "SO_KEEPALIVE fd=%d", fd);
     }
 #endif

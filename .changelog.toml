@@ -6,7 +6,7 @@ project  = "SRS-Win"
 history  = "Docs/ChangeHistory.md"
 todo     = "TODO.md"
 # 不索引第三方原始碼與說明文件（避免文件／符號索引被 vendor 內容淹沒）。
-exclude  = ["trunk/3rdparty/**"]
+exclude  = ["trunk/3rdparty/**", "dev/runtime/**"]
 
 # Documents 分頁的文件分組。
 [[tool.changelog.docs.groups]]
@@ -21,4 +21,4 @@ id    = "design"
 title = "設計與限制"
 color = "violet"
 order = 20
-paths = ["Docs/Windows移植技術文件.md", "Docs/已知限制與待辦事項.md"]
+paths = ["Docs/Windows移植技術文件.md", "Docs/組件盤點與技術債.md", "Docs/已知限制與待辦事項.md"]

@@ -15,8 +15,10 @@
 - [x] Nightly 改為僅 push 觸發（移除固定排程）
 - [x] Smoke test 設定檔與埠號一致（`test.conf`／1985）
 - [x] 建置輸出含 OpenSSL DLL、`test.conf`、`objs/`（artifact 可直接執行）
+- [x] Smoke test 增加 RTMP handshake（HTTP API 之外）
+- [x] Nightly 執行 `st-event-loop-test`（`ctest -R st-event-loop-test`）
+- [ ] Windows RTC／SRT 依賴（libsrtp／libsrt）納入建置與 CI
 - [ ] Nightly 產出 Release artifact（避免 Debug CRT 相依）
-- [ ] Smoke test 增加 RTMP 推拉流驗證（目前只驗 HTTP API）
 - [ ] Nightly 與 Release 共用同一份 smoke test 腳本（避免兩份漂移）
 
 ## 工具鏈
@@ -24,6 +26,9 @@
 - [x] 接入 changelogkit（`.changelog.toml` ＋ `Docs/ChangeHistory.md`）
 - [x] 建立主 `TODO.md`
 - [x] 新增 Pages workflow（`changelogkit export` → GitHub Pages）
+- [x] 專屬 dev 測試環境（Windows `srs-dev.exe` ＋ Docker Linux lane，執行時產物在 `dev/runtime/`）
+- [x] Docker lane 改用系統 libsrtp／SRT／FFmpeg 6／OpenSSL 3（Ubuntu 24.04）
+- [x] st-srs 事件迴圈回歸測試（context switch＋select round-trip）
 - [x] 首次部署後確認 Pages 網址可瀏覽、文件分組正確
 
 ## 已知限制改善
@@ -32,8 +37,11 @@
 - [x] 以 `SetConsoleCtrlHandler()` 取代 POSIX 訊號 stub（優雅關閉）
 - [ ] 評估以 IOCP 取代 `select()` 的可行性
 - [ ] 支援 ARM64 Windows（需 `md_win64_arm64.asm` 與 vcpkg 驗證）
-- [ ] 減少 `force_include.h` 與 `srs_win32_compat.h` 的重複定義
+- [ ] 減少 `force_include.h` 與 `srs_win32_compat.h` 的重複定義（後者目前未被 include）
 - [ ] `rebuild.ps1` 改用相對路徑
+- [ ] 移除 dead 第三方元件（`httpx-static`、`srs-docs`、`gprof`、`gperftools`、`signaling`）
+- [ ] OpenSSL：移除 vendored 1.1.1l，統一使用系統 3.x
+- [ ] FFmpeg：Windows 改接真實 FFmpeg 7.x 或明確改為外部 `ffmpeg.exe`；Linux 使用系統 6.x
 
 ## 文件
 
