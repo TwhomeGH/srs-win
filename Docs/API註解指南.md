@@ -41,6 +41,50 @@ int cid_;
 
 公開欄位若沒有 Doxygen 註解，Doxygen 的 member list 只會顯示型別與名稱，也就是「能傳什麼」但不知道「代表什麼」。`SrsChunkStream` 已補上這組欄位說明。
 
+## 漸進式補齊策略（change-scoped）
+
+不要一次把整個 `trunk/src` 補滿；那會製造巨大 diff，也會和上游 SRS 的合併衝突。規則是：
+
+> **本次改到哪個區塊，就把那個區塊的公開介面註解補到可維護的程度。**
+
+| 情境 | 要求 |
+|------|------|
+| 新增公開 class／method／field | 必須有 `@brief`；有參數補 `@param`，有回傳補 `@return` |
+| 修改既有公開 API | 同一個 commit 補上或更新註解 |
+| 修 platform-specific bug | 在修正處加 `@note` 說明 Windows 限制與失敗行為 |
+| 只改私有實作 | 用一般 `//` 說明「為什麼」，不強制 Doxygen |
+| 沒碰到的舊 API | 不動；列入後續文件債，不要順手大改 |
+
+### 補齊順序
+
+1. **目前正在改的區塊**：1C 的 `compat/` stub、`srs_kernel_file_open.hpp`、`srs_path_rename()`、`SrsPidFileLocker`。
+2. **Console／API 會直接讀取的公開介面**：`SrsStatistic`、`SrsHttpApi`、config getters。
+3. **核心公開標頭**：`srs_kernel_*`、`srs_protocol_*`、`srs_app_*` 的 class／method／field。
+4. **私有實作**：只在邏輯不直觀時補 `//`，不追求 Doxygen 覆蓋率。
+
+### Windows stub 的註解格式
+
+每個不支援的 POSIX 函式要明確寫出「呼叫會怎樣」，不要讓讀者以為它真的可用：
+
+```cpp
+/**
+ * @brief Create a child process.
+ * @note Windows compatibility: not implemented. Always returns -1 and sets
+ *       errno to ENOSYS; callers must gate this feature at configure time.
+ */
+static inline pid_t fork(void)
+{
+    errno = ENOSYS;
+    return -1;
+}
+```
+
+### 驗收
+
+- 每個修改到的公開 API 都能在 Doxygen 頁面看到 `@brief`／`@param`。
+- 平台 stub 的失敗行為有 `@note`，且對應測試存在。
+- `WARN_IF_UNDOCUMENTED` 暫時維持 `NO`；等主要公開標頭覆蓋到一個程度，再改成 `YES` 當 backlog 檢查，最後才考慮 CI 阻擋。
+
 ## 涵蓋範圍
 
 - 優先補 **公開標頭** 的 class／method／field；私有實作不需要為了文件而補。
