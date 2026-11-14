@@ -39,19 +39,15 @@ function Invoke-Checked([scriptblock]$action, [string]$what) {
     }
 }
 
-if ($Full -and -not $env:VCPKG_ROOT) {
-    # The repository's documented vcpkg location is H:\vcpkg, but keep the
-    # override working; only auto-fill when the toolchain actually exists.
-    foreach ($candidate in @('H:\vcpkg', 'C:\vcpkg')) {
-        if (Test-Path (Join-Path $candidate 'scripts\buildsystems\vcpkg.cmake')) {
-            $env:VCPKG_ROOT = $candidate
-            break
-        }
+if ($Full) {
+    # CMakePresets and VSCode point at .vscode/vcpkg, a workspace-local
+    # junction. Create it once from the discovered vcpkg root; no drive letter
+    # is hard-coded in any tracked config.
+    $vcpkgToolchain = Join-Path $repoRoot '.vscode\vcpkg\scripts\buildsystems\vcpkg.cmake'
+    if (-not (Test-Path $vcpkgToolchain)) {
+        Step 'link vcpkg into .vscode/vcpkg'
+        & (Join-Path $PSScriptRoot 'setup-vscode.ps1')
     }
-}
-
-if ($Full -and -not $env:VCPKG_ROOT) {
-    throw 'VCPKG_ROOT is not set; set it to the vcpkg installation (for example H:\vcpkg) for -Full.'
 }
 
 if (-not (Test-Path (Join-Path $buildDir 'CMakeCache.txt'))) {

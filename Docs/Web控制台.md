@@ -5,7 +5,7 @@
 ## 最短路徑
 
 | 目的 | 指令 |
-|------|------|
+| ------ | ------ |
 | 開發（Vite HMR） | `pwsh dev/serve-ui.ps1` → `http://127.0.0.1:5173/console/` |
 | 建置並安裝到 SRS | `pwsh dev/build-ui.ps1` → `http://127.0.0.1:11985/console/` |
 | 只建置靜態檔 | `npm --prefix ui run build` |
@@ -14,7 +14,7 @@
 ## 頁面
 
 | 頁面 | 資料來源 | 說明 |
-|------|----------|------|
+| ------ | ---------- | ------ |
 | Overview | `/api/v1/summaries` | SRS／OS 的 CPU、記憶體、連線、網路速率、程序資訊 |
 | Vhosts | `/api/v1/vhosts/` | vhost 狀態、串流／連線數、HLS |
 | Streams | `/api/v1/streams/` | 發布狀態、視訊／音訊、流量、踢除 publisher |
@@ -47,7 +47,7 @@ ui/ (React 18 + Vite 6 + Bootstrap 5)
 ## 與 Oryx 的差異
 
 | Oryx | 本專案 |
-|------|--------|
+| ------ | -------- |
 | `/terraform/v1` 平台 API、bearer token | 直接 `/api/v1` |
 | Forwarding、Redis、AI、平台設定頁 | 只保留 SRS 核心頁面 |
 | 多 scenario（source／live／record／transcode…） | MVP 先做監控與踢除；scenario 後續再加 |

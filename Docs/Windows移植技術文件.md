@@ -18,7 +18,7 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 ### 1.2 外部相依（vcpkg）
 
 | 套件 | vcpkg 名稱 | 用途 |
-|------|-----------|------|
+| ------ | ----------- | ------ |
 | OpenSSL | `openssl` | SSL/TLS/DTLS (3.x) |
 | libSRTP | `srtp` | WebRTC SRTP 加解密 |
 | Opus | `opus` | WebRTC 音訊編解碼 |
@@ -59,7 +59,7 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 
 ### 2.2 型別定義
 | POSIX 型別 | Windows 對應 |
-|---|---|
+| --- | --- |
 | `ssize_t` | `__int64` (x64) / `int` (x86) |
 | `socklen_t` | `int` |
 | `mode_t` | `unsigned short` |
@@ -74,7 +74,7 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 ### 2.3 POSIX 函式對應
 
 | 原始函式 | Windows 對應 |
-|---|---|
+| --- | --- |
 | `strcasecmp` | `_stricmp` |
 | `strncasecmp` | `_strnicmp` |
 | `chdir` | `_chdir` |
@@ -127,7 +127,7 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 共 20+ 個偽標頭，模擬 POSIX 系統標頭：
 
 | 標頭 | 實作方式 |
-|---|---|
+| --- | --- |
 | `sys/socket.h` | `msghdr`, `sockaddr_un`, AF_UNIX → AF_INET |
 | `sys/epoll.h` | 所有函式回傳 ENOSYS |
 | `sys/inotify.h` | 所有函式回傳 ENOSYS |

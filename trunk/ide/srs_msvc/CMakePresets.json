@@ -22,7 +22,7 @@
       "generator": "Visual Studio 17 2022",
       "architecture": "x64",
       "binaryDir": "${sourceDir}/build-full",
-      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "toolchainFile": "${sourceDir}/../../../.vscode/vcpkg/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
         "SRS_BUILD_ST_TESTS": "ON"
       }

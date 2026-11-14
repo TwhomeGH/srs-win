@@ -12,7 +12,7 @@
 ## 支援的協議
 
 | 協議 | 狀態 | 說明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | **RTMP** | ✅ | 發佈／播放，SRT↔RTMP 橋接 |
 | **HTTP-FLV / HTTP-TS** | ✅ | HTTP 串流 |
 | **HLS** | ✅ | HTTP Live Streaming |
@@ -29,7 +29,7 @@
 - Windows 10/11 x64
 - Visual Studio 2022 (含 MSVC v143)
 - CMake 3.15+
-- [vcpkg](https://github.com/Microsoft/vcpkg)（建議安裝於 `C:\vcpkg`）
+- [vcpkg](https://github.com/Microsoft/vcpkg)（位置不限；先執行 `pwsh dev/setup-vscode.ps1` 建立 `.vscode/vcpkg`）
 
 ### 一鍵建置
 
@@ -67,10 +67,10 @@ ffmpeg -re -i video.mp4 -c copy -f flv rtmp://localhost/live/stream
 詳細建置說明請參考 [Docs/建置與執行說明.md](Docs/建置與執行說明.md)。
 
 ```powershell
-# CMake Configure
+# CMake Configure（先執行 pwsh dev/setup-vscode.ps1）
 cmake -B trunk/ide/srs_msvc/build -S trunk/ide/srs_msvc `
       -G "Visual Studio 17 2022" -A x64 `
-      -DCMAKE_TOOLCHAIN_FILE="C:\vcpkg\scripts\buildsystems\vcpkg.cmake"
+      -DCMAKE_TOOLCHAIN_FILE=".vscode/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
 # Build
 cmake --build trunk/ide/srs_msvc/build --config Debug
@@ -79,7 +79,7 @@ cmake --build trunk/ide/srs_msvc/build --config Debug
 ## 專案文件
 
 | 文件 | 說明 |
-|------|------|
+| ------ | ------ |
 | [Docs/文件索引.md](Docs/文件索引.md) | **文件單一入口**：最短路徑、文件地圖、維護規則 |
 | [Docs/項目概覽說明.md](Docs/項目概覽說明.md) | 專案簡介、目錄結構、移植範圍 |
 | [Docs/Windows移植技術文件.md](Docs/Windows移植技術文件.md) | CMake 系統、POSIX 相容層、st-srs 移植細節 |

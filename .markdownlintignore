@@ -1,0 +1,9 @@
+# Vendored sources and build/runtime output are not project documentation.
+trunk/3rdparty/**
+.vscode/vcpkg/**
+node_modules/**
+ui/node_modules/**
+trunk/ide/srs_msvc/build/**
+trunk/ide/srs_msvc/build-full/**
+dev/runtime/**
+_site/**

@@ -3,7 +3,7 @@
 開發用的 SRS 測試入口。所有執行時產物都在 `dev/runtime/`（已 gitignore），不寫入 `%APPDATA%` 或 `%TEMP%`。
 
 | 車道 | 用途 | 產物 |
-|------|------|------|
+| ------ | ------ | ------ |
 | Windows 原生 | 本機除錯、Windows 移植驗證 | `dev/runtime/windows/srs-dev.exe` |
 | Docker | 上游 Linux 版對照、協議行為比對 | `srs-win-dev-linux` 映像＋容器 `srs-dev` |
 
@@ -31,7 +31,7 @@
 兩個車道刻意錯開，且都避開本機可能已被占用的 1985。
 
 | 用途 | Windows 原生 | Docker（主機 → 容器） |
-|------|--------------|------------------------|
+| ------ | -------------- | ------------------------ |
 | RTMP | `11935` | `11935 → 1935` |
 | HTTP API | `11985` | `11985 → 1985` |
 | HTTP 靜態／HLS | `18088` | `18088 → 8088` |
@@ -121,8 +121,9 @@ WebRTC listen at udp://0.0.0.0:8000
 ## Windows 全功能（RTC／SRT）
 
 ```powershell
-$env:VCPKG_ROOT = "H:\vcpkg"
-& "$env:VCPKG_ROOT\vcpkg.exe" install libsrtp libsrt opus --triplet x64-windows
+# 建立 .vscode/vcpkg junction；自動找 vcpkg，必要時加 -VcpkgRoot
+pwsh dev/setup-vscode.ps1
+& .vscode\vcpkg\vcpkg.exe install libsrtp libsrt opus --triplet x64-windows
 
 cd trunk/ide/srs_msvc
 cmake --preset windows-full
@@ -150,7 +151,7 @@ ffmpeg -re -f lavfi -i testsrc=size=320x240:rate=10 -t 5 `
 ## 常見問題
 
 | 症狀 | 處理 |
-|------|------|
+| ------ | ------ |
 | `srs-dev.exe is missing` | 先跑 `-Build` |
 | `code=1034 PidFileAcquire` | `dev/runtime/windows/objs` 不存在或殘留 `srs.pid`；重跑 `-Build` 或刪除該 pid |
 | 11985 已被占用 | 改 `dev/windows/dev.conf` 與 `dev/srs-dev.ps1` 的 `ApiUrl` |

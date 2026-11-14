@@ -5,15 +5,27 @@ param(
     [switch]$NoBuild
 )
 
-$BuildDir  = "F:\srs\trunk\ide\srs_msvc\build"
-$OutDir    = "$BuildDir\Debug"
-$SrsExe    = "$OutDir\srs.exe"
-$ConfSrc   = "$OutDir\live.conf"
+$ErrorActionPreference = 'Stop'
+
+$RepoRoot  = $PSScriptRoot
+$BuildDir  = Join-Path $RepoRoot 'trunk\ide\srs_msvc\build'
+$OutDir    = Join-Path $BuildDir 'Debug'
+$SrsExe    = Join-Path $OutDir 'srs.exe'
+$ConfSrc   = Join-Path $OutDir 'live.conf'
+
+# Point CMake at the workspace junction instead of a fixed C:/H: vcpkg path.
+$Toolchain = Join-Path $RepoRoot '.vscode\vcpkg\scripts\buildsystems\vcpkg.cmake'
+if (-not (Test-Path $Toolchain)) {
+    & (Join-Path $RepoRoot 'dev\setup-vscode.ps1')
+}
+if (-not (Test-Path $Toolchain)) {
+    throw "vcpkg toolchain not found: $Toolchain"
+}
 
 Write-Host "[1/3] Running CMake..." -ForegroundColor Cyan
-cmake -B $BuildDir -S "F:\srs\trunk\ide\srs_msvc" `
+cmake -B $BuildDir -S (Join-Path $RepoRoot 'trunk\ide\srs_msvc') `
       -G "Visual Studio 17 2022" -A x64 `
-      -DCMAKE_TOOLCHAIN_FILE="C:\vcpkg\scripts\buildsystems\vcpkg.cmake"
+      -DCMAKE_TOOLCHAIN_FILE="$Toolchain"
 if ($LASTEXITCODE -ne 0) { Write-Host "CMake failed!" -ForegroundColor Red; exit 1 }
 
 if (-not $NoBuild) {

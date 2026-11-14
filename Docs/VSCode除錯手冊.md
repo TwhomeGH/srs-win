@@ -5,7 +5,7 @@
 ## 前置需求
 
 | 項目 | 說明 |
-|------|------|
+| ------ | ------ |
 | Visual Studio 2022 | 需勾選「使用 C++ 的桌面開發」工作負載（含 MSVC v143、MASM） |
 | VSCode 擴充 | **C/C++**（`ms-vscode.cpptools`）；CMake Tools 可選 |
 | OpenSSL | `C:\Program Files\OpenSSL-Win64` 或 vcpkg；CMake 會自動尋找 |
@@ -14,11 +14,24 @@
 
 ## 找不到 `/installed/x64-windows/include`
 
-這通常不是少裝套件，而是 **`VCPKG_ROOT` 沒有定義**：`${env:VCPKG_ROOT}` 會展開成空字串，路徑就變成 `/installed/x64-windows/include`。本機的 vcpkg 在 `H:\vcpkg`，`H:\vcpkg\installed\x64-windows\include` 已存在。
+這通常不是少裝套件，而是路徑變數展開成空字串。新版工作區不再使用 `${env:VCPKG_ROOT}`；它改讀：
 
-- `.vscode/c_cpp_properties.json` 已改用固定的 `H:/vcpkg/...`，重開 VSCode 後 IntelliSense 不再回報這個錯誤。
-- 要把 vcpkg 搬到別的位置：修改 `c_cpp_properties.json` 的 includePath，並在 PowerShell 設定 `$env:VCPKG_ROOT`（或永久使用者環境變數）後重開 VSCode。
-- 全功能建置仍需要 `VCPKG_ROOT`；`dev/check.ps1 -Full` 會在未設定時自動尋找 `H:\vcpkg`／`C:\vcpkg`，其他位置請自行指定。
+```text
+.vscode/vcpkg/installed/x64-windows/include
+```
+
+`.vscode/vcpkg` 是指向本機 vcpkg 的 junction，由腳本建立，不把磁碟機寫死在設定裡：
+
+```powershell
+pwsh dev/setup-vscode.ps1
+# vcpkg 不在常見位置時：
+# pwsh dev/setup-vscode.ps1 -VcpkgRoot D:\tools\vcpkg
+```
+
+- 重新執行腳本即可換 vcpkg 版本／位置；junction 會更新。
+- `windows-full` 的 `CMakePresets.json` 也指向 `.vscode/vcpkg`，不再要求 `VCPKG_ROOT`。
+- `dev/check.ps1 -Full` 會在 junction 不存在時自動呼叫這個腳本。
+- 若 IntelliSense 還顯示舊路徑，重開 VSCode 或執行 `C/C++: Reset IntelliSense Database`。
 
 ## 建置
 
@@ -30,7 +43,7 @@ cmake --build trunk/ide/srs_msvc/build --config Debug
 輸出目錄 `trunk/ide/srs_msvc/build/Debug` 應包含：
 
 | 檔案 | 用途 |
-|------|------|
+| ------ | ------ |
 | `srs.exe` | 主程式 |
 | `srs.pdb` | 符號檔（中斷點與呼叫堆疊） |
 | `test.conf` | 建置時複製的測試設定 |
@@ -41,7 +54,7 @@ cmake --build trunk/ide/srs_msvc/build --config Debug
 
 ```powershell
 pwsh dev/check.ps1          # 增量建置 srs + 事件迴圈測試，再跑 ctest
-pwsh dev/check.ps1 -Full    # RTC／SRT 全功能（需 VCPKG_ROOT）
+pwsh dev/check.ps1 -Full    # RTC／SRT 全功能（自動建立 .vscode/vcpkg junction）
 ```
 
 `check.ps1` 只重建變更的 target，不會 clean；輸出會顯示耗時。
@@ -49,7 +62,7 @@ pwsh dev/check.ps1 -Full    # RTC／SRT 全功能（需 VCPKG_ROOT）
 ### 全功能建置（RTC／SRT）
 
 ```powershell
-$env:VCPKG_ROOT = "H:\vcpkg"
+pwsh dev/setup-vscode.ps1
 cd trunk/ide/srs_msvc
 cmake --preset windows-full
 cmake --build --preset windows-full-debug
@@ -156,7 +169,7 @@ cmake --build trunk/ide/srs_msvc/build --config Release
 ## 建議中斷點
 
 | 位置 | 用途 |
-|------|------|
+| ------ | ------ |
 | `SrsTcpListener::do_cycle` | 觀察 accept 是否被呼叫、回傳哪個 fd |
 | `SrsServer::do_cycle` | 主迴圈與關閉旗標 |
 | `SrsSignalManager::start` | Windows 主控台事件是否安裝成功 |
@@ -167,7 +180,7 @@ cmake --build trunk/ide/srs_msvc/build --config Release
 ## 常見錯誤
 
 | 症狀 | 原因 | 處理 |
-|------|------|------|
+| ------ | ------ | ------ |
 | `0xc0000135`／找不到 `libcrypto-3-x64.dll` | exe 旁沒有 OpenSSL DLL | 重新建置（POST_BUILD 會複製）；或把 OpenSSL `bin` 加進 PATH |
 | `code=1034 PidFileAcquire` | `objs/` 不存在或殘留 `srs.pid` | 建立 `objs/`、刪除 `objs/srs.pid` |
 | API／RTMP 連線逾時 | 埠被占用或程式沒 accept | 改 `test.conf` 的埠；確認 `Get-NetTCPConnection -LocalPort <port>` |

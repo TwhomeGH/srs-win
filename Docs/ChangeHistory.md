@@ -2,6 +2,25 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.15 10:10 用 workspace junction 取代固定的 vcpkg 路徑
+
+**類型**: 工具鏈／文件 · **檔案**: `dev/setup-vscode.ps1`, `CMakePresets.json`, `.vscode/c_cpp_properties.json`, `dev/check.ps1`, `rebuild.ps1`, `.markdownlint.json`
+
+### 問題
+- IntelliSense 與 CMakePresets 直接寫死 `C:\vcpkg`／`H:\vcpkg` 或 `${env:VCPKG_ROOT}`；前者不能換位置，後者在變數未定義時展開成 `/installed/x64-windows/include`。
+- 文件表格的 delimiter 列使用 `|------|`，不符合 `MD060` 的 compact 樣式。
+
+### 修改
+- 新增 `dev/setup-vscode.ps1`：依序嘗試 `-VcpkgRoot`、`VCPKG_ROOT`、PATH 上的 `vcpkg.exe`、各磁碟根目錄／家目錄下的 `vcpkg`，建立 `.vscode/vcpkg` junction。
+- `.vscode/c_cpp_properties.json` 與 `CMakePresets.json` 改讀 `${workspaceFolder}/.vscode/vcpkg`；`dev/check.ps1 -Full` 會自動建立 junction。
+- `rebuild.ps1` 改用腳本所在目錄與 junction，不再寫死 `F:\srs`／`C:\vcpkg`。
+- 文件表格 delimiter 統一為 `| --- |`；新增 `.markdownlint.json`（`MD060: compact`）與 `.markdownlintignore`（排除 vendored／build／runtime）。
+
+### 驗證
+- `dev/setup-vscode.ps1` 建立 `.vscode/vcpkg -> H:\vcpkg`。
+- `cmake --preset windows-full --fresh` 的 `CMAKE_TOOLCHAIN_FILE` 指向 `.vscode/vcpkg`；`dev/check.ps1 -Full -NoTests` 通過（96.6s）。
+- `markdownlint-cli2` 不再回報任何 `MD060`（其他既有規則仍有錯誤，未在這批處理）。
+
 ## 2026.11.15 09:45 HLS 輸出路徑移到可預期的 runtime 目錄
 
 **類型**: 設定／可用性 · **檔案**: `dev/windows/dev.conf`, `dev/docker/dev.conf`, `dev/docker/docker-compose.yml`, `dev/local-deploy.ps1`, `srs_app_http_api.cpp`, `ui/src/pages/Configs.jsx`

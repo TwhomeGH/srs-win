@@ -11,7 +11,7 @@
                 "${workspaceFolder}/trunk/ide/srs_msvc",
                 "${workspaceFolder}/trunk/ide/srs_msvc/build",
                 "${workspaceFolder}/trunk/3rdparty/st-srs",
-                "H:/vcpkg/installed/x64-windows/include",
+                "${workspaceFolder}/.vscode/vcpkg/installed/x64-windows/include",
                 "C:/Program Files/OpenSSL-Win64/include"
             ],
             "defines": ["_WIN32", "_DEBUG", "SRS_AUTO_SSL", "SRS_AUTO_SSL_USE", "SRS_FFMPEG_STUB", "SRS_AUTO_H265"],
@@ -32,7 +32,7 @@
                 "${workspaceFolder}/trunk/ide/srs_msvc",
                 "${workspaceFolder}/trunk/ide/srs_msvc/build-full",
                 "${workspaceFolder}/trunk/3rdparty/st-srs",
-                "H:/vcpkg/installed/x64-windows/include",
+                "${workspaceFolder}/.vscode/vcpkg/installed/x64-windows/include",
                 "C:/Program Files/OpenSSL-Win64/include"
             ],
             "defines": ["_WIN32", "_DEBUG", "SRS_AUTO_SSL", "SRS_AUTO_SSL_USE", "SRS_AUTO_RTC_USE", "SRS_AUTO_SRT_USE", "SRS_FFMPEG_FIT", "SRS_AUTO_H265"],

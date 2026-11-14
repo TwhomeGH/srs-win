@@ -5,7 +5,7 @@
 ## 怎麼看這份 API
 
 | 想做什麼 | 從哪裡開始 |
-|----------|------------|
+| ---------- | ------------ |
 | 找某個類別／函式 | 右上角搜尋，或左側 `Classes`／`Files` |
 | 了解啟動流程 | `SrsServer` → `SrsServer::initialize()` → `run()` → `SrsTcpListener`／`SrsUdpMuxListener` |
 | 找 RTMP 連線處理 | `SrsRtmpConn`、`SrsRtmpServer`、`SrsLiveSource` |
@@ -19,7 +19,7 @@
 ## 模組地圖
 
 | 目錄 | 角色 | 常見入口 |
-|------|------|----------|
+| ------ | ------ | ---------- |
 | `src/core` | 平台、錯誤、時間、記憶體、版本 | `srs_core.hpp`、`srs_core_platform.hpp` |
 | `src/kernel` | RTMP／FLV／TS／MP4／PS、buffer、codec、統計 | `SrsLiveSource`、`SrsStatistic`、`SrsKbps` |
 | `src/protocol` | RTMP、HTTP、ST、AMF0、RTP／RTCP、SRT、SDP | `SrsRtmpServer`、`SrsHttpParser`、`SrsSrtSocket` |
@@ -48,7 +48,7 @@ main()
 ## 註解語言策略
 
 | 位置 | 語言 | 理由 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 類別／函式名稱、參數 | 原文（英文） | 可執行識別字，不能翻譯 |
 | 公開 API 的 `@brief`／`@param`／`@return` | **中英雙語**（新寫或改動的程式） | 讓 Doxygen 直接可讀，同時保留上游合併能力 |
 | 既有英文註解 | 逐步補中文 `@details` | 不一次大批翻譯，避免 diff 失控 |
