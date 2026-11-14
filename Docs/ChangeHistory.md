@@ -15,11 +15,12 @@
 - `.vscode/c_cpp_properties.json` 與 `CMakePresets.json` 改讀 `${workspaceFolder}/.vscode/vcpkg`；`dev/check.ps1 -Full` 會自動建立 junction。
 - `rebuild.ps1` 改用腳本所在目錄與 junction，不再寫死 `F:\srs`／`C:\vcpkg`。
 - 文件表格 delimiter 統一為 `| --- |`；新增 `.markdownlint.json`（`MD060: compact`）與 `.markdownlintignore`（排除 vendored／build／runtime）。
+- **MD013（固定行長）刻意關閉**：本專案文件以中文為主，表格、指令、URL 與長句較多；硬折行會讓 diff 與複製貼上變差。行長改由編輯器軟換行處理，不作為 CI／編輯器錯誤。
 
 ### 驗證
 - `dev/setup-vscode.ps1` 建立 `.vscode/vcpkg -> H:\vcpkg`。
 - `cmake --preset windows-full --fresh` 的 `CMAKE_TOOLCHAIN_FILE` 指向 `.vscode/vcpkg`；`dev/check.ps1 -Full -NoTests` 通過（96.6s）。
-- `markdownlint-cli2` 不再回報任何 `MD060`（其他既有規則仍有錯誤，未在這批處理）。
+- `markdownlint-cli2` 不再回報 `MD060` 或 `MD013`（其他既有規則仍有錯誤，未在這批處理）。
 
 ## 2026.11.15 09:45 HLS 輸出路徑移到可預期的 runtime 目錄
 
