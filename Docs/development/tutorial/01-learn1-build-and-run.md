@@ -3,7 +3,9 @@
 > [!TIP]
 > 這一題不新增功能，目標是把「改檔 → 建置 → 啟動 → 驗證 → 清理」跑過一次。
 > 完成後再進 [Build 配置導讀](02-build-configuration.md)，理解每個開關的位置。
->
+
+---
+
 > [!WARNING]
 > 請在個人分支或 worktree 操作。本文的練習檔 `srs_app_tutorial_probe.cpp` 只是用來觸發檢查，做完必須刪除，不可 commit。
 
