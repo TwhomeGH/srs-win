@@ -131,6 +131,21 @@ pwsh dev/auth-e2e.ps1 `
 
 `dev/windows/auth.conf` 只啟用 `http_api.auth`，不寫死帳密；第一次啟動會由 SRS 產生 `objs/console-auth.txt`，或由 `SRS_HTTP_API_AUTH_PASSWORD` 覆寫。正式部署請自行保存並限制該檔案讀取權限。
 
+## Docker 建置快取
+
+Docker build context 只包含 Linux 建置需要的 `trunk/` 原始碼：`.dockerignore` 排除 `trunk/ide`（Windows CMake 與本機 build 產物）、`trunk/build`、`trunk/objs`、`ui/node_modules`、`dev/runtime` 等。
+
+Dockerfile 另外使用 BuildKit cache mount：
+
+- `/var/cache/apt`、`/var/lib/apt/lists`：避免 apt 套件重複下載。
+- `/root/.ccache`：原始碼變更時只重編受影響的 translation unit，未變更的對象由 ccache 重用。
+
+因此：
+
+- 沒有原始碼變更時，`local-deploy.ps1 -Deploy` 幾乎只重建容器，image layers 全部 cache hit。
+- 只有 `trunk/` 變更時，`COPY trunk` 會失效，但 configure／make 會利用 ccache；不需要每次重新下載 apt 套件。
+- 若 BuildKit cache 累積過大，可定期執行 `docker builder prune`；不要為了一次建置速度而關閉 cache。
+
 ## 執行時狀態與持久化
 
 不要把「建置產物」和「需要保留的狀態」混在同一個目錄：

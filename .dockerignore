@@ -6,7 +6,8 @@ _site
 dev/runtime
 objs
 trunk/objs
-trunk/ide/srs_msvc/build
+trunk/build
+trunk/ide
 ui/node_modules
 ui/build
 Docs

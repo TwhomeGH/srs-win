@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+
 # Dev-only Linux lane: build the upstream SRS from this repository's trunk/.
 # Keep this image separate from the Windows port; it exists for parity testing.
 #
@@ -8,7 +10,9 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         cmake \
@@ -28,7 +32,7 @@ RUN apt-get update \
         patch \
         git \
         tcl \
-    && rm -rf /var/lib/apt/lists/*
+        ccache
 
 WORKDIR /srs
 COPY trunk /srs/trunk
@@ -42,8 +46,16 @@ RUN find /srs/trunk -type f \( -name configure -o -name '*.sh' -o -name bootstra
 
 WORKDIR /srs/trunk
 
+# Cache compiler results across image rebuilds. A source-only change still
+# invalidates the COPY layer, but unchanged translation units are reused.
+ENV CCACHE_DIR=/root/.ccache \
+    CCACHE_MAXSIZE=2G \
+    CC="ccache gcc" \
+    CXX="ccache g++"
+
 # Use the distribution's modern libraries instead of the vendored copies.
-RUN ./configure --jobs="$(nproc)" \
+RUN --mount=type=cache,target=/root/.ccache,sharing=locked \
+    ./configure --jobs="$(nproc)" \
         --use-sys-srtp=on \
         --use-sys-srt=on \
         --use-sys-ffmpeg=on \

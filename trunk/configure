@@ -299,7 +299,7 @@ MODULE_FILES=("srs_app_server" "srs_app_rtmp_conn" "srs_app_rtmp_source"
         "srs_app_caster_flv" "srs_app_latest_version" "srs_app_process"
         "srs_app_dash" "srs_app_fragment" "srs_app_dvr" "srs_app_ng_exec"
         "srs_app_coworkers" "srs_app_circuit_breaker" "srs_app_factory"
-        "srs_app_stream_token" "srs_app_http_stream")
+        "srs_app_stream_token" "srs_app_http_stream" "srs_app_console_auth")
 # Always include SRT app modules
 MODULE_FILES+=("srs_app_srt_server" "srs_app_srt_listener" "srs_app_srt_conn" "srs_app_srt_source")
 MODULE_FILES+=("srs_app_rtc_conn" "srs_app_rtc_dtls" "srs_app_rtc_network"

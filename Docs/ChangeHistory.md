@@ -2,6 +2,27 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.16 01:40 Docker Linux lane：縮小 build context、ccache 與 Linux auth 連結修正
+
+**類型**: 建置／修復 · **檔案**: `.dockerignore`, `dev/docker/Dockerfile`, `trunk/configure`, `dev/README.md`
+
+### 問題
+
+- Docker build context 曾達 327.91MB，主要包含 `trunk/ide` 的 Windows build 產物與舊 `trunk/build`；每次 Windows 建置都可能讓 `COPY trunk` cache 失效。
+- Linux `configure` 的 `MODULE_FILES` 沒有加入 `srs_app_console_auth`，Docker 建置在連結階段出現 `undefined reference to srs_console_auth_*`。
+
+### 修改
+
+- `.dockerignore` 排除整個 `trunk/ide`、`trunk/build`、`trunk/objs` 與其他非 Linux 建置輸入。
+- Dockerfile 使用 BuildKit apt cache mount 與 `/root/.ccache` ccache cache mount；apt layer 不再因原始碼變更重複下載。
+- `trunk/configure` 的 APP module 清單加入 `srs_app_console_auth`，修正 Linux 連結。
+
+### 驗證
+
+- `dev/local-deploy.ps1 -Deploy` 成功建置並啟動 Linux 容器。
+- 原始碼未變更再次 `-Deploy`：exporting layers 0.1s，全部 layer cache hit。
+- context 由 327.91MB 降至後續 incremental 542.87kB（BuildKit 重用既有 blob）；Dockerfile 首次建置仍會下載一次 apt 套件。
+
 ## 2026.11.16 01:20 VSCode 測試通道：UI npm、Windows 與 Docker Linux
 
 **類型**: 工具鏈 · **檔案**: `.vscode/launch.json`, `.vscode/tasks.json`, `.vscode/README.md`, `Docs/VSCode除錯手冊.md`
