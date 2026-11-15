@@ -27,12 +27,29 @@
 
 ## 1. 確認工作區
 
+這一步不是確認「程式能不能跑」，而是確認**你現在改的是哪一份工作區、哪個 commit，而且沒有把別人的／未完成的變更混進來**。
+
 ```powershell
-git status --short
-git rev-parse --short HEAD
+git rev-parse --show-toplevel   # 目前是哪個 repo／worktree
+git branch --show-current       # 目前是哪個分支
+git status --short              # 有沒有未提交或未追蹤的變更
+git rev-parse --short HEAD      # 這次練習的 baseline commit
 ```
 
-`git status` 應該是乾淨的；若有未提交變更，先處理，不要和練習混在一起。
+| 指令 | 確認什麼 | 通過條件 |
+| --- | --- | --- |
+| `git rev-parse --show-toplevel` | 是否在正確的 SRS／tutorial worktree | 路徑是你要操作的那一份 |
+| `git branch --show-current` | 是否在練習分支，不是直接改 `develop` | 顯示 `tutorial/learn1` 或你自訂的練習分支 |
+| `git status --short` | 有沒有未提交變更、練習殘留檔 | **沒有輸出** |
+| `git rev-parse --short HEAD` | 練習的 baseline commit | 記下短 hash，方便之後比較 diff |
+
+如果 `git status --short` 有輸出，先不要開始：
+
+- 已完成的變更：commit 或另開分支保存。
+- 不想要的變更：確認內容後再丟棄，不要直接 `git reset --hard`。
+- 練習殘留檔（例如 `srs_app_tutorial_probe.cpp`）：刪除後再確認一次。
+
+`git rev-parse --short HEAD` 只回報 commit，不會修改任何東西；它和 SRS 的版本號 `7.0.89` 是兩件事。
 
 ## 2. Windows default build
 
