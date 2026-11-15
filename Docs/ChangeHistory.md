@@ -13,6 +13,16 @@
 - 用語更正：官方是**正式停止支援（drop support）並移除實作**，不只是「不再維護」；「不再維護」是結果，但不足以描述程式碼已被刪除。
 - README、項目概覽與 Windows 技術文件統一這個說法。
 
+## 2026.11.15 13:50 Phase 1 結案與功能開發門檻
+
+**類型**: 文件／規劃 · **檔案**: `Docs/Phase1結案.md`, `Docs/文件索引.md`, `.changelog.toml`, `TODO.md`
+
+### 內容
+- 定義 Phase 1 最小出口：建置／ctest／ABI probe／檔案語意／PID／stub／smoke／Full CI／文件。
+- 明確延後選擇性 utest、RTC 媒體 E2E、CreateProcess、IOCP、ARM64、FFmpeg 等，不作為功能前置條件。
+- 定義功能開發護欄與 Phase 2 建議順序。
+- 目前不建立 tag；Release workflow 只在明確版本時觸發。
+
 ## 2026.11.15 13:35 1E 第二批：Windows Full（RTC／SRT）CI job
 
 **類型**: 測試網／CI · **檔案**: `.github/workflows/windows-full.yml`, `Docs/CI策略.md`, `Docs/測試策略.md`

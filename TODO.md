@@ -60,10 +60,11 @@
 - [ ] 移除 dead 第三方元件（`httpx-static`、`srs-docs`、`gprof`、`gperftools`、`signaling`）
 - [ ] OpenSSL：移除 vendored 1.1.1l，統一使用系統 3.x
 - [ ] FFmpeg：Windows 改接真實 FFmpeg 7.x 或明確改為外部 `ffmpeg.exe`；Linux 使用系統 6.x
-- [ ] CMakePresets 補 CI 用 `windows-full` job（不要讓 nightly 依賴本機 `VCPKG_ROOT`）
+- [x] CMakePresets 補 CI 用 `windows-full` job（`.github/workflows/windows-full.yml`）
 
 ## 文件
 
 - [ ] `Docs/` 四份文件與現況對齊（埠號、路徑、CI 行為）
 - [ ] `README.md` 補上建置／執行的最短步驟與 Pages 連結
 - [x] VSCode 除錯手冊（含生產版 `.exe`、`launch.json`／`tasks.json`）
+- [x] Phase 1 結案文件（`Docs/Phase1結案.md`）
