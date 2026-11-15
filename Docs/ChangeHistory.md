@@ -32,6 +32,7 @@
 
 ### 驗證
 - 本機：`rtc-e2e: PASS`，video 320x180、readyState 4、paused false。
+- Windows Full CI `43729141759`：RTC media E2E step PASS，video 320x180；ctest 與 full smoke 也通過。
 
 ## 2026.11.15 13:50 Phase 1 結案與功能開發門檻
 

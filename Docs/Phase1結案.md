@@ -30,10 +30,11 @@
 
 ## 3. 明確延後，不阻擋功能
 
+> Phase 2 第一項「RTC 媒體 E2E（WHIP／WHEP）＋ console 播放器」已完成，見 `dev/rtc-e2e.ps1` 與 Windows Full CI `43729141759`。
+
 | 項目 | 延後理由 | 何時處理 |
 |------|----------|----------|
 | 選擇性接入 `trunk/src/utest` | app／SRT／RTC 耦合深，gtest harness 大 | 有具體 protocol／kernel 回歸需求時 |
-| RTC 媒體 E2E（WHIP／WHEP） | 需要媒體客戶端與 UDP 測試環境 | 做 RTC／WebRTC 功能前 |
 | `CreateProcess` 行程管理 | 與 exec／ingest 功能綁定 | 做 process／ingest 功能時 |
 | IOCP 取代 `select()` | 目前沒有量測到瓶頸 | 有延遲／併發量測證據時 |
 | ARM64 Windows | 需求未出現；需另一份 asm | 有 ARM64 使用者時 |
@@ -57,7 +58,7 @@
 ## 5. Phase 2 建議順序
 
 ```text
-1. RTC 媒體 E2E（WHIP／WHEP）＋ console 播放器
+1. RTC 媒體 E2E（WHIP／WHEP）＋ console 播放器（已完成）
 2. HLS／DASH／DVR 功能與設定改進
 3. Web 控制台：Basic Auth、Playwright E2E
 4. 行程管理／ingest（CreateProcess）
