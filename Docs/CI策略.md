@@ -9,7 +9,8 @@
 | 本機預設 | 開發者主動執行 | `trunk/ide/srs_msvc/build/Debug` | 快速建置、VSCode 偵錯、`dev/check.ps1` |
 | 本機 dev lane | `dev/srs-dev.ps1 -Build -Run` | `dev/runtime/windows`／Docker | 測試執行檔與容器，不依賴 CI |
 | 本機部署 | `dev/local-deploy.ps1 -Deploy` | Docker container | 固定開發容器 |
-| **Windows Nightly** | 每天 03:00（台北）**且 develop 有新 commit**＋手動 | `srs-win-nightly-x64`（Release） | 晚間穩定通道，不是每次 push 的 gate |
+| **Windows Nightly** | 每天 03:00（台北）**且 develop 有新 commit**＋手動 | `srs-win-nightly-x64`（Release，RTC／SRT 關閉） | 晚間穩定通道，不是每次 push 的 gate |
+| **Windows Full** | 每週日 04:00（台北）＋手動 | Debug full build（RTC／SRT） | vcpkg 依賴較重，獨立驗證全功能宣稱 |
 | Release | tag `v*` | Release package | 正式版本 |
 | Pages | `Docs/**`／`README.md`／`trunk/src/**/*.hpp` 等文件變更＋手動 | `_site`（changelog／Doxygen） | 文件與 API 站 |
 
@@ -44,6 +45,13 @@ pwsh dev/build-docs.ps1
 - Smoke：`dev/smoke-test.ps1` 檢查 HTTP API、RTMP handshake、`/console/`、`/api/v1/config`；Nightly 與 Release 共用。
 - 上傳 artifact 保留 14 天。
 
+## Windows Full 的責任
+
+- `vcpkg install libsrtp libsrt opus --triplet x64-windows`，並快取 `C:\vcpkg\installed`。
+- configure `windows-full`、建置 RTC／SRT 版本。
+- 跑 native ctest 與 full smoke（API、RTMP handshake、config API）。
+- 不取代 Nightly；它驗證的是 full build 是否能編譯並啟動監聽，不是完整 RTC 媒體 E2E。
+
 ## 已完成
 
 - st-srs context switch 補上 RDI/RSI 與 XMM6-15，Release `st-event-loop-test` 已通過。
@@ -54,4 +62,4 @@ pwsh dev/build-docs.ps1
 
 - 不在每次 push 自動建置。
 - 不把 Pages 當成每個 commit 的部署開關。
-- 不在 CI 執行 `windows-full`（RTC／SRT）；那是後續獨立的 full job。
+- 不用 `windows-full` 取代 Nightly；full 是每週／手動的獨立 job。

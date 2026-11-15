@@ -13,6 +13,20 @@
 - 用語更正：官方是**正式停止支援（drop support）並移除實作**，不只是「不再維護」；「不再維護」是結果，但不足以描述程式碼已被刪除。
 - README、項目概覽與 Windows 技術文件統一這個說法。
 
+## 2026.11.15 13:35 1E 第二批：Windows Full（RTC／SRT）CI job
+
+**類型**: 測試網／CI · **檔案**: `.github/workflows/windows-full.yml`, `Docs/CI策略.md`, `Docs/測試策略.md`
+
+### 修改
+- 新增每週日＋手動的 `Windows Full (RTC/SRT)` workflow。
+- 使用 runner 的 `C:\vcpkg` 安裝 `libsrtp`／`libsrt`／`opus`，快取 `C:\vcpkg\installed`。
+- 建立 `.vscode/vcpkg` junction、configure `windows-full`、建置 srs 與所有 native tests。
+- 跑 `ctest --preset windows-full-test`，再用 `dev/smoke-test.ps1` 驗證 full 版本啟動。
+
+### 已知限制
+- full smoke 只驗證 API／RTMP／config API 與監聽啟動；WHIP／WHEP 媒體 E2E 尚未納入。
+- 首次 CI 驗證待手動 dispatch。
+
 ## 2026.11.15 13:20 1E 第一批：Nightly／Release 共用 smoke test
 
 **類型**: 測試網 · **檔案**: `dev/smoke-test.ps1`, `.github/workflows/windows-nightly.yml`, `.github/workflows/release.yml`

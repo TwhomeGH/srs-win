@@ -1,0 +1,90 @@
+name: "Windows Full (RTC/SRT)"
+
+# Full-feature build is heavier than the default nightly and depends on vcpkg.
+# Run it weekly plus on demand; local development still uses dev/check.ps1 -Full.
+on:
+  schedule:
+    # Sunday 04:00 Asia/Taipei (UTC+8).
+    - cron: '0 20 * * 6'
+  workflow_dispatch:
+
+permissions: read-all
+
+concurrency:
+  group: windows-full
+  cancel-in-progress: true
+
+jobs:
+  build-windows-full:
+    name: build-windows-full-x64
+    runs-on: windows-2022
+
+    env:
+      VCPKG_ROOT: C:\vcpkg
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Check vcpkg
+        id: vcpkg
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "$env:VCPKG_ROOT\vcpkg.exe")) {
+            throw "vcpkg.exe not found at $env:VCPKG_ROOT"
+          }
+          $version = (& "$env:VCPKG_ROOT\vcpkg.exe" version | Select-Object -First 1).Trim()
+          if (-not $version) { throw "unable to read vcpkg version" }
+          $key = $version -replace '[^0-9A-Za-z\.\-]', '-'
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "cache-key=$key" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Restore vcpkg installed cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.VCPKG_ROOT }}\installed
+          key: ${{ runner.os }}-vcpkg-x64-windows-${{ steps.vcpkg.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-x64-windows-
+
+      - name: Install vcpkg dependencies
+        shell: pwsh
+        run: |
+          & "$env:VCPKG_ROOT\vcpkg.exe" install libsrtp libsrt opus `
+            --triplet x64-windows --clean-after-build
+          if ($LASTEXITCODE -ne 0) { throw "vcpkg install failed" }
+
+      - name: Link workspace vcpkg
+        shell: pwsh
+        run: pwsh dev/setup-vscode.ps1
+
+      - name: Configure full CMake
+        working-directory: trunk/ide/srs_msvc
+        shell: pwsh
+        run: |
+          cmake --preset windows-full
+          if ($LASTEXITCODE -ne 0) { throw "CMake configure failed" }
+
+      - name: Build full (RTC/SRT)
+        working-directory: trunk/ide/srs_msvc
+        shell: pwsh
+        run: |
+          cmake --build --preset windows-full-debug --target srs st-event-loop-test path-rename-test file-share-test win-compat-test -- /m:2
+          if ($LASTEXITCODE -ne 0) { throw "Build failed" }
+
+      - name: Run full native tests
+        working-directory: trunk/ide/srs_msvc
+        shell: pwsh
+        run: |
+          ctest --preset windows-full-test --output-on-failure
+          if ($LASTEXITCODE -ne 0) { throw "ctest failed" }
+
+      - name: Smoke test full listeners
+        shell: pwsh
+        run: |
+          pwsh dev/smoke-test.ps1 `
+            -SrsExe trunk/ide/srs_msvc/build-full/Debug/srs.exe `
+            -ConfFile dev/windows/dev.conf `
+            -WorkDir trunk/ide/srs_msvc/build-full/Debug `
+            -ApiPort 11985 `
+            -RtmpPort 11935
