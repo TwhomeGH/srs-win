@@ -53,10 +53,18 @@ function Show-Diff([string]$label, [string[]]$expected, [string[]]$actualNames) 
     return ($missing.Count -eq 0 -and $extra.Count -eq 0)
 }
 
+# Learn 1 uses this file to prove the source-list guard fails. It must remain
+# visible to git status (not .gitignore) so a forgotten probe cannot hide.
+$tutorialProbe = Join-Path $appDir 'srs_app_tutorial_probe.cpp'
+$probePresent = Test-Path -LiteralPath $tutorialProbe
+if ($probePresent) {
+    Write-Host 'tutorial probe detected: delete trunk/src/app/srs_app_tutorial_probe.cpp' -ForegroundColor Red
+}
+
 $okConfigure = Show-Diff 'trunk/configure' $actual $configureNames
 $okCmake = Show-Diff 'CMakeLists.txt' $actual $cmakeNames
 
-if (-not ($okConfigure -and $okCmake)) {
+if ($probePresent -or -not ($okConfigure -and $okCmake)) {
     Write-Host 'source list check: FAIL' -ForegroundColor Red
     exit 1
 }

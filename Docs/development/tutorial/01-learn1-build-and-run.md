@@ -8,6 +8,7 @@
 
 > [!WARNING]
 > 請在個人分支或 worktree 操作。本文的練習檔 `srs_app_tutorial_probe.cpp` 只是用來觸發檢查，做完必須刪除，不可 commit。
+> 不要把它加進 `.gitignore`：`.gitignore` 只會讓 `git status` 看不到殘留檔，無法阻止編譯或被 `git add -f`；正確做法是刪除，source list 檢查也會拒絕它。
 
 ## 目標
 
@@ -259,9 +260,10 @@ Set-Content trunk/src/app/srs_app_tutorial_probe.cpp "// tutorial probe"
 pwsh dev/check-source-lists.ps1
 ```
 
-預期失敗，訊息會指出它不在 `trunk/configure` 與 `CMakeLists.txt`：
+預期失敗，訊息會先提示練習檔，再指出它不在 `trunk/configure` 與 `CMakeLists.txt`：
 
 ```text
+tutorial probe detected: delete trunk/src/app/srs_app_tutorial_probe.cpp
 missing from trunk/configure:
   srs_app_tutorial_probe
 missing from CMakeLists.txt:

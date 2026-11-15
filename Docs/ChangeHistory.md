@@ -2,6 +2,21 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.16 02:50 Tutorial probe 改由檢查腳本守門，不加入 .gitignore
+
+**類型**: 工具鏈／文件 · **檔案**: `dev/check-source-lists.ps1`, `Docs/development/tutorial/01-learn1-build-and-run.md`
+
+### 修改
+
+- source list 檢查會明確偵測 `srs_app_tutorial_probe.cpp`，即使它被加進兩份 manifest 也會失敗。
+- 教學說明不把 probe 加進 `.gitignore`：ignore 只會讓 `git status` 看不到殘留檔，不能阻止編譯或 `git add -f`。
+- 練習預期輸出加入 probe 提示。
+
+### 驗證
+
+- 正常狀態 `source list check: OK`。
+- 建立 probe 後 FAIL，刪除後恢復 OK。
+
 ## 2026.11.16 02:40 Learn 1 補上 VSCode 工作區入口
 
 **類型**: 文件 · **檔案**: `Docs/development/tutorial/01-learn1-build-and-run.md`, `README.md`
