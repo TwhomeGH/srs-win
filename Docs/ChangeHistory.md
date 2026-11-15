@@ -2,18 +2,6 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
-## 2026.11.15 12:45 更正官方 Windows 支援脈絡
-
-**類型**: 文件 · **檔案**: `README.md`, `Docs/項目概覽說明.md`, `Docs/Windows移植技術文件.md`, `trunk/3rdparty/srs-docs/doc/windows.md`
-
-### 修正
-
-- 原本寫「官方 SRS 已在 v7.0.60+ 終止 Windows 支援」，容易誤解為 v7.0.60 之後才移除。
-- 依 git 證據：官方 Windows 支援是 **Cygwin64**（自 v5.0.89），在 **v7.0.60（2025-08-21，#4447）** 移除；v7.0.60 本身就是移除點。
-- 官方 SRS 7 沒有原生 MSVC Windows 支援；本 fork 以 **v7.0.89** 為基礎，重新建立原生 MSVC/CMake port。
-- 用語更正：官方是**正式停止支援（drop support）並移除實作**，不只是「不再維護」；「不再維護」是結果，但不足以描述程式碼已被刪除。
-- README、項目概覽與 Windows 技術文件統一這個說法。
-
 ## 2026.11.16 01:10 Markdown lint：MD024 改 siblings_only、加入 autofix 腳本
 
 **類型**: 工具鏈／文件 · **檔案**: `.markdownlint.json`, `.markdownlint-cli2.jsonc`, `.markdownlintignore`, `dev/lint-docs.ps1`
@@ -149,6 +137,18 @@
 
 - `/api/v1/config` 回報 `build=2026-11-14`、`build_ts=1794700572`（實際 configure 時間）。
 - 本機 `srs` Debug 建置成功。
+
+## 2026.11.15 12:45 更正官方 Windows 支援脈絡
+
+**類型**: 文件 · **檔案**: `README.md`, `Docs/項目概覽說明.md`, `Docs/Windows移植技術文件.md`, `trunk/3rdparty/srs-docs/doc/windows.md`
+
+### 修正
+
+- 原本寫「官方 SRS 已在 v7.0.60+ 終止 Windows 支援」，容易誤解為 v7.0.60 之後才移除。
+- 依 git 證據：官方 Windows 支援是 **Cygwin64**（自 v5.0.89），在 **v7.0.60（2025-08-21，#4447）** 移除；v7.0.60 本身就是移除點。
+- 官方 SRS 7 沒有原生 MSVC Windows 支援；本 fork 以 **v7.0.89** 為基礎，重新建立原生 MSVC/CMake port。
+- 用語更正：官方是**正式停止支援（drop support）並移除實作**，不只是「不再維護」；「不再維護」是結果，但不足以描述程式碼已被刪除。
+- README、項目概覽與 Windows 技術文件統一這個說法。
 
 ## 2026.11.15 12:30 1C 第二輪：wait／timer／resource stub 與集中 errno 映射
 
