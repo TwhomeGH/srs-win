@@ -2,6 +2,16 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.16 02:40 Learn 1 補上 VSCode 工作區入口
+
+**類型**: 文件 · **檔案**: `Docs/development/tutorial/01-learn1-build-and-run.md`, `README.md`
+
+### 修改
+
+- Learn 1 新增「用 VSCode 啟動」：開啟 workspace 根目錄、launch 設定對照、Tasks 清單、建議情境與 Docker 除錯邊界。
+- 練習加入用 F5 啟動 SRS 與從 Tasks 跑 `dev: check Windows`。
+- 明確區分：Learn 1 只教入口；Learn 3 才是完整 VSCode 除錯工作流。
+
 ## 2026.11.16 02:30 新增開發教學：Learn 1 與 Build 配置導讀
 
 **類型**: 文件 · **檔案**: `Docs/development/tutorial/*`, `Docs/文件索引.md`, `.changelog.toml`

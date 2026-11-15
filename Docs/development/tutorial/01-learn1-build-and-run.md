@@ -17,6 +17,7 @@
 4. 啟動 Docker Linux lane，確認 HTTP API 與 RTMP handshake。
 5. 指出新增 app source 時要改哪兩個檔案。
 6. 知道 Docker build context 為什麼不能包含 `trunk/ide`。
+7. 知道 VSCode 的「執行與偵錯」與「工作」各自用在什麼情境。
 
 ## 前置
 
@@ -105,6 +106,87 @@ pwsh dev/srs-dev.ps1 -Stop
 ```
 
 > Windows dev 設定的埠號是 11935／11985／18088；若被其他程式佔用，先停止舊的 `srs.exe`，不要直接改設定檔逃避衝突。
+
+## 3.1 用 VSCode 啟動（可選）
+
+VSCode 不是另一條建置路徑；它呼叫的是同一批 CMake target 與 `dev/` 腳本。先開**workspace 根目錄**：
+
+```text
+File → Open Folder → F:\srs
+```
+
+不要只開 `trunk/` 或 `.vscode/`，否則 `${workspaceFolder}` 與 task 路徑會不對。
+
+### 「執行與偵錯」下拉
+
+| 設定 | 用途 |
+| --- | --- |
+| `SRS Windows (default features, Debug)` | 日常 API／HLS／RTMP／console，feature set 較小 |
+| `SRS Windows (full RTC/SRT, Debug)` | WebRTC／SRT 測試 |
+| `SRS event loop test` | 只跑 st 協程測試，不是 SRS 服務 |
+| `Attach to srs.exe` | 附加到已啟動的程序 |
+| `UI: Vite dev server` | 啟動 console 前端 |
+| `UI: Vitest (Windows)` | Web 單元測試 |
+| `UI: RTC E2E (full, no auth)` | 自動啟動 full SRS 並跑 WHIP／WHEP |
+| `UI: Auth E2E (full, auth)` | 自動啟動 auth SRS 並跑登入 |
+
+日常完整功能測試選：
+
+```text
+SRS Windows (full RTC/SRT, Debug)
+```
+
+兩個 SRS 設定都是 Debug build；差別是 feature set，不是 Release 最佳化。
+
+### 「工作」清單
+
+按：
+
+```text
+Ctrl+Shift+P → Tasks: Run Task
+```
+
+常用工作：
+
+| 工作 | 用途 |
+| --- | --- |
+| `dev: check Windows` | 增量建置＋native tests |
+| `dev: check Windows full` | RTC／SRT 建置＋tests |
+| `dev: test UI` | Web Vitest |
+| `dev: lint docs` | Markdown 檢查 |
+| `dev: Docker deploy` | 建置並重建 Linux 容器 |
+| `dev: Docker smoke` | 部署後 HTTP／RTMP smoke |
+| `dev: Docker shell` | 進入 Linux 容器 |
+| `dev: RTC E2E (no auth)` | Windows full＋Playwright |
+| `dev: Auth E2E (auth)` | Windows auth＋Playwright |
+
+測試類工作也可以用：
+
+```text
+Tasks: Run Test Task
+```
+
+### 建議情境
+
+```text
+日常 SRS：SRS Windows (default features, Debug)
+完整功能：SRS Windows (full RTC/SRT, Debug)
+前端：UI: Vite dev server
+Linux：Tasks → dev: Docker smoke／dev: Docker shell
+```
+
+Docker 車道目前是**執行與 smoke**，不是 gdb 原始碼除錯；不要期待在 Docker task 裡設中斷點。
+
+### 練習
+
+用 VSCode 再跑一次同一個流程：
+
+1. 選 `SRS Windows (default features, Debug)` 按 F5。
+2. 確認 `http://127.0.0.1:11985/api/v1/versions` 回應。
+3. 按 Shift+F5 停止，或執行 `dev/srs-dev.ps1 -Stop`。
+4. 從 `Tasks: Run Task` 執行一次 `dev: check Windows`。
+
+完整 launch／tasks 說明見 [VSCode 除錯手冊](../../VSCode除錯手冊.md)。
 
 ## 4. 全功能建置（需要 RTC／SRT 時）
 
@@ -207,6 +289,7 @@ git status --short
 - [ ] `dev/check-source-lists.ps1` 回 OK
 - [ ] `dev/check.ps1` 建置＋ctest 通過
 - [ ] Windows dev API 回 200
+- [ ] 能用 VSCode 的 launch 設定啟動 SRS，並從 Tasks 跑一次 `dev: check Windows`
 - [ ] Docker `-Test` 回 HTTP 200 與 RTMP 16 bytes
 - [ ] 故意新增 source 時，source list 檢查失敗
 - [ ] 練習檔已刪除，`git status` 乾淨

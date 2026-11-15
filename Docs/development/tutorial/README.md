@@ -10,10 +10,11 @@
 
 | 題目 | 類型 | 狀態 |
 | --- | --- | --- |
-| [Learn 1：建置、啟動與 Docker](01-learn1-build-and-run.md) | 建置流程、Windows／Docker | 完成 |
+| [Learn 1：建置、啟動與 Docker](01-learn1-build-and-run.md) | 建置流程、Windows／Docker、VSCode 入口 | 完成 |
 | [Build 配置導讀：CMake 與 Dockerfile](02-build-configuration.md) | CMake、Dockerfile、來源清單 | 完成 |
 | Learn 2：新增唯讀 API 欄位 | C++ API + console | 規劃中 |
-| Learn 3：新增 console 頁面 | React／Vite | 規劃中 |
+| Learn 3：VSCode 除錯工作流 | launch／tasks／attach／Docker 邊界 | 規劃中 |
+| Learn 4：新增 console 頁面 | React／Vite | 規劃中 |
 
 ## 練習模式
 
