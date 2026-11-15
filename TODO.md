@@ -7,7 +7,7 @@
 ### P0 平台契約與跨平台建置
 
 - [x] Source list 一致性檢查：比對 `trunk/src/app/*.cpp`、`trunk/configure` 與 CMake
-- [ ] Linux build CI（workflow 已加入，待首次 GitHub Actions 驗證）
+- [x] Linux build CI（workflow 已加入；run `43743234425` 全綠）
 - [x] Add source-list consistency check to `dev/check.ps1` and CI
 - [ ] Feature flags 單一來源：Windows／Linux 從同一份偵測結果產生 feature header
 - [ ] 撰寫 `Docs/平台移植契約.md`（Build／OS／ABI contract、capability matrix）

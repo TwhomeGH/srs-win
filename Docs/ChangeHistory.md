@@ -17,7 +17,7 @@
 
 - `dev/check-source-lists.ps1`：56 個 app source 在 configure 與 CMake 一致。
 - `dev/check.ps1 -NoTests`：source check＋增量建置通過。
-- Linux workflow YAML 可解析；待 GitHub Actions 首次執行。
+- Linux workflow YAML 可解析；GitHub Actions run `43743234425` 全綠（1m7s）。
 
 ## 2026.11.16 01:40 Docker Linux lane：縮小 build context、ccache 與 Linux auth 連結修正
 

@@ -68,6 +68,7 @@ pwsh dev/build-docs.ps1
 - 共用 smoke `dev/smoke-test.ps1` 已在 Nightly `43656170128` 驗證通過。
 - Windows Full workflow `43724683576` 全綠（12m10s）：vcpkg、full build、ctest、full smoke 都通過。
 - Windows Full CI `43737927172` 全綠：RTC media E2E、console auth E2E、ctest 與 full smoke 都通過。
+- Linux Build `43743234425` 全綠（1m7s）：source list、configure、make、binary 驗證。
 
 ## 目前不做
 
