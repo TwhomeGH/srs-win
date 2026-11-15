@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "SRS Windows (Debug)",
+            "name": "SRS Windows (default features, Debug)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/trunk/ide/srs_msvc/build/Debug/srs.exe",
@@ -13,7 +13,7 @@
             "preLaunchTask": "build-srs-debug"
         },
         {
-            "name": "SRS Windows (Full RTC/SRT)",
+            "name": "SRS Windows (full RTC/SRT, Debug)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/trunk/ide/srs_msvc/build-full/Debug/srs.exe",

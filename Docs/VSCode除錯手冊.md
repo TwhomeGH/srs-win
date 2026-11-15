@@ -69,7 +69,7 @@ cmake --build --preset windows-full-debug
 ctest --preset windows-full-test
 ```
 
-輸出在 `build-full/Debug`；`launch.json` 的 `SRS Windows (Full RTC/SRT)` 已指向它。
+輸出在 `build-full/Debug`；`launch.json` 的 `SRS Windows (full RTC/SRT, Debug)` 已指向它。
 
 ## `.vscode/launch.json`
 
@@ -142,8 +142,8 @@ ctest --preset windows-full-test
 
 | 入口 | 用途 |
 |------|------|
-| `SRS Windows (Debug)` | 啟動 `build/Debug/srs.exe` |
-| `SRS Windows (Full RTC/SRT)` | 啟動 `build-full/Debug/srs.exe` |
+| `SRS Windows (default features, Debug)` | 啟動 `build/Debug/srs.exe` |
+| `SRS Windows (full RTC/SRT, Debug)` | 啟動 `build-full/Debug/srs.exe` |
 | `dev: check Windows` | 增量建置＋4 個 native tests |
 | `dev: check Windows full` | vcpkg RTC／SRT 建置＋tests |
 | `UI: Vitest (Windows)` | 在整合終端跑 `npm --prefix ui test` |

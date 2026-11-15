@@ -7,8 +7,8 @@ Windows 除錯設定已改為 `cppvsdbg`（Visual Studio 偵錯器）。完整�
 
 | 名稱 | 用途 |
 | ------ | ------ |
-| `SRS Windows (Debug)` | 預設建置，`dev/windows/dev.conf` |
-| `SRS Windows (Full RTC/SRT)` | vcpkg 全功能建置（先跑 `dev/setup-vscode.ps1`） |
+| `SRS Windows (default features, Debug)` | 預設建置，`dev/windows/dev.conf` |
+| `SRS Windows (full RTC/SRT, Debug)` | vcpkg 全功能建置（先跑 `dev/setup-vscode.ps1`） |
 | `SRS event loop test` | st-srs 協程／select 回歸測試 |
 | `Attach to srs.exe` | 附加到已啟動的程式 |
 | `SRS proxy (Go)` | proxy 除錯 |
@@ -42,7 +42,7 @@ VSCode 的「執行與偵錯」下拉選單只放**除錯器**；測試與 Docke
 
 | 目的 | 入口 |
 |------|------|
-| Windows C++ 除錯 | `SRS Windows (Debug)`／`SRS Windows (Full RTC/SRT)` |
+| Windows C++ 除錯 | `SRS Windows (default features, Debug)`／`SRS Windows (full RTC/SRT, Debug)` |
 | Windows native tests | 工作 `dev: check Windows`／`dev: check Windows full` |
 | Web 單元測試 | 除錯選單 `UI: Vitest (Windows)` 或工作 `dev: test UI` |
 | Web／RTC／auth E2E | 除錯選單 `UI: RTC E2E (full, no auth)`／`UI: Auth E2E (full, auth)`，或對應 `dev:` 工作 |
