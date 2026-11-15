@@ -15,6 +15,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': { target: apiTarget, changeOrigin: true },
+      '/rtc': { target: apiTarget, changeOrigin: true },
       '/players': { target: apiTarget, changeOrigin: true },
     },
   },

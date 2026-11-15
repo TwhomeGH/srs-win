@@ -13,6 +13,26 @@
 - 用語更正：官方是**正式停止支援（drop support）並移除實作**，不只是「不再維護」；「不再維護」是結果，但不足以描述程式碼已被刪除。
 - README、項目概覽與 Windows 技術文件統一這個說法。
 
+## 2026.11.15 23:20 RTC 媒體 E2E（WHIP／WHEP）與 console 播放器
+
+**類型**: 功能／測試／修復 · **檔案**: `ui/src/pages/Player.jsx`, `ui/src/media.js`, `ui/e2e/*`, `dev/rtc-e2e.ps1`, `srs_app_rtc_source.cpp`
+
+### 功能
+- Web 控制台新增「播放器」頁：WebRTC（WHEP）、HTTP-FLV、HLS；可從 `/api/v1/streams/` 選目前串流。
+- HTTP-FLV／HLS 以動態 import 載入 `flv.js`／`hls.js`，不進初始 bundle；主 bundle 約 247KB。
+- WHEP 使用原生 `RTCPeerConnection`；video-only 串流不送 audio m-line，m-line 不匹配時自動退回 video-only。
+
+### 修復
+- `SrsRtcConsumer::wait(0)` 原本 `queue_.size() >= 0` 恒真，realtime 模式下沒有封包時立即返回，`SrsRtcPlayStream::cycle` 空轉餓死 ST 排程器，導致 HTTP API 停止回應。改為 `nb_msgs == 0` 時等待佇列非空。
+
+### E2E
+- `ui/e2e/rtc-whip.html`：canvas H.264 WHIP 發佈器，不需攝影機權限。
+- `ui/e2e/rtc-roundtrip.mjs`：Playwright 發佈 WHIP → console WHEP 播放 → 驗證 `readyState`、`videoWidth`／`videoHeight`，並確認 API 仍可回應。
+- `dev/rtc-e2e.ps1` 啟動 full SRS 並執行上述測試；Windows Full CI 加入此步驟。
+
+### 驗證
+- 本機：`rtc-e2e: PASS`，video 320x180、readyState 4、paused false。
+
 ## 2026.11.15 13:50 Phase 1 結案與功能開發門檻
 
 **類型**: 文件／規劃 · **檔案**: `Docs/Phase1結案.md`, `Docs/文件索引.md`, `.changelog.toml`, `TODO.md`

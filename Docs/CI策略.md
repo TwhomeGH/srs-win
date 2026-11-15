@@ -50,7 +50,8 @@ pwsh dev/build-docs.ps1
 - `vcpkg install libsrtp libsrt opus --triplet x64-windows`，並快取 `C:\vcpkg\installed`。
 - configure `windows-full`、建置 RTC／SRT 版本。
 - 跑 native ctest 與 full smoke（API、RTMP handshake、config API）。
-- 不取代 Nightly；它驗證的是 full build 是否能編譯並啟動監聽，不是完整 RTC 媒體 E2E。
+- 跑 RTC 媒體 E2E：WHIP 發佈 canvas H.264，console WHEP 播放並檢查畫面尺寸。
+- 不取代 Nightly；它驗證的是 full build 是否能編譯、啟動監聽與實際 RTC 媒體路徑。
 
 ## 已完成
 
@@ -58,6 +59,7 @@ pwsh dev/build-docs.ps1
 - 手動 Release Nightly `43654341813` 全綠：build、native tests、console、smoke 都通過。
 - 共用 smoke `dev/smoke-test.ps1` 已在 Nightly `43656170128` 驗證通過。
 - Windows Full workflow `43724683576` 全綠（12m10s）：vcpkg、full build、ctest、full smoke 都通過。
+- RTC 媒體 E2E 已在本機通過（WHIP canvas → console WHEP，video 320x180）；Windows Full CI 已加入此步驟，待下一次 run 驗證。
 
 ## 目前不做
 

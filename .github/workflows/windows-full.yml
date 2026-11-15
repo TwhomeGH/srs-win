@@ -72,6 +72,23 @@ jobs:
           cmake --build --preset windows-full-debug --target srs st-event-loop-test path-rename-test file-share-test win-compat-test -- /m:2
           if ($LASTEXITCODE -ne 0) { throw "Build failed" }
 
+      - name: Install web console deps
+        working-directory: ui
+        run: npm ci --no-audit --no-fund
+
+      - name: Build web console
+        shell: pwsh
+        run: |
+          pwsh dev/build-ui.ps1 -Target full -NoInstall
+
+      - name: RTC media E2E (WHIP/WHEP)
+        shell: pwsh
+        run: |
+          pwsh dev/rtc-e2e.ps1 `
+            -SrsExe trunk/ide/srs_msvc/build-full/Debug/srs.exe `
+            -ConfFile dev/windows/dev.conf `
+            -WorkDir trunk/ide/srs_msvc/build-full/Debug
+
       - name: Run full native tests
         working-directory: trunk/ide/srs_msvc
         shell: pwsh

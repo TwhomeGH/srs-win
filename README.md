@@ -16,7 +16,7 @@
 | **RTMP** | ✅ | ✅ | 發佈／播放 |
 | **HTTP-FLV / HTTP-TS** | ✅ | ✅ | HTTP 串流 |
 | **HLS** | ✅ | ✅ | HTTP Live Streaming |
-| **WebRTC (WHIP/WHEP)** | — | ✅ | 需 `windows-full`＋vcpkg `libsrtp`／`opus`；媒體路徑仍在驗證 |
+| **WebRTC (WHIP/WHEP)** | — | ✅ | 需 `windows-full`＋vcpkg `libsrtp`／`opus`；WHIP 發佈／WHEP 播放已納入 RTC E2E |
 | **SRT** | — | ✅ | 需 `windows-full`＋vcpkg `libsrt` |
 | **GB28181** | △ | △ | 巨集已啟用；UDP／媒體路徑尚未端到端驗證 |
 | **MPEG-DASH** | ✅ | ✅ | HTTP 自適應串流 |

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <title>SRS RTC WHIP E2E publisher</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    #canvas { width: 320px; height: 180px; border: 1px solid #ccc; background: #111; }
+    #status { margin-top: 1rem; font-weight: 600; }
+    button { padding: 0.4rem 1rem; margin-right: 0.5rem; }
+    code { word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h1>RTC WHIP E2E publisher</h1>
+  <p>Publishes a synthetic H.264 canvas stream to SRS. No camera permission is needed.</p>
+  <canvas id="canvas" width="320" height="180"></canvas>
+  <p>
+    <button id="publish">Publish</button>
+    <button id="stop">Stop</button>
+  </p>
+  <p id="status">idle</p>
+  <p>URL: <code id="url"></code></p>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const app = params.get('app') || 'live';
+    const streamName = params.get('stream') || 'rtc-e2e';
+    const apiBase = params.get('api') || location.origin;
+    const whipUrl = `${apiBase}/rtc/v1/whip/?app=${encodeURIComponent(app)}&stream=${encodeURIComponent(streamName)}`;
+    document.querySelector('#url').textContent = whipUrl;
+
+    const canvas = document.querySelector('#canvas');
+    const ctx = canvas.getContext('2d');
+    let drawTimer = null;
+    let pc = null;
+    let localStream = null;
+
+    function draw() {
+      const t = performance.now() / 1000;
+      ctx.fillStyle = `hsl(${(t * 60) % 360}, 70%, 25%)`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#fff';
+      ctx.font = '24px monospace';
+      ctx.fillText(`SRS RTC ${t.toFixed(1)}s`, 20, 90);
+      ctx.fillRect(20 + ((t * 60) % 260), 120, 40, 20);
+    }
+
+    function setStatus(text) {
+      document.querySelector('#status').textContent = text;
+      window.__rtcStatus = text;
+    }
+
+    async function publish() {
+      if (pc) return;
+      setStatus('capturing canvas');
+      draw();
+      drawTimer = setInterval(draw, 66);
+      localStream = canvas.captureStream(15);
+
+      pc = new RTCPeerConnection();
+      window.__rtcPublisher = pc;
+
+      const videoTrack = localStream.getVideoTracks()[0];
+      const transceiver = pc.addTransceiver(videoTrack, {
+        direction: 'sendonly',
+        streams: [localStream],
+      });
+
+      // SRS RTC expects H.264. Canvas capture defaults to VP8, so prefer H264
+      // explicitly when the browser exposes it.
+      try {
+        const codecs = RTCRtpSender.getCapabilities('video')?.codecs || [];
+        const h264 = codecs.filter((c) => c.mimeType === 'video/H264');
+        if (h264.length) transceiver.setCodecPreferences(h264);
+      } catch (err) {
+        console.warn('setCodecPreferences failed', err);
+      }
+
+      pc.onconnectionstatechange = () => setStatus(`connection: ${pc.connectionState}`);
+
+      await pc.setLocalDescription(await pc.createOffer());
+      setStatus(`offer ${pc.localDescription.sdp.length} bytes, posting`);
+
+      const response = await fetch(whipUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/sdp' },
+        body: pc.localDescription.sdp,
+      });
+      const answer = await response.text();
+      if (!response.ok) {
+        throw new Error(`WHIP HTTP ${response.status}: ${answer.slice(0, 200)}`);
+      }
+
+      await pc.setRemoteDescription({ type: 'answer', sdp: answer });
+      window.__rtcPublished = true;
+      setStatus('published');
+    }
+
+    function stop() {
+      if (drawTimer) clearInterval(drawTimer);
+      drawTimer = null;
+      if (pc) pc.close();
+      pc = null;
+      if (localStream) localStream.getTracks().forEach((track) => track.stop());
+      localStream = null;
+      window.__rtcPublished = false;
+      setStatus('stopped');
+    }
+
+    document.querySelector('#publish').addEventListener('click', () => {
+      publish().catch((err) => {
+        console.error(err);
+        setStatus(`error: ${err.message}`);
+      });
+    });
+    document.querySelector('#stop').addEventListener('click', stop);
+    window.addEventListener('beforeunload', stop);
+  </script>
+</body>
+</html>

@@ -75,7 +75,6 @@ pwsh dev/smoke-test.ps1 `
 ```
 
 它會啟動 SRS、等待 API、檢查 RTMP handshake、`/console/`（選用）與 `/api/v1/config`，最後停止 process。預設 API／RTMP 埠是 `1985`／`19350`，本機埠被占用時用 `-ApiPort`／`-RtmpPort` 覆寫。
-```
 
 設定存在 `dev/local-deploy.ini`（已 gitignore）；沒有 ini 時使用 repo 相對預設值。範例見 `dev/local-deploy.ini.example`。
 
@@ -95,6 +94,20 @@ pwsh dev/build-ui.ps1      # 建置並安裝到 objs/nginx/html/console/
 ```
 
 建置後可直接開 `http://127.0.0.1:11985/console/`；API 同源，不需要 CORS。細節見 [`ui/README.md`](../ui/README.md)。
+
+## RTC 媒體 E2E
+
+需要 full（RTC／SRT）建置與已建置的 console：
+
+```powershell
+pwsh dev/build-ui.ps1 -Target full
+pwsh dev/rtc-e2e.ps1 `
+  -SrsExe trunk/ide/srs_msvc/build-full/Debug/srs.exe `
+  -ConfFile dev/windows/dev.conf `
+  -WorkDir trunk/ide/srs_msvc/build-full/Debug
+```
+
+腳本會啟動 SRS、用 `ui/e2e/rtc-whip.html` 發佈 canvas H.264 串流，再從 console 的 WHEP 播放器播放，確認 `videoWidth` > 0 且 API 仍可回應。需要 Chrome 或 Edge（`playwright-core` 會依序嘗試）。
 
 ## Windows 車道
 

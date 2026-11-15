@@ -21,7 +21,7 @@
 - [x] Nightly 執行 `st-event-loop-test`（`ctest -R st-event-loop-test`）
 - [x] Windows RTC／SRT 依賴（vcpkg `libsrtp`／`libsrt`／`opus`）納入 `windows-full` preset
 - [x] SRT 推流 Windows 端到端驗證（ffmpeg → SRS，H264/320x240）
-- [ ] RTC 媒體（WHIP／WHEP）Windows 端到端驗證
+- [x] RTC 媒體（WHIP／WHEP）Windows 端到端驗證（`dev/rtc-e2e.ps1`）
 - [x] 全功能（RTC／SRT）CI job 與 vcpkg 快取（run `43724683576` 通過）
 - [x] Nightly 產出 Release artifact（workflow 已改 Release；手動 run 43654341813 驗證通過）
 - [x] Nightly 與 Release 共用同一份 smoke test 腳本（`dev/smoke-test.ps1`）
@@ -45,7 +45,8 @@
 - [x] 推流診斷（HTTP-FLV 標籤串流、位元率、封包、關鍵影格／GOP）
 - [x] Web 控制台離線時保留最後資料，只顯示警告卡＋重試
 - [x] UI 單元測試（Vitest：FLV 解析、API 錯誤分類）
-- [ ] Web 控制台：RTC／SRT 播放器、Basic Auth 登入、Playwright E2E 收錄
+- [x] Web 控制台：RTC（WHEP）／HTTP-FLV／HLS 播放器
+- [ ] Web 控制台：SRT 播放器、Basic Auth 登入、Playwright E2E 收錄
 - [ ] 選擇性接入 `trunk/src/utest` 的 protocol／kernel 測試
 - [x] 首次部署後確認 Pages 網址可瀏覽、文件分組正確
 

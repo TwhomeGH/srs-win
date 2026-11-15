@@ -21,13 +21,15 @@
 | Clients | `/api/v1/clients/` | 連線類型、IP、存活時間、踢除 |
 | Configs | `/api/v1/config`、`/vhosts/`、`/features` | 唯讀的 listeners、限制、建置能力與 vhost 摘要；不使用 raw API |
 | Push Diag | `/api/v1/streams/`、HTTP-FLV | 選目前串流或手動輸入 URL，分析 FLV 標籤流、位元率、封包、關鍵影格與 GOP |
+| Player | `/api/v1/streams/`、`/api/v1/config`、WHEP／HTTP-FLV／HLS | 選目前串流，支援 WebRTC（WHEP）、HTTP-FLV、HLS 播放 |
 
 ## 架構
 
 ```text
 ui/ (React 18 + Vite 6 + Bootstrap 5)
 ├── src/api.jsx          axios → /api/v1
-├── src/pages/*          Overview/Vhosts/Streams/Clients/Configs/PushDiag
+├── src/pages/*          Overview/Vhosts/Streams/Clients/Configs/PushDiag/Player
+├── src/media.js         播放 URL 組裝（WHEP／FLV／HLS）
 ├── src/usePolling.jsx   3 秒輪詢，頁面隱藏時暫停
 ├── src/flvAnalyzer.js   FLV header/tag 解析（推流診斷）
 └── src/i18n.jsx         zh-TW / en
@@ -36,12 +38,16 @@ ui/ (React 18 + Vite 6 + Bootstrap 5)
 - **同源 API**：建置後的檔案放在 `objs/nginx/html/console/`，SRS `http_api` 會把 `/console` 掛到該目錄；瀏覽器直接打 `/api/v1`，不需要 CORS。
 - **開發代理**：Vite `server.proxy['/api']` 轉到 `SRS_API`（預設 `http://127.0.0.1:11985`）。
 - **錯誤處理**：`ErrorBoundary` 接住渲染錯誤；輪詢失敗保留上一筆資料，只顯示警告，不清空畫面。
+- **播放器**：WHEP 使用原生 `RTCPeerConnection`；HTTP-FLV／HLS 使用 `flv.js`／`hls.js`，以動態 import 載入，不佔初始 bundle。
+- **播放 URL**：WHEP 走 API 來源的 `/rtc/v1/whep/`；FLV／HLS 走 `/api/v1/config` 回報的 `http_server` 埠。
 - **認證**：目前沿用 SRS API 本身；若前面有反向代理認證，瀏覽器會帶其 session。尚未實作 Basic Auth 登入表單。
 
 ## 依賴策略
 
 - 只使用 **Bootstrap CSS** 與原生 HTML／React markup，不引入 `react-bootstrap`、`react-aria` 或整套 icon 套件；目前 `node_modules` 約 3 千個檔案，主要是 Vite／Babel／browserslist 的建置期依賴。
-- `node_modules` 與 `build/` 都不進版控；CI 用 `npm ci` 重建，執行期只輸出 `ui/build/` 的 3 個靜態檔。
+- 新增 `flv.js`／`hls.js` 作為播放器；兩者以動態 import 載入，只有實際選 HTTP-FLV／HLS 時才下載。
+- `playwright-core` 只用於 RTC E2E，不進入執行期 bundle。
+- `node_modules` 與 `build/` 都不進版控；CI 用 `npm ci` 重建，執行期只輸出 `ui/build/` 的靜態檔。
 - 套件清單以 `package.json` 為準；新增套件前先確認是否只是為了幾個元件，能用手寫 markup 就不引入。
 
 ## 與 Oryx 的差異
@@ -56,12 +62,14 @@ ui/ (React 18 + Vite 6 + Bootstrap 5)
 ## 建置與 CI
 
 - 本機：`dev/build-ui.ps1` 建置並複製到 `build/Debug`（`-Target full` 可選 `build-full`）。
-- CI：Nightly 在 `ui/` 執行 `npm ci`＋`npm run build`，複製到 `build/Debug/objs/nginx/html/console`，並在 smoke 檢查 `/console/` 回 200；artifact 也會帶上 console。
+- RTC 媒體 E2E：`pwsh dev/rtc-e2e.ps1 -SrsExe ... -ConfFile dev/windows/dev.conf -WorkDir ...`；用 `ui/e2e/rtc-whip.html` 發佈合成 H.264 canvas 串流，再從 console WHEP 播放並檢查 `videoWidth`。
+- CI：Nightly 在 `ui/` 執行 `npm ci`＋`npm run build`，複製到 `build/Debug/objs/nginx/html/console`，並在 smoke 檢查 `/console/` 回 200；artifact 也會帶上 console。Windows Full 另外跑 RTC 媒體 E2E。
 - Pages：與控制台無關；API 參考仍由 `Doxyfile` 產生。
 
 ## 已知限制
 
 - `/api/v1/raw` 預設關閉；控制台改用唯讀 `/api/v1/config`，不需要開啟可寫入的 raw API。
 - 推流診斷需要瀏覽器能讀取 HTTP-FLV；若 HTTP server 在另一個來源，請開啟 `http_server.crossdomain`（或用同源反向代理）。
-- RTC／SRT 媒體驗證仍以 API 為準；播放器（WHEP／SRT player）尚未接入。
+- RTC 播放目前以 WHEP 為主；SRT 播放器尚未接入。
+- RTC 媒體 E2E 使用 Chrome／Edge 的 canvas 合成串流，驗證的是 WHIP 發佈＋WHEP 播放路徑，不是實體攝影機相容性。
 - 尚未提供登入／權限管理；請在反向代理或 SRS API 層處理。

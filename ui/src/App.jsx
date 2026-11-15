@@ -9,6 +9,7 @@ import Streams from './pages/Streams';
 import Clients from './pages/Clients';
 import Configs from './pages/Configs';
 import PushDiag from './pages/PushDiag';
+import Player from './pages/Player';
 import Footer from './components/Footer';
 
 const LANG_KEY = 'srs.console.lang';
@@ -20,6 +21,7 @@ const TABS = [
   { key: 'clients', label: 'clients', Page: Clients },
   { key: 'configs', label: 'configs', Page: Configs },
   { key: 'pushdiag', label: 'pushdiag', Page: PushDiag },
+  { key: 'player', label: 'player', Page: Player },
 ];
 
 export default function App() {

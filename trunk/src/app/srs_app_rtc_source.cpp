@@ -221,8 +221,11 @@ void SrsRtcConsumer::wait(int nb_msgs)
 {
     mw_min_msgs_ = nb_msgs;
 
-    // when duration ok, signal to flush.
-    if ((int)queue_.size() >= mw_min_msgs_) {
+    // nb_msgs==0 means realtime mode: wait until at least one packet arrives.
+    // The previous `size() >= 0` check was always true, so wait() returned
+    // immediately and the play coroutine spun without yielding, starving the
+    // ST scheduler (the HTTP API stopped responding).
+    if (nb_msgs > 0 ? (int)queue_.size() >= nb_msgs : !queue_.empty()) {
         return;
     }
 
