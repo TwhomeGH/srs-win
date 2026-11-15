@@ -50,6 +50,7 @@ curl http://127.0.0.1:11985/api/v1/versions
 pwsh dev/check.ps1          # 增量建置 srs + st-event-loop-test，再跑 ctest
 pwsh dev/check.ps1 -Full    # windows-full（RTC/SRT）
 pwsh dev/check.ps1 -Docs    # 同時更新 _site/api
+pwsh dev/check-source-lists.ps1  # 只檢查 configure／CMake／src/app 是否一致
 ```
 
 `check.ps1` 不 clean、只重建變更的 target；適合每次改碼後跑。

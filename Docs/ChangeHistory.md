@@ -2,6 +2,23 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.16 02:00 P0 開始：來源清單守門與 Linux build CI
+
+**類型**: 建置／CI · **檔案**: `dev/check-source-lists.ps1`, `dev/check.ps1`, `.github/workflows/linux-build.yml`, `TODO.md`
+
+### 修改
+
+- 新增來源清單檢查：比對 `trunk/src/app/*.cpp`、`trunk/configure` 的 `MODULE_FILES` 與 MSVC `CMakeLists.txt`，新增檔案漏列時直接失敗。
+- `dev/check.ps1` 建置前先跑這個檢查。
+- 新增每週／手動的 Linux Build workflow：系統套件、configure、make、binary 驗證；避免 Windows-only 變更破壞 Linux 連結。
+- TODO 加上 P0 平台契約與跨平台建置項目。
+
+### 驗證
+
+- `dev/check-source-lists.ps1`：56 個 app source 在 configure 與 CMake 一致。
+- `dev/check.ps1 -NoTests`：source check＋增量建置通過。
+- Linux workflow YAML 可解析；待 GitHub Actions 首次執行。
+
 ## 2026.11.16 01:40 Docker Linux lane：縮小 build context、ccache 與 Linux auth 連結修正
 
 **類型**: 建置／修復 · **檔案**: `.dockerignore`, `dev/docker/Dockerfile`, `trunk/configure`, `dev/README.md`

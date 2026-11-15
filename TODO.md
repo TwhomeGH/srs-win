@@ -4,6 +4,18 @@
 
 ## 設計檢查（進行中）
 
+### P0 平台契約與跨平台建置
+
+- [x] Source list 一致性檢查：比對 `trunk/src/app/*.cpp`、`trunk/configure` 與 CMake
+- [ ] Linux build CI（workflow 已加入，待首次 GitHub Actions 驗證）
+- [x] Add source-list consistency check to `dev/check.ps1` and CI
+- [ ] Feature flags 單一來源：Windows／Linux 從同一份偵測結果產生 feature header
+- [ ] 撰寫 `Docs/平台移植契約.md`（Build／OS／ABI contract、capability matrix）
+- [ ] Platform capability tests（file replace、share-delete、poll、pid lock、spawn、time）
+- [ ] 合併 `force_include.h`／`compat/`／`srs_win32_compat.h` 重疊（後者為死碼）
+- [ ] macOS 建置原型（POSIX adapter + Darwin override）
+- [ ] Linux／Windows ARM64 建置原型與 st context-switch probe
+
 - [ ] 逐模組檢查 Windows 相容層的設計缺口（`force_include.h`、`srs_win32_compat.h`、`compat/`）
 - [ ] 每次修改區塊同步補齊公開 API 的 Doxygen 註解（change-scoped，不做全域大改）
 - [ ] 確認 POSIX 相容層的錯誤碼轉換一致（`errno` ↔ `GetLastError()`）

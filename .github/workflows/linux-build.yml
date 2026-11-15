@@ -1,0 +1,71 @@
+name: "Linux Build"
+
+# Local-first: normal development uses dev/check.ps1 and the Docker dev lane.
+# This workflow is a weekly/on-demand guard so a Windows-only source change
+# cannot silently break the Linux build or the Autotools source list.
+on:
+  schedule:
+    # Sunday 04:00 Asia/Taipei (UTC+8).
+    - cron: '0 20 * * 6'
+  workflow_dispatch:
+
+permissions: read-all
+
+concurrency:
+  group: linux-build
+  cancel-in-progress: true
+
+jobs:
+  build-linux:
+    name: build-linux-x64
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            cmake \
+            pkg-config \
+            libssl-dev \
+            libsrtp2-dev \
+            libsrt-openssl-dev \
+            libopus-dev \
+            libavcodec-dev \
+            libavformat-dev \
+            libavutil-dev \
+            libswscale-dev \
+            libswresample-dev \
+            unzip \
+            automake \
+            libtool \
+            patch \
+            git \
+            tcl
+
+      - name: Check source lists
+        shell: pwsh
+        run: ./dev/check-source-lists.ps1
+
+      - name: Configure (system libraries)
+        working-directory: trunk
+        run: |
+          ./configure \
+            --jobs="$(nproc)" \
+            --use-sys-srtp=on \
+            --use-sys-srt=on \
+            --use-sys-ffmpeg=on
+
+      - name: Build
+        working-directory: trunk
+        run: make -j"$(nproc)"
+
+      - name: Verify binary
+        working-directory: trunk
+        run: |
+          test -x ./objs/srs
+          ./objs/srs -v

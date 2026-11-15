@@ -50,6 +50,9 @@ if ($Full) {
     }
 }
 
+Step 'check source lists'
+Invoke-Checked { & (Join-Path $PSScriptRoot 'check-source-lists.ps1') } 'source list check'
+
 if (-not (Test-Path (Join-Path $buildDir 'CMakeCache.txt'))) {
     Step "configure $buildDir"
     if ($Full) {
