@@ -280,6 +280,22 @@ git status --short
 
 `git status` 應該沒有這個檔案。這個練習說明：新增 app source 時，**兩個清單都要改**；檢查腳本只是防止忘記。
 
+這個練習故意讓 probe **同時漏掉兩邊**，讓你一次看到兩個方向的錯誤。實際事故不是「CMake 漏檔」，而是：
+
+```text
+srs_app_console_auth.cpp 加到 CMake
+但沒有加到 trunk/configure
+→ Windows 正常
+→ Linux 連結 undefined reference
+```
+
+所以檢查腳本比對的是 **CMake 與 `trunk/configure` 兩份清單是否一致**，不是只檢查 CMake。真正事故會顯示：
+
+```text
+missing from trunk/configure:
+  srs_app_console_auth
+```
+
 ## 7. 你應該能回答
 
 - `windows-default` 和 `windows-full` 分別輸出到哪個目錄？
