@@ -32,6 +32,7 @@
 
 ### 驗證
 - `dev/auth-e2e.ps1` PASS：登入、reload 沿用 token、refresh、登出。
+- Windows Full CI `43737927172` 的 Console auth E2E PASS。
 - `dev/windows/auth.conf` 未設定帳密時，實際產生 `objs/console-auth.txt`。
 
 ## 2026.11.15 23:20 RTC 媒體 E2E（WHIP／WHEP）與 console 播放器
