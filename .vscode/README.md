@@ -14,8 +14,8 @@ Windows 除錯設定已改為 `cppvsdbg`（Visual Studio 偵錯器）。完整�
 | `SRS proxy (Go)` | proxy 除錯 |
 | `UI: Vitest (Windows)` | 在整合終端執行 Web 單元測試 |
 | `UI: Vite dev server` | 啟動 console dev server |
-| `UI: RTC E2E (Windows full)` | 啟動 full SRS 並跑 WHIP／WHEP |
-| `UI: Auth E2E (Windows auth)` | 啟動 auth SRS 並跑登入流程 |
+| `UI: RTC E2E (full, no auth)` | 啟動 full SRS 並跑 WHIP／WHEP |
+| `UI: Auth E2E (full, auth)` | 啟動 auth SRS 並跑登入流程 |
 
 ## 工作
 
@@ -33,8 +33,8 @@ Windows 除錯設定已改為 `cppvsdbg`（Visual Studio 偵錯器）。完整�
 | `dev: Docker deploy` | 建置並重建 Linux dev 容器 |
 | `dev: Docker smoke` | 部署後檢查 HTTP API／RTMP |
 | `dev: Docker shell` | 進入 Linux 容器 bash |
-| `dev: RTC E2E` | Windows full SRS＋Playwright |
-| `dev: Auth E2E` | Windows auth SRS＋Playwright |
+| `dev: RTC E2E (no auth)` | Windows full SRS＋Playwright |
+| `dev: Auth E2E (auth)` | Windows auth SRS＋Playwright |
 
 ## 測試通道怎麼選
 
@@ -45,7 +45,7 @@ VSCode 的「執行與偵錯」下拉選單只放**除錯器**；測試與 Docke
 | Windows C++ 除錯 | `SRS Windows (Debug)`／`SRS Windows (Full RTC/SRT)` |
 | Windows native tests | 工作 `dev: check Windows`／`dev: check Windows full` |
 | Web 單元測試 | 除錯選單 `UI: Vitest (Windows)` 或工作 `dev: test UI` |
-| Web／RTC／auth E2E | 除錯選單 `UI: RTC E2E`／`UI: Auth E2E`，或對應 `dev:` 工作 |
+| Web／RTC／auth E2E | 除錯選單 `UI: RTC E2E (full, no auth)`／`UI: Auth E2E (full, auth)`，或對應 `dev:` 工作 |
 | Linux Docker 測試 | 工作 `dev: Docker smoke`（部署＋HTTP／RTMP） |
 | Linux Docker shell | 工作 `dev: Docker shell` |
 

@@ -148,8 +148,8 @@ ctest --preset windows-full-test
 | `dev: check Windows full` | vcpkg RTC／SRT 建置＋tests |
 | `UI: Vitest (Windows)` | 在整合終端跑 `npm --prefix ui test` |
 | `dev: test UI` | 同上，從工作清單選 |
-| `UI: RTC E2E (Windows full)` | 啟動 full SRS 並跑 WHIP／WHEP |
-| `UI: Auth E2E (Windows auth)` | 啟動 auth SRS 並跑登入流程 |
+| `UI: RTC E2E (full, no auth)` | 啟動 full SRS 並跑 WHIP／WHEP |
+| `UI: Auth E2E (full, auth)` | 啟動 auth SRS 並跑登入流程 |
 
 ### Linux Docker
 

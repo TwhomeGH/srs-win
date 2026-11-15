@@ -62,14 +62,14 @@
             "cwd": "${workspaceFolder}"
         },
         {
-            "name": "UI: RTC E2E (Windows full)",
+            "name": "UI: RTC E2E (full, no auth)",
             "type": "node-terminal",
             "request": "launch",
             "command": "pwsh -NoProfile -File dev/rtc-e2e.ps1",
             "cwd": "${workspaceFolder}"
         },
         {
-            "name": "UI: Auth E2E (Windows auth)",
+            "name": "UI: Auth E2E (full, auth)",
             "type": "node-terminal",
             "request": "launch",
             "command": "pwsh -NoProfile -File dev/auth-e2e.ps1",

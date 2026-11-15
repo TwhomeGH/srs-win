@@ -146,7 +146,7 @@
             "detail": "Open a shell inside the Linux dev container."
         },
         {
-            "label": "dev: RTC E2E",
+            "label": "dev: RTC E2E (no auth)",
             "type": "shell",
             "command": "pwsh",
             "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/rtc-e2e.ps1"],
@@ -155,7 +155,7 @@
             "detail": "Start full SRS and run WHIP/WHEP Playwright test on Windows."
         },
         {
-            "label": "dev: Auth E2E",
+            "label": "dev: Auth E2E (auth)",
             "type": "shell",
             "command": "pwsh",
             "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/auth-e2e.ps1"],
