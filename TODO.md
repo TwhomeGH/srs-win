@@ -22,7 +22,7 @@
 - [x] Windows RTC／SRT 依賴（vcpkg `libsrtp`／`libsrt`／`opus`）納入 `windows-full` preset
 - [x] SRT 推流 Windows 端到端驗證（ffmpeg → SRS，H264/320x240）
 - [ ] RTC 媒體（WHIP／WHEP）Windows 端到端驗證
-- [ ] 全功能（RTC／SRT）CI job 與 vcpkg 快取（`.github/workflows/windows-full.yml` 已建立，待首次 CI 驗證）
+- [x] 全功能（RTC／SRT）CI job 與 vcpkg 快取（run `43724683576` 通過）
 - [x] Nightly 產出 Release artifact（workflow 已改 Release；手動 run 43654341813 驗證通過）
 - [x] Nightly 與 Release 共用同一份 smoke test 腳本（`dev/smoke-test.ps1`）
 

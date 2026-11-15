@@ -25,7 +25,9 @@
 
 ### 已知限制
 - full smoke 只驗證 API／RTMP／config API 與監聽啟動；WHIP／WHEP 媒體 E2E 尚未納入。
-- 首次 CI 驗證待手動 dispatch。
+
+### 驗證
+- run `43724683576` 全綠（12m10s）：vcpkg install/cache、full build、4 個 native tests、full smoke 都通過。
 
 ## 2026.11.15 13:20 1E 第一批：Nightly／Release 共用 smoke test
 
