@@ -109,6 +109,19 @@ pwsh dev/rtc-e2e.ps1 `
 
 腳本會啟動 SRS、用 `ui/e2e/rtc-whip.html` 發佈 canvas H.264 串流，再從 console 的 WHEP 播放器播放，確認 `videoWidth` > 0 且 API 仍可回應。需要 Chrome 或 Edge（`playwright-core` 會依序嘗試）。
 
+## Console 認證（可選）
+
+一般開發的 `dev/windows/dev.conf` 不啟用 auth。要測認證時：
+
+```powershell
+. .\dev\dev-auth.ps1          # 產生／沿用 dev/runtime/dev-password.txt，並設定 SRS_HTTP_API_AUTH_PASSWORD
+pwsh dev/auth-e2e.ps1 `
+  -SrsExe trunk/ide/srs_msvc/build-full/Debug/srs.exe `
+  -WorkDir trunk/ide/srs_msvc/build-full/Debug
+```
+
+`dev/windows/auth.conf` 只啟用 `http_api.auth`，不寫死帳密；第一次啟動會由 SRS 產生 `objs/console-auth.txt`，或由 `SRS_HTTP_API_AUTH_PASSWORD` 覆寫。正式部署請自行保存並限制該檔案讀取權限。
+
 ## Windows 車道
 
 `-Build` 會：

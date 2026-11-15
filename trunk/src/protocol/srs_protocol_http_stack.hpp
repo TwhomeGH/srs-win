@@ -535,6 +535,8 @@ public:
 // while proxy to the worker mux for services.
 // @see https://www.rfc-editor.org/rfc/rfc7617
 // @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate
+typedef bool (*SrsHttpAuthTokenValidator)(const std::string &token, std::string &username);
+
 class SrsHttpAuthMux : public ISrsHttpHandler
 {
 private:
@@ -542,6 +544,8 @@ private:
     std::string username_;
     std::string password_;
     ISrsHttpHandler *next_;
+    SrsHttpAuthTokenValidator token_validator_;
+    std::vector<std::string> public_paths_;
 
 public:
     SrsHttpAuthMux(ISrsHttpHandler *h);
@@ -549,6 +553,10 @@ public:
 
 public:
     virtual srs_error_t initialize(bool enabled, std::string username, std::string password);
+    // Validate console bearer tokens in addition to Basic auth.
+    virtual void set_token_validator(SrsHttpAuthTokenValidator validator);
+    // Paths that must be reachable before authentication (for example login).
+    virtual void add_public_path(std::string path);
     // Interface ISrsHttpServeMux
 public:
     virtual srs_error_t serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r);

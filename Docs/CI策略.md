@@ -51,6 +51,7 @@ pwsh dev/build-docs.ps1
 - configure `windows-full`、建置 RTC／SRT 版本。
 - 跑 native ctest 與 full smoke（API、RTMP handshake、config API）。
 - 跑 RTC 媒體 E2E：WHIP 發佈 canvas H.264，console WHEP 播放並檢查畫面尺寸。
+- 跑 console auth E2E：登入 token、reload 保存、refresh 與登出；使用 dev 專用密碼。
 - 不取代 Nightly；它驗證的是 full build 是否能編譯、啟動監聽與實際 RTC 媒體路徑。
 
 ## 已完成

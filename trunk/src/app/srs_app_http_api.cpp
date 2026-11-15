@@ -13,6 +13,7 @@
 using namespace std;
 
 #include <srs_app_config.hpp>
+#include <srs_app_console_auth.hpp>
 #include <srs_app_coworkers.hpp>
 #include <srs_app_dvr.hpp>
 #include <srs_app_http_conn.hpp>
@@ -1448,4 +1449,85 @@ srs_error_t SrsGoApiMetrics::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessa
     w->header()->set_content_type("text/plain; charset=utf-8");
 
     return srs_api_response(w, r, ss.str());
+}
+
+SrsGoApiConsoleLogin::SrsGoApiConsoleLogin()
+{
+}
+
+SrsGoApiConsoleLogin::~SrsGoApiConsoleLogin()
+{
+}
+
+srs_error_t SrsGoApiConsoleLogin::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r)
+{
+    srs_error_t err = srs_success;
+
+    std::string body;
+    if ((err = r->body_read_all(body)) != srs_success) {
+        return srs_error_wrap(err, "read login body");
+    }
+
+    SrsUniquePtr<SrsJsonAny> root(SrsJsonAny::loads(body));
+    if (!root.get() || !root->is_object()) {
+        return srs_api_response_code(w, r, SRS_CONSTS_HTTP_BadRequest);
+    }
+
+    SrsJsonObject *obj = root->to_object();
+    SrsJsonAny *pusername = obj->get_property("username");
+    SrsJsonAny *ppassword = obj->get_property("password");
+    if (!pusername || !pusername->is_string() || !ppassword || !ppassword->is_string()) {
+        return srs_api_response_code(w, r, SRS_CONSTS_HTTP_BadRequest);
+    }
+
+    std::string token;
+    int64_t expires_at = 0;
+    if ((err = srs_console_auth_login(pusername->to_str(), ppassword->to_str(), token, expires_at)) != srs_success) {
+        srs_freep(err);
+        return srs_api_response_code(w, r, SRS_CONSTS_HTTP_Unauthorized);
+    }
+
+    SrsUniquePtr<SrsJsonObject> result(SrsJsonAny::object());
+    result->set("code", SrsJsonAny::integer(ERROR_SUCCESS));
+    SrsJsonObject *data = SrsJsonAny::object();
+    data->set("username", SrsJsonAny::str(pusername->to_str().c_str()));
+    data->set("token", SrsJsonAny::str(token.c_str()));
+    data->set("expires_at", SrsJsonAny::integer(expires_at));
+    result->set("data", data);
+
+    return srs_api_response(w, r, result->dumps());
+}
+
+SrsGoApiConsoleRefresh::SrsGoApiConsoleRefresh()
+{
+}
+
+SrsGoApiConsoleRefresh::~SrsGoApiConsoleRefresh()
+{
+}
+
+srs_error_t SrsGoApiConsoleRefresh::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r)
+{
+    srs_error_t err = srs_success;
+
+    std::string auth = r->header()->get("Authorization");
+    if (auth.compare(0, 7, "Bearer ") != 0) {
+        return srs_api_response_code(w, r, SRS_CONSTS_HTTP_Unauthorized);
+    }
+
+    std::string token;
+    int64_t expires_at = 0;
+    if ((err = srs_console_auth_refresh(auth.substr(7), token, expires_at)) != srs_success) {
+        srs_freep(err);
+        return srs_api_response_code(w, r, SRS_CONSTS_HTTP_Unauthorized);
+    }
+
+    SrsUniquePtr<SrsJsonObject> result(SrsJsonAny::object());
+    result->set("code", SrsJsonAny::integer(ERROR_SUCCESS));
+    SrsJsonObject *data = SrsJsonAny::object();
+    data->set("token", SrsJsonAny::str(token.c_str()));
+    data->set("expires_at", SrsJsonAny::integer(expires_at));
+    result->set("data", data);
+
+    return srs_api_response(w, r, result->dumps());
 }

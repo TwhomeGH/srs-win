@@ -295,4 +295,26 @@ public:
     virtual srs_error_t serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r);
 };
 
+// Console login issues a 7-day bearer token when http_api.auth is enabled.
+class SrsGoApiConsoleLogin : public ISrsHttpHandler
+{
+public:
+    SrsGoApiConsoleLogin();
+    virtual ~SrsGoApiConsoleLogin();
+
+public:
+    virtual srs_error_t serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r);
+};
+
+// Console refresh slides the expiry forward without asking for the password.
+class SrsGoApiConsoleRefresh : public ISrsHttpHandler
+{
+public:
+    SrsGoApiConsoleRefresh();
+    virtual ~SrsGoApiConsoleRefresh();
+
+public:
+    virtual srs_error_t serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r);
+};
+
 #endif

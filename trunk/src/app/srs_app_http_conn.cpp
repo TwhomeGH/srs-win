@@ -15,6 +15,7 @@
 using namespace std;
 
 #include <srs_app_config.hpp>
+#include <srs_app_console_auth.hpp>
 #include <srs_app_http_api.hpp>
 #include <srs_app_http_hooks.hpp>
 #include <srs_app_http_static.hpp>
@@ -269,10 +270,12 @@ srs_error_t SrsHttpConn::set_auth_enabled(bool auth_enabled)
 
     // initialize the auth, which will proxy to mux.
     if ((err = auth_->initialize(auth_enabled,
-                                 _srs_config->get_http_api_auth_username(),
-                                 _srs_config->get_http_api_auth_password())) != srs_success) {
+                                 srs_console_auth_username(),
+                                 srs_console_auth_password())) != srs_success) {
         return srs_error_wrap(err, "init auth");
     }
+    auth_->set_token_validator(srs_console_auth_verify);
+    auth_->add_public_path("/api/v1/console/login");
 
     return err;
 }

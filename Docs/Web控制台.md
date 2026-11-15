@@ -50,6 +50,31 @@ ui/ (React 18 + Vite 6 + Bootstrap 5)
 - `node_modules` 與 `build/` 都不進版控；CI 用 `npm ci` 重建，執行期只輸出 `ui/build/` 的靜態檔。
 - 套件清單以 `package.json` 為準；新增套件前先確認是否只是為了幾個元件，能用手寫 markup 就不引入。
 
+## API 認證（可選）
+
+`http_api.auth` 預設關閉。需要保護 API 時：
+
+```nginx
+http_api {
+    enabled on;
+    listen 1985;
+    auth {
+        enabled on;
+    }
+}
+```
+
+未設定 `username`／`password` 時，SRS 首次啟動會產生隨機密碼並寫入 `objs/console-auth.txt`；日誌只印檔案路徑，不印密碼。可用 `SRS_HTTP_API_AUTH_USERNAME`／`SRS_HTTP_API_AUTH_PASSWORD` 覆寫，或使用 `dev/dev-auth.ps1` 取得穩定的開發密碼（存在 `dev/runtime/dev-password.txt`，不進版控）。
+
+登入流程：
+
+1. `POST /api/v1/console/login` 以帳密換取 7 天有效的 Bearer token。
+2. 控制台只把 token 存在 `localStorage`，不保存密碼。
+3. token 剩餘時間低於 1 天時，控制台呼叫 `/api/v1/console/refresh` 滑動續期；重新整理頁面仍會沿用 token。
+4. SRS 重啟後 token 仍有效，除非 `http_api.auth` 密碼被變更。
+
+> Basic Auth 仍保留給 API 工具；瀏覽器原生 Basic 對話框會被 `X-SRS-Console` 抑制，控制台使用自己的登入表單。
+
 ## 與 Oryx 的差異
 
 | Oryx | 本專案 |
@@ -63,6 +88,7 @@ ui/ (React 18 + Vite 6 + Bootstrap 5)
 
 - 本機：`dev/build-ui.ps1` 建置並複製到 `build/Debug`（`-Target full` 可選 `build-full`）。
 - RTC 媒體 E2E：`pwsh dev/rtc-e2e.ps1 -SrsExe ... -ConfFile dev/windows/dev.conf -WorkDir ...`；用 `ui/e2e/rtc-whip.html` 發佈合成 H.264 canvas 串流，再從 console WHEP 播放並檢查 `videoWidth`。
+- 認證 E2E：`pwsh dev/auth-e2e.ps1 -SrsExe ... -WorkDir ...`；用 `dev/dev-auth.ps1` 的開發密碼驗證登入、token 保存、續期與登出。
 - CI：Nightly 在 `ui/` 執行 `npm ci`＋`npm run build`，複製到 `build/Debug/objs/nginx/html/console`，並在 smoke 檢查 `/console/` 回 200；artifact 也會帶上 console。Windows Full 另外跑 RTC 媒體 E2E。
 - Pages：與控制台無關；API 參考仍由 `Doxyfile` 產生。
 
@@ -72,4 +98,5 @@ ui/ (React 18 + Vite 6 + Bootstrap 5)
 - 推流診斷需要瀏覽器能讀取 HTTP-FLV；若 HTTP server 在另一個來源，請開啟 `http_server.crossdomain`（或用同源反向代理）。
 - RTC 播放目前以 WHEP 為主；SRT 播放器尚未接入。
 - RTC 媒體 E2E 使用 Chrome／Edge 的 canvas 合成串流，驗證的是 WHIP 發佈＋WHEP 播放路徑，不是實體攝影機相容性。
-- 尚未提供登入／權限管理；請在反向代理或 SRS API 層處理。
+- 認證為可選功能；預設關閉。啟用但未設定帳密時，初始密碼在 `objs/console-auth.txt`（Windows 檔案 ACL 由部署環境決定）。
+- 尚未提供多使用者、角色或撤銷單一 session 的功能；token 以設定密碼簽章，換密碼即全部失效。

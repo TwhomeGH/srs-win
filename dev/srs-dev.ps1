@@ -20,6 +20,7 @@
 
 .EXAMPLE
     .\dev\srs-dev.ps1 -Build -Run
+    .\dev\srs-dev.ps1 -Build -Run -Auth   # 啟用 http_api.auth，使用 dev 專用密碼
     .\dev\srs-dev.ps1 -Status
     .\dev\srs-dev.ps1 -Stop
 
@@ -34,6 +35,7 @@ param(
 
     [switch]$Build,
     [switch]$Run,
+    [switch]$Auth,
     [switch]$Stop,
     [switch]$Status,
     [switch]$Clean
@@ -43,7 +45,7 @@ $ErrorActionPreference = 'Stop'
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $WinRuntime = Join-Path $PSScriptRoot 'runtime\windows'
-$WinConf = Join-Path $PSScriptRoot 'windows\dev.conf'
+$WinConf = if ($Auth) { Join-Path $PSScriptRoot 'windows\auth.conf' } else { Join-Path $PSScriptRoot 'windows\dev.conf' }
 $BuildDir = Join-Path $RepoRoot 'trunk\ide\srs_msvc\build'
 $WinExe = Join-Path $WinRuntime 'srs-dev.exe'
 $PidFile = Join-Path $WinRuntime 'srs-dev.pid'
@@ -66,7 +68,12 @@ function Get-WindowsStatus {
 
     Write-Host "windows: running (pid $processId)"
     try {
-        $response = Invoke-WebRequest -Uri $ApiUrl -UseBasicParsing -TimeoutSec 5
+        $headers = @{}
+        if ($env:SRS_HTTP_API_AUTH_PASSWORD) {
+            $token = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$($env:SRS_HTTP_API_AUTH_USERNAME):$($env:SRS_HTTP_API_AUTH_PASSWORD)"))
+            $headers['Authorization'] = "Basic $token"
+        }
+        $response = Invoke-WebRequest -Uri $ApiUrl -UseBasicParsing -TimeoutSec 5 -Headers $headers
         Write-Host "windows: api $($response.StatusCode)"
         return $true
     } catch {
@@ -114,6 +121,10 @@ function Build-Windows {
 
 function Start-Windows {
     Stop-Windows
+
+    if ($Auth) {
+        . (Join-Path $PSScriptRoot 'dev-auth.ps1')
+    }
 
     if (-not (Test-Path $WinExe)) {
         throw 'srs-dev.exe is missing; run with -Build first'

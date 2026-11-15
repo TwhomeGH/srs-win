@@ -21,6 +21,7 @@ using namespace std;
 #include <srs_app_caster_flv.hpp>
 #include <srs_app_circuit_breaker.hpp>
 #include <srs_app_config.hpp>
+#include <srs_app_console_auth.hpp>
 #include <srs_app_coworkers.hpp>
 #include <srs_app_heartbeat.hpp>
 #include <srs_app_http_api.hpp>
@@ -400,6 +401,11 @@ srs_error_t SrsServer::initialize()
     srs_assert(_srs_config);
     _srs_config->subscribe(this);
 
+    // Resolve/generate Basic-auth credentials before any HTTP listener starts.
+    if ((err = srs_console_auth_bootstrap()) != srs_success) {
+        return srs_error_wrap(err, "console auth bootstrap");
+    }
+
     bool stream = _srs_config->get_http_stream_enabled();
     vector<string> http_listens = _srs_config->get_http_stream_listens();
     vector<string> https_listens = _srs_config->get_https_stream_listens();
@@ -732,6 +738,14 @@ srs_error_t SrsServer::http_handle()
         }
         if ((err = http_api_mux_->handle("/api/v1/versions", new SrsGoApiVersion())) != srs_success) {
             return srs_error_wrap(err, "handle versions");
+        }
+
+        if ((err = http_api_mux_->handle("/api/v1/console/login", new SrsGoApiConsoleLogin())) != srs_success) {
+            return srs_error_wrap(err, "handle console login");
+        }
+
+        if ((err = http_api_mux_->handle("/api/v1/console/refresh", new SrsGoApiConsoleRefresh())) != srs_success) {
+            return srs_error_wrap(err, "handle console refresh");
         }
     }
 

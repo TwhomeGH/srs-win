@@ -8,6 +8,7 @@
     "build": "vite build",
     "test": "vitest run",
     "test:e2e:rtc": "node e2e/rtc-roundtrip.mjs",
+    "test:e2e:auth": "node e2e/auth-login.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

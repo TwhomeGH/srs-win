@@ -184,6 +184,7 @@ set(SRS_APP_SOURCES
     ${SRS_TRUNK}/src/app/srs_app_async_call.cpp
     ${SRS_TRUNK}/src/app/srs_app_caster_flv.cpp
     ${SRS_TRUNK}/src/app/srs_app_circuit_breaker.cpp
+    ${SRS_TRUNK}/src/app/srs_app_console_auth.cpp
     ${SRS_TRUNK}/src/app/srs_app_config.cpp
     ${SRS_TRUNK}/src/app/srs_app_coworkers.cpp
     ${SRS_TRUNK}/src/app/srs_app_dash.cpp

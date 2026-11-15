@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Button } from '../components/Layout';
-import { apiErrorMessage, apiGet } from '../api';
+import { apiErrorMessage, apiGet, authHeader } from '../api';
 import { buildMediaUrl } from '../media';
 
 // Console media player: WHEP for WebRTC, hls.js for HLS, flv.js for HTTP-FLV.
@@ -99,7 +99,8 @@ export default function Player({ t }) {
           await pc.setLocalDescription(await pc.createOffer());
           const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/sdp' },
+            cache: 'no-store',
+            headers: { ...authHeader(), 'Content-Type': 'application/sdp', 'X-SRS-Console': '1' },
             body: pc.localDescription.sdp,
           });
           if (!response.ok) throw new Error(`WHEP HTTP ${response.status}`);

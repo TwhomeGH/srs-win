@@ -89,6 +89,13 @@ jobs:
             -ConfFile dev/windows/dev.conf `
             -WorkDir trunk/ide/srs_msvc/build-full/Debug
 
+      - name: Console auth E2E
+        shell: pwsh
+        run: |
+          pwsh dev/auth-e2e.ps1 `
+            -SrsExe trunk/ide/srs_msvc/build-full/Debug/srs.exe `
+            -WorkDir trunk/ide/srs_msvc/build-full/Debug
+
       - name: Run full native tests
         working-directory: trunk/ide/srs_msvc
         shell: pwsh

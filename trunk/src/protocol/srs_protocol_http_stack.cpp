@@ -1118,6 +1118,7 @@ SrsHttpAuthMux::SrsHttpAuthMux(ISrsHttpHandler *h)
 {
     next_ = h;
     enabled_ = false;
+    token_validator_ = NULL;
 }
 
 SrsHttpAuthMux::~SrsHttpAuthMux()
@@ -1133,11 +1134,23 @@ srs_error_t SrsHttpAuthMux::initialize(bool enabled, std::string username, std::
     return srs_success;
 }
 
+void SrsHttpAuthMux::set_token_validator(SrsHttpAuthTokenValidator validator)
+{
+    token_validator_ = validator;
+}
+
+void SrsHttpAuthMux::add_public_path(std::string path)
+{
+    public_paths_.push_back(path);
+}
+
 srs_error_t SrsHttpAuthMux::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage *r)
 {
     srs_error_t err;
     if ((err = do_auth(w, r)) != srs_success) {
-        srs_error("do_auth %s", srs_error_desc(err).c_str());
+        // Unauthenticated console requests and expired tokens are normal; keep
+        // them at info level so the log is not filled with Error entries.
+        srs_info("do_auth %s", srs_error_desc(err).c_str());
         srs_freep(err);
         w->write_header(SRS_CONSTS_HTTP_Unauthorized);
         return w->final_request();
@@ -1161,18 +1174,41 @@ srs_error_t SrsHttpAuthMux::do_auth(ISrsHttpResponseWriter *w, ISrsHttpMessage *
         return err;
     }
 
+    // Login must be reachable before a session token exists.
+    for (size_t i = 0; i < public_paths_.size(); i++) {
+        if (r->path() == public_paths_[i]) {
+            return err;
+        }
+    }
+
+    const bool console_request = !r->header()->get("X-SRS-Console").empty();
+
     std::string auth = r->header()->get("Authorization");
     if (auth.empty()) {
-        w->header()->set("WWW-Authenticate", SRS_HTTP_AUTH_SCHEME_BASIC);
+        if (!console_request) w->header()->set("WWW-Authenticate", SRS_HTTP_AUTH_SCHEME_BASIC);
         return srs_error_new(SRS_CONSTS_HTTP_Unauthorized, "empty Authorization");
     }
 
+    // Console sessions use a stateless Bearer token. Keep Basic as the
+    // machine-to-machine/legacy API mechanism.
+    if (auth.compare(0, 7, "Bearer ") == 0) {
+        std::string token = auth.substr(7);
+        std::string user;
+        if (token_validator_ && token_validator_(token, user)) {
+            return err;
+        }
+        if (!console_request) w->header()->set("WWW-Authenticate", SRS_HTTP_AUTH_SCHEME_BASIC);
+        return srs_error_new(SRS_CONSTS_HTTP_Unauthorized, "invalid or expired bearer token");
+    }
+
     if (!srs_strings_contains(auth, SRS_HTTP_AUTH_PREFIX_BASIC)) {
+        if (!console_request) w->header()->set("WWW-Authenticate", SRS_HTTP_AUTH_SCHEME_BASIC);
         return srs_error_new(SRS_CONSTS_HTTP_Unauthorized, "invalid auth %s, should start with %s", auth.c_str(), SRS_HTTP_AUTH_PREFIX_BASIC);
     }
 
     std::string token = srs_erase_first_substr(auth, SRS_HTTP_AUTH_PREFIX_BASIC);
     if (token.empty()) {
+        if (!console_request) w->header()->set("WWW-Authenticate", SRS_HTTP_AUTH_SCHEME_BASIC);
         return srs_error_new(SRS_CONSTS_HTTP_Unauthorized, "empty token from auth %s", auth.c_str());
     }
 
@@ -1188,7 +1224,7 @@ srs_error_t SrsHttpAuthMux::do_auth(ISrsHttpResponseWriter *w, ISrsHttpMessage *
     }
 
     if (username_ != user_pwd[0] || password_ != user_pwd[1]) {
-        w->header()->set("WWW-Authenticate", SRS_HTTP_AUTH_SCHEME_BASIC);
+        if (!console_request) w->header()->set("WWW-Authenticate", SRS_HTTP_AUTH_SCHEME_BASIC);
         return srs_error_new(SRS_CONSTS_HTTP_Unauthorized, "invalid token %s:%s", user_pwd[0].c_str(), user_pwd[1].c_str());
     }
 

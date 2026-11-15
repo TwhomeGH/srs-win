@@ -13,6 +13,27 @@
 - 用語更正：官方是**正式停止支援（drop support）並移除實作**，不只是「不再維護」；「不再維護」是結果，但不足以描述程式碼已被刪除。
 - README、項目概覽與 Windows 技術文件統一這個說法。
 
+## 2026.11.16 00:50 可選 HTTP API 認證：初次隨機密碼、7 天 Bearer token 與自動續期
+
+**類型**: 功能／安全 · **檔案**: `srs_app_console_auth.*`, `srs_app_http_api.*`, `srs_protocol_http_stack.*`, `ui/src/api.jsx`, `ui/src/components/Login.jsx`
+
+### 伺服器
+- `http_api.auth` 維持可選，預設關閉；啟用但未設定帳密時，首次啟動產生隨機密碼並寫入 `objs/console-auth.txt`，日誌只印路徑。
+- `SRS_HTTP_API_AUTH_USERNAME`／`SRS_HTTP_API_AUTH_PASSWORD` 可覆寫；變更密碼會使既有 token 失效。
+- 新增 `POST /api/v1/console/login`（帳密換 token）與 `POST /api/v1/console/refresh`（滑動續期）。
+- token 為 HMAC-SHA256 無狀態 token，有效期 7 天；SRS 重啟後仍有效（密碼不變時）。
+- `SrsHttpAuthMux` 同時接受 Basic 與 Bearer；`X-SRS-Console` 請求不送出 `WWW-Authenticate`，避免瀏覽器原生 Basic 對話框。
+
+### 控制台
+- 登入表單與 `localStorage` token；不保存密碼。
+- token 剩餘低於 1 天時自動呼叫 refresh，不需重新輸入密碼。
+- 登出只清除本機 token；無狀態 token 本身仍有效直到過期或密碼變更。
+- `dev/dev-auth.ps1` 提供穩定開發密碼，存在 gitignored `dev/runtime/dev-password.txt`。
+
+### 驗證
+- `dev/auth-e2e.ps1` PASS：登入、reload 沿用 token、refresh、登出。
+- `dev/windows/auth.conf` 未設定帳密時，實際產生 `objs/console-auth.txt`。
+
 ## 2026.11.15 23:20 RTC 媒體 E2E（WHIP／WHEP）與 console 播放器
 
 **類型**: 功能／測試／修復 · **檔案**: `ui/src/pages/Player.jsx`, `ui/src/media.js`, `ui/e2e/*`, `dev/rtc-e2e.ps1`, `srs_app_rtc_source.cpp`

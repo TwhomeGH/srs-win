@@ -46,7 +46,8 @@
 - [x] Web 控制台離線時保留最後資料，只顯示警告卡＋重試
 - [x] UI 單元測試（Vitest：FLV 解析、API 錯誤分類）
 - [x] Web 控制台：RTC（WHEP）／HTTP-FLV／HLS 播放器
-- [ ] Web 控制台：SRT 播放器、Basic Auth 登入、Playwright E2E 收錄
+- [x] 可選 HTTP API Basic Auth＋console token 登入（7 天、自動續期、初次產生密碼；dev 專用密碼）
+- [ ] Web 控制台：SRT 播放器、多使用者／權限管理、Playwright 全頁 E2E
 - [ ] 選擇性接入 `trunk/src/utest` 的 protocol／kernel 測試
 - [x] 首次部署後確認 Pages 網址可瀏覽、文件分組正確
 
