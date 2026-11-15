@@ -48,6 +48,7 @@ pwsh dev/build-docs.ps1
 
 - st-srs context switch 補上 RDI/RSI 與 XMM6-15，Release `st-event-loop-test` 已通過。
 - 手動 Release Nightly `43654341813` 全綠：build、native tests、console、smoke 都通過。
+- 共用 smoke `dev/smoke-test.ps1` 已在 Nightly `43656170128` 驗證通過。
 
 ## 目前不做
 

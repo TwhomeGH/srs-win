@@ -24,7 +24,7 @@
 - [ ] RTC 媒體（WHIP／WHEP）Windows 端到端驗證
 - [ ] 全功能（RTC／SRT）CI job 與 vcpkg 快取
 - [x] Nightly 產出 Release artifact（workflow 已改 Release；手動 run 43654341813 驗證通過）
-- [ ] Nightly 與 Release 共用同一份 smoke test 腳本（避免兩份漂移）
+- [x] Nightly 與 Release 共用同一份 smoke test 腳本（`dev/smoke-test.ps1`）
 
 ## 工具鏈
 
