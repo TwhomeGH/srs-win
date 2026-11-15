@@ -294,6 +294,30 @@ git status --short
 - [ ] 故意新增 source 時，source list 檢查失敗
 - [ ] 練習檔已刪除，`git status` 乾淨
 
+## 延伸閱讀：API 參考
+
+Learn 1 不教 API 註解或 Doxygen 設定；這些放在單一文件入口，避免教學與工具文件各自漂移。
+
+需要查本地 API 參考時：
+
+```powershell
+pwsh dev/build-docs.ps1 -Open
+```
+
+輸出：
+
+```text
+_site/api/index.html
+```
+
+| 想知道什麼 | 看哪裡 |
+| --- | --- |
+| 指令與最短入口 | [文件索引](../../文件索引.md) |
+| Doxygen 首頁與閱讀順序 | [API 導讀](../../API導讀.md) |
+| `@brief`／`@param`／`@return` 怎麼寫 | [API 註解指南](../../API註解指南.md) |
+
+Learn 2 開始改 API 時，才會把「產生 API 參考 → 檢查類別／函式頁面」當成驗證步驟寫進題目。
+
 ## 常見問題
 
 | 現象 | 原因 | 處理 |
