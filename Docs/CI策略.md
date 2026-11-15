@@ -11,7 +11,7 @@
 | 本機部署 | `dev/local-deploy.ps1 -Deploy` | Docker container | 固定開發容器 |
 | **Windows Nightly** | 每天 03:00（台北）**且 develop 有新 commit**＋手動 | `srs-win-nightly-x64`（Release，RTC／SRT 關閉） | 晚間穩定通道，不是每次 push 的 gate |
 | **Windows Full** | 每週日 04:00（台北）＋手動 | Debug full build（RTC／SRT） | vcpkg 依賴較重，獨立驗證全功能宣稱 |
-| **Linux Build** | 每週日 04:00（台北）＋手動 | Linux x64 系統套件建置 | 防止 Windows-only 來源變更破壞 `configure`／Linux 連結 |
+| **Linux Build** | `trunk/src/**`、`trunk/configure`、`trunk/auto/**`、`trunk/3rdparty/**` 等 Linux 建置輸入變更＋手動 | Linux x64 系統套件建置 | 防止 Windows-only 來源變更破壞 `configure`／Linux 連結；文件變更不觸發 |
 | Release | tag `v*` | Release package | 正式版本 |
 | Pages | `Docs/**`／`README.md`／`trunk/src/**/*.hpp` 等文件變更＋手動 | `_site`（changelog／Doxygen） | 文件與 API 站 |
 
@@ -50,7 +50,7 @@ pwsh dev/build-docs.ps1
 
 - 使用 `ubuntu-24.04` 的系統套件（OpenSSL 3、libsrtp2、SRT、FFmpeg 6），不是 Windows vcpkg。
 - 先跑 `dev/check-source-lists.ps1`，再 `./configure --use-sys-srtp=on --use-sys-srt=on --use-sys-ffmpeg=on` 與 `make`。
-- 目的不是取代 Docker dev lane，而是每週確認 Autotools 來源清單與 Linux 連結沒有被 Windows-only 變更破壞。
+- 目的不是取代 Docker dev lane，而是當 Linux 建置輸入變更時，確認 Autotools 來源清單與 Linux 連結沒有被 Windows-only 變更破壞；不設無條件每週排程。
 
 ## Windows Full 的責任
 

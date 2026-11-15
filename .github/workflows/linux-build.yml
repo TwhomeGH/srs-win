@@ -1,12 +1,31 @@
 name: "Linux Build"
 
 # Local-first: normal development uses dev/check.ps1 and the Docker dev lane.
-# This workflow is a weekly/on-demand guard so a Windows-only source change
-# cannot silently break the Linux build or the Autotools source list.
+# This workflow guards Linux build inputs with path filters, so docs-only or
+# Windows-only changes do not consume a runner.
 on:
-  schedule:
-    # Sunday 04:00 Asia/Taipei (UTC+8).
-    - cron: '0 20 * * 6'
+  # Run when Linux build inputs change, and on demand. There is no
+  # unconditional weekly schedule: a clean weekly run with no new commit only
+  # burns a runner and does not prove a new code path.
+  push:
+    branches: [develop]
+    paths:
+      - 'trunk/src/**'
+      - 'trunk/configure'
+      - 'trunk/auto/**'
+      - 'trunk/Makefile'
+      - 'trunk/3rdparty/**'
+      - 'dev/check-source-lists.ps1'
+      - '.github/workflows/linux-build.yml'
+  pull_request:
+    paths:
+      - 'trunk/src/**'
+      - 'trunk/configure'
+      - 'trunk/auto/**'
+      - 'trunk/Makefile'
+      - 'trunk/3rdparty/**'
+      - 'dev/check-source-lists.ps1'
+      - '.github/workflows/linux-build.yml'
   workflow_dispatch:
 
 permissions: read-all

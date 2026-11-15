@@ -10,7 +10,7 @@
 
 - 新增來源清單檢查：比對 `trunk/src/app/*.cpp`、`trunk/configure` 的 `MODULE_FILES` 與 MSVC `CMakeLists.txt`，新增檔案漏列時直接失敗。
 - `dev/check.ps1` 建置前先跑這個檢查。
-- 新增每週／手動的 Linux Build workflow：系統套件、configure、make、binary 驗證；避免 Windows-only 變更破壞 Linux 連結。
+- 新增 Linux Build workflow：`trunk/src/**` 等 Linux 建置輸入變更或手動觸發；不設無條件每週排程。
 - TODO 加上 P0 平台契約與跨平台建置項目。
 
 ### 驗證
