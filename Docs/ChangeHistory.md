@@ -2,6 +2,20 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.16 02:30 新增開發教學：Learn 1 與 Build 配置導讀
+
+**類型**: 文件 · **檔案**: `Docs/development/tutorial/*`, `Docs/文件索引.md`, `.changelog.toml`
+
+### 修改
+
+- 新增教學系列入口、Learn 1（Windows default／full、dev 啟動、Docker smoke、source list 練習）與 Build 配置導讀（CMakePresets、CMakeLists、Dockerfile、compose）。
+- 文件索引與 changelogkit 的「開發教學」分組加入這系列。
+- 練習以 worktree 進行；source list 故意失敗的 probe 檔要求刪除，不進版本控制。
+
+### 驗證
+
+- Markdown lint 0 errors；所有指令與目前路徑／埠號對照。
+
 ## 2026.11.16 02:00 P0 開始：來源清單守門與 Linux build CI
 
 **類型**: 建置／CI · **檔案**: `dev/check-source-lists.ps1`, `dev/check.ps1`, `.github/workflows/linux-build.yml`, `TODO.md`

@@ -17,6 +17,13 @@ order = 10
 paths = ["Docs/建置與執行說明.md", "Docs/VSCode除錯手冊.md", "Docs/文件索引.md", "Docs/Web控制台.md", "Docs/API導讀.md", "Docs/API註解指南.md", "Docs/CI策略.md", "Docs/Phase1結案.md", "Docs/測試策略.md", "Docs/項目概覽說明.md"]
 
 [[tool.changelog.docs.groups]]
+id    = "tutorial"
+title = "開發教學"
+color = "blue"
+order = 15
+paths = ["Docs/development/tutorial/README.md", "Docs/development/tutorial/01-learn1-build-and-run.md", "Docs/development/tutorial/02-build-configuration.md"]
+
+[[tool.changelog.docs.groups]]
 id    = "design"
 title = "設計與限制"
 color = "violet"
