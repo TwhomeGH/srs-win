@@ -53,6 +53,8 @@
 
 ## 已知限制改善
 
+- [ ] 認證升級：HttpOnly／SameSite cookie session（含 CSRF 防護、HTTPS 時 Secure、伺服器端撤銷）
+
 - [ ] 以 `CreateProcess()` 實作行程管理（讓 exec／ingest 可用）
 - [x] 以 `SetConsoleCtrlHandler()` 取代 POSIX 訊號 stub（優雅關閉）
 - [ ] 評估以 IOCP 取代 `select()` 的可行性

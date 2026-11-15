@@ -99,4 +99,6 @@ http_api {
 - RTC 播放目前以 WHEP 為主；SRT 播放器尚未接入。
 - RTC 媒體 E2E 使用 Chrome／Edge 的 canvas 合成串流，驗證的是 WHIP 發佈＋WHEP 播放路徑，不是實體攝影機相容性。
 - 認證為可選功能；預設關閉。啟用但未設定帳密時，初始密碼在 `objs/console-auth.txt`（Windows 檔案 ACL 由部署環境決定）。
+- 目前 token 存在 `localStorage`，可被同源 XSS 讀取。正式對外部署前應升級為 **HttpOnly cookie session**：`HttpOnly`＋`SameSite=Strict/Lax`＋（HTTPS 時）`Secure`，並為會改變狀態的 API 加 CSRF 防護與伺服器端撤銷。
+- `HttpOnly` 本身不要求 HTTPS；但 `Secure` 旗標要求 HTTPS，且 token／密碼在 HTTP 上仍會明文傳輸，所以非本機環境應一律使用 HTTPS。
 - 尚未提供多使用者、角色或撤銷單一 session 的功能；token 以設定密碼簽章，換密碼即全部失效。
