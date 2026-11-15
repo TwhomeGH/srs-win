@@ -15,6 +15,12 @@ services:
       # Keep HLS output in the repository's ignored runtime area instead of
       # inside the container filesystem (or a Windows temp directory).
       - ../runtime/docker/hls:/srs/trunk/objs/nginx/html/hls
+      # Persistent state for optional console auth. The default dev.conf has
+      # auth disabled; when enabled, keep the generated credential outside the
+      # container filesystem.
+      - ../runtime/docker/state:/srs/state
+    environment:
+      SRS_CONSOLE_AUTH_FILE: /srs/state/console-auth.txt
     command: ["./objs/srs", "-c", "conf/dev.conf"]
     working_dir: /srs/trunk
     restart: "no"

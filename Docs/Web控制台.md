@@ -73,6 +73,8 @@ http_api {
 未設定 `username`／`password` 時，SRS 首次啟動會產生隨機密碼並寫入 `objs/console-auth.txt`；日誌只印檔案路徑，不印密碼。可用 `SRS_HTTP_API_AUTH_USERNAME`／`SRS_HTTP_API_AUTH_PASSWORD` 覆寫，或使用 `dev/dev-auth.ps1` 取得穩定的開發密碼（存在 `dev/runtime/dev-password.txt`，不進版控）。
 
 > 只有「auth 啟用且沒有顯式帳密」才會初始化。**不是每次啟動都產生新密碼**：同一個 `work_dir` 會沿用檔案；刪除檔案、清空容器 `objs/` 或換 `work_dir` 才會重新產生。容器部署建議用環境變數或持久化 `objs/`，避免重啟後密碼與 token 失效。
+>
+> 可用 `SRS_CONSOLE_AUTH_FILE` 指定初始密碼檔的固定位置（例如容器內的 `/srs/state/console-auth.txt`），與建置產物分開。
 
 登入流程：
 

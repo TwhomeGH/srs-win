@@ -122,6 +122,23 @@ pwsh dev/auth-e2e.ps1 `
 
 `dev/windows/auth.conf` 只啟用 `http_api.auth`，不寫死帳密；第一次啟動會由 SRS 產生 `objs/console-auth.txt`，或由 `SRS_HTTP_API_AUTH_PASSWORD` 覆寫。正式部署請自行保存並限制該檔案讀取權限。
 
+## 執行時狀態與持久化
+
+不要把「建置產物」和「需要保留的狀態」混在同一個目錄：
+
+| 路徑 | 類型 | 是否保留 |
+|------|------|----------|
+| `trunk/ide/srs_msvc/build*/`、`ui/build/` | 建置產物 | ❌ 可重建 |
+| `objs/srs.pid` | 程序狀態 | ❌ 重啟即過期 |
+| `objs/nginx/html/console/` | 靜態控制台 | ❌ 由建置產生 |
+| `objs/nginx/html/hls/` | HLS 輸出 | ✅ 需要保留（Docker 已掛載到 `dev/runtime/docker/hls`） |
+| `objs/console-auth.txt` | 初始認證 | ✅ 需要保留；建議用 `SRS_CONSOLE_AUTH_FILE` 指到固定路徑 |
+| `srs_log_file`（若啟用） | 日誌 | 依需求保留；Docker 預設用 console |
+| `dvr_path`（若啟用） | 錄影 | ✅ 需要保留 |
+| `dev/runtime/` | 本機執行時狀態 | ✅ 不進版控 |
+
+Docker lane 已把 HLS 掛到 `dev/runtime/docker/hls`，並把可選的認證狀態放在 `dev/runtime/docker/state/console-auth.txt`。`dev.conf` 預設不啟用 auth，所以一般 dev 容器不會建立這個檔案。
+
 ## Windows 車道
 
 `-Build` 會：
