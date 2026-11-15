@@ -16,12 +16,13 @@
 
 ### 1.1 CMake 建置架構
 
-```
+```text
 trunk/ide/srs_msvc/CMakeLists.txt   ← 主建置檔 (407 行)
 trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 ```
 
 **主要特性：**
+
 - **Generator**: Visual Studio 17 2022, x64
 - **強制引入**: `/FI"force_include.h"` — 每個 translation unit 都先載入 POSIX 相容層
 - **ASM_MASM**: x64 組合語言支援 (`ml64.exe`)
@@ -41,6 +42,7 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 ### 1.3 FFmpeg Stub 機制
 
 由於 FFmpeg 在 Windows 上的連結較為複雜，實作了一層 stub：
+
 - **檔案**: `trunk/ide/srs_msvc/ffmpeg_stubs/ffmpeg_stubs.c` (262 行)
 - **功能**: 提供 20+ 個 FFmpeg API 的空實作（`avcodec_open2()` 回傳 -1）
 - **效果**: 二進位檔可正常連結，但內部轉碼功能不可用
@@ -49,6 +51,7 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 ### 1.4 CMakePresets.json
 
 提供四種預設組態：
+
 - `default` — VS Debug 組態
 - `release` — Release 組態
 - `ninja` — Ninja 快速建置
@@ -61,6 +64,7 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 這是 Windows 移植最重要的單一檔案，強制引入每個編譯單元，提供：
 
 ### 2.1 Windows 標頭管理
+
 ```c
 // 順序重要: winsock2.h 必須在 windows.h 之前
 #include <winsock2.h>
@@ -70,6 +74,7 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 ```
 
 ### 2.2 型別定義
+
 | POSIX 型別 | Windows 對應 |
 | --- | --- |
 | `ssize_t` | `__int64` (x64) / `int` (x86) |
@@ -113,6 +118,7 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 - `mmap()` / `munmap()` — 回傳 MAP_FAILED
 
 ### 2.5 Socket API 包裝
+
 - `getsockopt` / `setsockopt` — char\* vs void\* 轉換
 - `srs_fcntl()` — 使用 `ioctlsocket` 模擬
 - `srs_pipe()` — 使用 `CreatePipe` 實作
@@ -123,6 +129,7 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 **路徑**: `trunk/ide/srs_msvc/srs_win32_compat.h` (264 行)
 
 提供檔案與 socket 的底層包裝：
+
 - `srs_read_sock()` / `srs_write_sock()` / `srs_close_sock()` — Winsock 包裝
 - `srs_read_file()` / `srs_write_file()` / `srs_open()` — CRT 檔案 I/O
 - `srs_getpagesize()` — `GetSystemInfo`
@@ -211,6 +218,7 @@ Windows x64 ABI 的 non-volatile 狀態包括：
 ### 5.3 事件系統
 
 Windows 使用 **`select()`** 作為 I/O 多工機制，而非 Linux 的 epoll：
+
 - `#define MD_HAVE_SELECT` — 啟用 select
 - `#define FD_SETSIZE 8192` — 較大的檔案描述元上限
 - `#undef MD_HAVE_EPOLL` — 不使用 epoll（stub）
@@ -248,6 +256,7 @@ Windows 使用 **`select()`** 作為 I/O 多工機制，而非 Linux 的 epoll�
 ### 6.1 `srs_core_platform.hpp` (core)
 
 新增 `#ifndef _WIN32` / `#else` 分支：
+
 - 引入 `winsock2.h`, `ws2tcpip.h`, `windows.h`（修正順序相依性）
 - 定義 `ssize_t`, `strcasecmp`/`strncasecmp`, `socklen_t`
 
@@ -258,6 +267,7 @@ Windows 使用 **`select()`** 作為 I/O 多工機制，而非 Linux 的 epoll�
 ### 6.3 `srs_kernel_error.hpp` (kernel)
 
 處理 Windows 巨集衝突：
+
 - `#pragma push_macro("ERROR")` / `#undef ERROR` — 防止 `wingdi.h` 的 `#define ERROR 0` 破壞所有 `ERROR_*` token
 - `#pragma push_macro("ERROR_NOT_SUPPORTED")` — 防止 `winerror.h` 的 `#define ERROR_NOT_SUPPORTED 50L`
 
@@ -298,7 +308,7 @@ Windows 使用 **`select()`** 作為 I/O 多工機制，而非 Linux 的 epoll�
 
 ## 7. 建置輸出結構
 
-```
+```text
 trunk/ide/srs_msvc/build/
 ├── Debug/
 │   ├── srs.exe           ← 最終二進位 (7+ MB)

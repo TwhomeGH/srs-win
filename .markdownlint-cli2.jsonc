@@ -3,6 +3,24 @@
     "MD060": {
       "style": "compact"
     },
-    "MD013": false
-  }
+    "MD013": false,
+    "MD024": {
+      "siblings_only": true
+    }
+  },
+  "ignores": [
+    "trunk/3rdparty/**",
+    "trunk/**/*.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "proxy/**",
+    ".vscode/vcpkg/**",
+    "node_modules/**",
+    "ui/node_modules/**",
+    "trunk/ide/srs_msvc/build/**",
+    "trunk/ide/srs_msvc/build-full/**",
+    "trunk/ide/srs_msvc/build-rel/**",
+    "dev/runtime/**",
+    "_site/**"
+  ]
 }

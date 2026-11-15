@@ -1,5 +1,9 @@
 # Vendored sources and build/runtime output are not project documentation.
 trunk/3rdparty/**
+trunk/**/*.md
+CONTRIBUTING.md
+SECURITY.md
+proxy/**
 .vscode/vcpkg/**
 node_modules/**
 ui/node_modules/**

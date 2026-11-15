@@ -54,6 +54,15 @@ pwsh dev/check.ps1 -Docs    # 同時更新 _site/api
 
 `check.ps1` 不 clean、只重建變更的 target；適合每次改碼後跑。
 
+## Markdown 檢查
+
+```powershell
+pwsh dev/lint-docs.ps1          # 只檢查專案維護的 Docs/、README、TODO、dev、ui
+pwsh dev/lint-docs.ps1 -Fix     # 自動修正可修的格式問題
+```
+
+`MD024` 使用 `siblings_only`：`ChangeHistory` 在不同日期小節下重複「問題／修改／驗證」是刻意的。`MD024`、`MD040`、`MD045` 不是 autofix 能安全處理的規則，需人工判斷。
+
 ## 本機部署到固定 Docker 容器
 
 ```powershell
@@ -164,7 +173,7 @@ HLS 輸出會 bind mount 到 `dev/runtime/docker/hls/<app>/`（容器內是
 
 `-Run` 以 `dev/docker/dev.conf` 啟動，並把主機的 11935／11985／18088（TCP）與 11980／18000（UDP）對到容器的 1935／1985／8088／10080／8000。啟動日誌應看到：
 
-```
+```text
 RTMP listen at tcp://0.0.0.0:1935
 HTTP-API listen at tcp://0.0.0.0:1985
 srt listen at udp://0.0.0.0:10080
