@@ -13,6 +13,23 @@
 - 用語更正：官方是**正式停止支援（drop support）並移除實作**，不只是「不再維護」；「不再維護」是結果，但不足以描述程式碼已被刪除。
 - README、項目概覽與 Windows 技術文件統一這個說法。
 
+## 2026.11.15 13:20 1E 第一批：Nightly／Release 共用 smoke test
+
+**類型**: 測試網 · **檔案**: `dev/smoke-test.ps1`, `.github/workflows/windows-nightly.yml`, `.github/workflows/release.yml`
+
+### 問題
+- Nightly 與 Release 各自維護一份 PowerShell smoke；兩邊檢查項目與等待邏輯容易漂移。
+- Release 只檢查 HTTP API，沒有 RTMP handshake 或 config API。
+
+### 修改
+- 新增 `dev/smoke-test.ps1`：啟動 SRS、等待 API（不用固定 sleep）、RTMP handshake、可選 `/console/`、`/api/v1/config`，最後停止 process。
+- Nightly 與 Release 都改用這個腳本；Release 多了 RTMP 與 config 檢查。
+- 支援 `-ApiPort`／`-RtmpPort`，本機埠被占用時可覆寫。
+
+### 驗證
+- 本機以 dev 埠執行：`API OK / RTMP handshake OK / Console OK / Config API OK / smoke: PASS`。
+- 兩個 workflow YAML 可解析，PowerShell parser 無錯。
+
 ## 2026.11.15 13:05 1D：建置資訊與 README 功能宣稱對齊
 
 **類型**: 文件／建置 · **檔案**: `CMakeLists.txt`, `README.md`, `Docs/項目概覽說明.md`, `Docs/組件盤點與技術債.md`

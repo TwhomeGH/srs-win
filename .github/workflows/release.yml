@@ -68,20 +68,10 @@ jobs:
       - name: Smoke test
         shell: pwsh
         run: |
-          $SrsExe = "trunk/ide/srs_msvc/build/Release/srs.exe"
-          $ConfSrc = "trunk/conf/test.conf"
-          if (-not (Test-Path $SrsExe)) { throw "srs.exe not found" }
-          Remove-Item -Path "objs/srs.pid" -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Path objs -Force | Out-Null
-          $proc = Start-Process -FilePath $SrsExe -ArgumentList "-c `"$ConfSrc`"" -NoNewWindow -PassThru
-          Start-Sleep -Seconds 15
-          if ($proc.HasExited) { throw "SRS exited with code $($proc.ExitCode)" }
-          try {
-            $resp = Invoke-WebRequest -Uri "http://localhost:1985/api/v1/versions" -UseBasicParsing -TimeoutSec 15
-            Write-Host "API OK: $($resp.Content)" -ForegroundColor Green
-          } finally {
-            Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
-          }
+          pwsh dev/smoke-test.ps1 `
+            -SrsExe trunk/ide/srs_msvc/build/Release/srs.exe `
+            -ConfFile trunk/ide/srs_msvc/build/Release/test.conf `
+            -WorkDir trunk/ide/srs_msvc/build/Release
 
       - name: Package artifacts
         shell: pwsh

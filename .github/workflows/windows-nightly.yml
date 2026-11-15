@@ -109,45 +109,11 @@ jobs:
       - name: Smoke test
         shell: pwsh
         run: |
-          $SrsExe = (Resolve-Path "trunk/ide/srs_msvc/build/Release/srs.exe").Path
-          $WorkDir = (Resolve-Path "trunk/ide/srs_msvc/build/Release").Path
-          $ConfFile = Join-Path $WorkDir "test.conf"
-          if (-not (Test-Path $ConfFile)) { throw "test.conf not found" }
-          Remove-Item -Path (Join-Path $WorkDir "objs/srs.pid") -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Path (Join-Path $WorkDir "objs") -Force | Out-Null
-          $proc = Start-Process -FilePath $SrsExe -ArgumentList "-c `"test.conf`"" -WorkingDirectory $WorkDir -NoNewWindow -PassThru
-          Start-Sleep -Seconds 15
-          if ($proc.HasExited) { throw "SRS exited with code $($proc.ExitCode)" }
-          try {
-            $resp = Invoke-WebRequest -Uri "http://localhost:1985/api/v1/versions" -UseBasicParsing -TimeoutSec 15
-            Write-Host "API OK: $($resp.Content)" -ForegroundColor Green
-
-            # RTMP handshake: 1537-byte C0+C1, expect 16-byte S0+S1 in reply.
-            $tcp = New-Object System.Net.Sockets.TcpClient
-            $tcp.Connect('127.0.0.1', 19350)
-            $tcp.ReceiveTimeout = 15000
-            $stream = $tcp.GetStream()
-            $handshake = New-Object byte[] 1537
-            $handshake[0] = 3
-            (New-Object System.Random).NextBytes($handshake)
-            $handshake[0] = 3
-            $stream.Write($handshake, 0, $handshake.Length)
-            $reply = New-Object byte[] 16
-            $read = $stream.Read($reply, 0, $reply.Length)
-            $tcp.Close()
-            if ($read -ne 16) { throw "RTMP handshake returned $read bytes, expected 16" }
-            Write-Host "RTMP handshake OK: $read bytes" -ForegroundColor Green
-
-            $console = Invoke-WebRequest -Uri "http://localhost:1985/console/" -UseBasicParsing -TimeoutSec 15
-            if ($console.StatusCode -ne 200) { throw "console returned $($console.StatusCode)" }
-            Write-Host "Console OK: /console/" -ForegroundColor Green
-
-            $config = Invoke-RestMethod -Uri "http://localhost:1985/api/v1/config" -TimeoutSec 15
-            if ($config.code -ne 0 -or -not $config.data.version) { throw "config API returned invalid data" }
-            Write-Host "Config API OK: $($config.data.version)" -ForegroundColor Green
-          } finally {
-            Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
-          }
+          pwsh dev/smoke-test.ps1 `
+            -SrsExe trunk/ide/srs_msvc/build/Release/srs.exe `
+            -ConfFile trunk/ide/srs_msvc/build/Release/test.conf `
+            -WorkDir trunk/ide/srs_msvc/build/Release `
+            -CheckConsole
 
       - name: Upload build artifacts
         if: always()

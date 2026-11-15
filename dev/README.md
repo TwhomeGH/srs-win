@@ -61,6 +61,20 @@ pwsh dev/local-deploy.ps1            # 建置 image + 回報 revision／version
 pwsh dev/local-deploy.ps1 -Check     # 只看狀態，不建置
 pwsh dev/local-deploy.ps1 -Deploy    # 建置並 force-recreate 容器
 pwsh dev/local-deploy.ps1 -Deploy -Test  # 加上 HTTP／RTMP smoke
+
+## 共用 smoke test
+
+Nightly 與 Release 都呼叫 `dev/smoke-test.ps1`，不再各自維護一份 PowerShell：
+
+```powershell
+pwsh dev/smoke-test.ps1 `
+  -SrsExe trunk/ide/srs_msvc/build/Release/srs.exe `
+  -ConfFile trunk/ide/srs_msvc/build/Release/test.conf `
+  -WorkDir trunk/ide/srs_msvc/build/Release `
+  -CheckConsole
+```
+
+它會啟動 SRS、等待 API、檢查 RTMP handshake、`/console/`（選用）與 `/api/v1/config`，最後停止 process。預設 API／RTMP 埠是 `1985`／`19350`，本機埠被占用時用 `-ApiPort`／`-RtmpPort` 覆寫。
 ```
 
 設定存在 `dev/local-deploy.ini`（已 gitignore）；沒有 ini 時使用 repo 相對預設值。範例見 `dev/local-deploy.ini.example`。

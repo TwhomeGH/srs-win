@@ -41,7 +41,7 @@ pwsh dev/build-docs.ps1
 - 建置 Release（預設 RTC／SRT 關閉）。
 - 跑 `st-event-loop-test`、`path-rename-test`、`file-share-test`、`win-compat-test`。
 - 跑 UI Vitest、建置 console。
-- Smoke：HTTP API、RTMP handshake、`/console/`、`/api/v1/config`。
+- Smoke：`dev/smoke-test.ps1` 檢查 HTTP API、RTMP handshake、`/console/`、`/api/v1/config`；Nightly 與 Release 共用。
 - 上傳 artifact 保留 14 天。
 
 ## 已完成
