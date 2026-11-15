@@ -82,6 +82,86 @@
             "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/local-deploy.ps1", "-Deploy"],
             "problemMatcher": [],
             "detail": "Build and recreate the fixed Docker dev container."
+        },
+        {
+            "label": "dev: check Windows",
+            "type": "shell",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/check.ps1"],
+            "problemMatcher": [],
+            "group": { "kind": "test" },
+            "detail": "Incremental Windows default build + native tests."
+        },
+        {
+            "label": "dev: check Windows full",
+            "type": "shell",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/check.ps1", "-Full"],
+            "problemMatcher": [],
+            "group": { "kind": "test" },
+            "detail": "Incremental vcpkg RTC/SRT build + native tests."
+        },
+        {
+            "label": "dev: test UI",
+            "type": "shell",
+            "command": "npm",
+            "args": ["--prefix", "ui", "test"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": [],
+            "group": { "kind": "test" },
+            "detail": "Run the Web console Vitest suite on Windows."
+        },
+        {
+            "label": "dev: lint docs",
+            "type": "shell",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/lint-docs.ps1"],
+            "problemMatcher": [],
+            "detail": "Check maintained Markdown files."
+        },
+        {
+            "label": "dev: Docker deploy",
+            "type": "shell",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/local-deploy.ps1", "-Deploy"],
+            "problemMatcher": [],
+            "detail": "Build and recreate the Linux dev container."
+        },
+        {
+            "label": "dev: Docker smoke",
+            "type": "shell",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/local-deploy.ps1", "-Test"],
+            "problemMatcher": [],
+            "group": { "kind": "test" },
+            "detail": "Deploy the Linux container, then check HTTP API and RTMP."
+        },
+        {
+            "label": "dev: Docker shell",
+            "type": "shell",
+            "command": "docker",
+            "args": ["compose", "-f", "${workspaceFolder}/dev/docker/docker-compose.yml", "exec", "srs-dev", "bash"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": [],
+            "detail": "Open a shell inside the Linux dev container."
+        },
+        {
+            "label": "dev: RTC E2E",
+            "type": "shell",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/rtc-e2e.ps1"],
+            "problemMatcher": [],
+            "group": { "kind": "test" },
+            "detail": "Start full SRS and run WHIP/WHEP Playwright test on Windows."
+        },
+        {
+            "label": "dev: Auth E2E",
+            "type": "shell",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-File", "${workspaceFolder}/dev/auth-e2e.ps1"],
+            "problemMatcher": [],
+            "group": { "kind": "test" },
+            "detail": "Start auth SRS and run console login Playwright test on Windows."
         }
     ]
 }

@@ -46,6 +46,34 @@
             "mode": "auto",
             "cwd": "${workspaceFolder}/proxy",
             "program": "${workspaceFolder}/proxy"
+        },
+        {
+            "name": "UI: Vitest (Windows)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm --prefix ui test",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "UI: Vite dev server",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm --prefix ui run dev",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "UI: RTC E2E (Windows full)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "pwsh -NoProfile -File dev/rtc-e2e.ps1",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "UI: Auth E2E (Windows auth)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "pwsh -NoProfile -File dev/auth-e2e.ps1",
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

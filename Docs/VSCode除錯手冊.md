@@ -134,6 +134,33 @@ ctest --preset windows-full-test
 }
 ```
 
+## 測試與 Docker 車道
+
+「執行與偵錯」下拉選單只列除錯器；測試與 Docker 指令請從 `Ctrl+Shift+P` → `Tasks: Run Task`（或 `Tasks: Run Test Task`）選。
+
+### Windows
+
+| 入口 | 用途 |
+|------|------|
+| `SRS Windows (Debug)` | 啟動 `build/Debug/srs.exe` |
+| `SRS Windows (Full RTC/SRT)` | 啟動 `build-full/Debug/srs.exe` |
+| `dev: check Windows` | 增量建置＋4 個 native tests |
+| `dev: check Windows full` | vcpkg RTC／SRT 建置＋tests |
+| `UI: Vitest (Windows)` | 在整合終端跑 `npm --prefix ui test` |
+| `dev: test UI` | 同上，從工作清單選 |
+| `UI: RTC E2E (Windows full)` | 啟動 full SRS 並跑 WHIP／WHEP |
+| `UI: Auth E2E (Windows auth)` | 啟動 auth SRS 並跑登入流程 |
+
+### Linux Docker
+
+| 入口 | 用途 |
+|------|------|
+| `dev: Docker deploy` | 建置並重建 `srs-dev` 容器 |
+| `dev: Docker smoke` | 部署後檢查 HTTP API 與 RTMP handshake |
+| `dev: Docker shell` | 進入容器 `bash` |
+
+Docker 車道目前是**執行與 smoke 測試**，不是原始碼層 gdb 除錯。若要在 Linux 容器內逐步偵錯，需另外加 Dev Containers 擴充與 gdb；在那之前不要假設 Docker 工作會提供中斷點。
+
 ## 本機 Docker 部署
 
 固定開發容器用 compose 管理；腳本會把 git revision／version 寫進 image label，並比對「源碼 vs image vs 容器」是否落後：

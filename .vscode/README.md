@@ -12,6 +12,10 @@ Windows 除錯設定已改為 `cppvsdbg`（Visual Studio 偵錯器）。完整�
 | `SRS event loop test` | st-srs 協程／select 回歸測試 |
 | `Attach to srs.exe` | 附加到已啟動的程式 |
 | `SRS proxy (Go)` | proxy 除錯 |
+| `UI: Vitest (Windows)` | 在整合終端執行 Web 單元測試 |
+| `UI: Vite dev server` | 啟動 console dev server |
+| `UI: RTC E2E (Windows full)` | 啟動 full SRS 並跑 WHIP／WHEP |
+| `UI: Auth E2E (Windows auth)` | 啟動 auth SRS 並跑登入流程 |
 
 ## 工作
 
@@ -22,6 +26,30 @@ Windows 除錯設定已改為 `cppvsdbg`（Visual Studio 偵錯器）。完整�
 | `test-srs` / `test-srs-full` | 執行 `ctest` |
 | `docs-api` | 產生並開啟 `_site/api` |
 | `deploy-dev-container` | 建置並重建 Docker 開發容器 |
+| `dev: check Windows` | 增量 Windows 建置＋native tests |
+| `dev: check Windows full` | 全功能（RTC／SRT）建置＋tests |
+| `dev: test UI` | Web console Vitest |
+| `dev: lint docs` | Markdown 檢查 |
+| `dev: Docker deploy` | 建置並重建 Linux dev 容器 |
+| `dev: Docker smoke` | 部署後檢查 HTTP API／RTMP |
+| `dev: Docker shell` | 進入 Linux 容器 bash |
+| `dev: RTC E2E` | Windows full SRS＋Playwright |
+| `dev: Auth E2E` | Windows auth SRS＋Playwright |
+
+## 測試通道怎麼選
+
+VSCode 的「執行與偵錯」下拉選單只放**除錯器**；測試與 Docker 指令放在「工作」清單，按 `Ctrl+Shift+P` → `Tasks: Run Task`（或 `Tasks: Run Test Task`）直接選。
+
+| 目的 | 入口 |
+|------|------|
+| Windows C++ 除錯 | `SRS Windows (Debug)`／`SRS Windows (Full RTC/SRT)` |
+| Windows native tests | 工作 `dev: check Windows`／`dev: check Windows full` |
+| Web 單元測試 | 除錯選單 `UI: Vitest (Windows)` 或工作 `dev: test UI` |
+| Web／RTC／auth E2E | 除錯選單 `UI: RTC E2E`／`UI: Auth E2E`，或對應 `dev:` 工作 |
+| Linux Docker 測試 | 工作 `dev: Docker smoke`（部署＋HTTP／RTMP） |
+| Linux Docker shell | 工作 `dev: Docker shell` |
+
+Linux C++ 的原始碼層除錯還沒接進 `launch.json`；目前 Docker 車道是**執行與 smoke 測試**，不是 gdb 除錯。若要在容器內逐步偵錯，下一步應加 Dev Containers（`ms-vscode-remote.remote-containers`）與 gdb，而不是把 `docker compose` 假裝成 debugger。
 
 ## 命令列替代方案
 

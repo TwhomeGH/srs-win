@@ -2,6 +2,21 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.16 01:20 VSCode 測試通道：UI npm、Windows 與 Docker Linux
+
+**類型**: 工具鏈 · **檔案**: `.vscode/launch.json`, `.vscode/tasks.json`, `.vscode/README.md`, `Docs/VSCode除錯手冊.md`
+
+### 修改
+
+- 「執行與偵錯」新增 `UI: Vitest`、`UI: Vite dev server`、`UI: RTC E2E`、`UI: Auth E2E`（node-terminal）。
+- 工作清單新增 Windows check、UI test、Markdown lint、Docker deploy／smoke／shell、RTC／auth E2E，並把測試類工作放進 test group。
+- 文件說明 launch 下拉選單只放除錯器，測試與 Docker 指令走 `Tasks: Run Task`；Docker 目前是執行／smoke，不是 gdb 原始碼除錯。
+
+### 驗證
+
+- `launch.json`／`tasks.json` 以 `ConvertFrom-Json` 驗證可解析。
+- `dev/lint-docs.ps1`：0 errors。
+
 ## 2026.11.16 01:10 Markdown lint：MD024 改 siblings_only、加入 autofix 腳本
 
 **類型**: 工具鏈／文件 · **檔案**: `.markdownlint.json`, `.markdownlint-cli2.jsonc`, `.markdownlintignore`, `dev/lint-docs.ps1`
