@@ -57,6 +57,23 @@ main()
 
 > 不建議只靠 Edge／瀏覽器翻譯：技術名詞、代碼片段與參數名容易被誤譯，且翻譯結果不會進版控。正確做法是把中文放在原始碼註解（雙語）與本導讀頁。
 
+### Doxygen 介面語言
+
+`Doxyfile` 目前設定：
+
+```text
+OUTPUT_LANGUAGE = English
+```
+
+原因是 Doxygen 1.16 的 Chinese 介面語言包尚未更新；若設為 Chinese，
+build 會出現「language has not been updated」warning，且部分內建標籤
+（例如 Classes、Files、Parameters）會中英混雜。
+
+這個設定只影響 Doxygen 自己產生的導覽與區塊標題，**不會**翻譯或改變
+原始碼註解、`Docs/API導讀.md` 內容、類別／函式名稱或搜尋結果。API 註解
+仍依上表策略維持英文／雙語。若未來 Doxygen 的 Chinese 語言包追上版本，
+再評估是否切回。
+
 ## 相關文件
 
 - `Docs/Web控制台.md`：`/api/v1` 的實際使用者。

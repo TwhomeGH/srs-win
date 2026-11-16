@@ -10,7 +10,9 @@ PROJECT_NAME           = "SRS-Win"
 PROJECT_NUMBER         = "7.0.0"
 PROJECT_BRIEF          = "Windows native port of Simple Realtime Server"
 OUTPUT_DIRECTORY       = _site/api
-OUTPUT_LANGUAGE        = Chinese
+# Doxygen's Chinese UI catalog is stale as of 1.16; keep built-in UI English.
+# This only affects Doxygen's own labels, not source comments or Docs/API導讀.md.
+OUTPUT_LANGUAGE        = English
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = YES
 FULL_PATH_NAMES        = NO
