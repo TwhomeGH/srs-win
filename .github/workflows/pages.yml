@@ -59,6 +59,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y doxygen
+          mkdir -p build/doxygen
           doxygen Doxyfile
           test -f build/doxygen/html/index.html
 
