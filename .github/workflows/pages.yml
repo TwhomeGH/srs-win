@@ -55,15 +55,17 @@ jobs:
           echo "Installing changelogkit@$ref"
           python -m pip install "git+https://github.com/TwhomeGH/ChangeLogKit.git@$ref"
 
-      - name: Export static site
-        run: changelogkit --locale zh-TW export _site --branch develop
-
       - name: Generate API reference
         run: |
           sudo apt-get update
           sudo apt-get install -y doxygen
           doxygen Doxyfile
-          test -f _site/api/index.html
+          test -f build/doxygen/html/index.html
+
+      - name: Export static site
+        run: |
+          changelogkit --locale zh-TW export _site --branch develop
+          test -f _site/api-docs/cpp/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v6

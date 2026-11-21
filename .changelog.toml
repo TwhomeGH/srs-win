@@ -29,3 +29,12 @@ title = "設計與限制"
 color = "violet"
 order = 20
 paths = ["Docs/Windows移植技術文件.md", "Docs/組件盤點與技術債.md", "Docs/已知限制與待辦事項.md"]
+
+# Doxygen HTML；changelogkit export 時複製到 _site/api-docs/cpp/。
+[[tool.changelog.api]]
+id    = "cpp"
+title = "C++ API"
+html  = "build/doxygen/html"
+mount = "cpp"
+embed = true
+order = 10

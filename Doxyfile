@@ -1,15 +1,18 @@
 # Doxygen configuration for the SRS-Win API reference.
-# The generated site is written to _site/api, next to the changelogkit site,
-# and published by .github/workflows/pages.yml.
+# The generated site is written to build/doxygen/html; changelogkit export
+# copies it to _site/api-docs/cpp when [tool.changelog.api] has embed = true.
+# .github/workflows/pages.yml runs Doxygen before the changelogkit export.
 #
 # Local preview (no local Doxygen install required):
 #   docker run --rm -v "${PWD}:/src" -w /src ubuntu:24.04 \
 #     bash -lc "apt-get update -qq && apt-get install -y -qq doxygen >/dev/null && doxygen Doxyfile"
+# Windows with MSYS2: add C:\msys64\ucrt64\bin to PATH, then run:
+#   doxygen Doxyfile
 
 PROJECT_NAME           = "SRS-Win"
 PROJECT_NUMBER         = "7.0.0"
 PROJECT_BRIEF          = "Windows native port of Simple Realtime Server"
-OUTPUT_DIRECTORY       = _site/api
+OUTPUT_DIRECTORY       = build/doxygen
 # Doxygen's Chinese UI catalog is stale as of 1.16; keep built-in UI English.
 # This only affects Doxygen's own labels, not source comments or Docs/API導讀.md.
 OUTPUT_LANGUAGE        = English
@@ -40,7 +43,7 @@ INCLUDE_PATH           = trunk/src/core trunk/src/kernel trunk/src/protocol trun
 PREDEFINED             = _WIN32 SRS_AUTO_SSL SRS_AUTO_SSL_USE SRS_AUTO_RTC_USE SRS_AUTO_SRT_USE SRS_AUTO_H265 SRS_AUTO_H265_USE SRS_FFMPEG_FIT SRS_AUTO_GB28181
 
 GENERATE_HTML          = YES
-HTML_OUTPUT            = .
+HTML_OUTPUT            = html
 HTML_DYNAMIC_SECTIONS  = YES
 GENERATE_TREEVIEW      = YES
 DISABLE_INDEX          = NO
