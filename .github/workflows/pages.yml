@@ -63,13 +63,6 @@ jobs:
           doxygen Doxyfile
           test -f build/doxygen/html/index.html
 
-      - name: Inspect API output
-        if: always()
-        run: |
-          pwd
-          find build -maxdepth 4 -type d -print 2>/dev/null || true
-          find build -maxdepth 4 -type f -print 2>/dev/null | head -30 || true
-
       - name: Export static site
         run: |
           changelogkit --locale zh-TW export _site --branch develop
