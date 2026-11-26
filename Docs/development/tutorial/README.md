@@ -36,14 +36,16 @@ cd ../srs-tutorial-learn1
 
 - baseline 是建立這份教學時的 `develop`；`git rev-parse --short HEAD` 會顯示實際 commit。
 - 練習期間只改 worktree。
-- 完成後先離開 worktree，再移除：
+- 完成後先離開 worktree，再依照 [Git worktree 安全清理](../git-worktree.md) 送回收站；不要直接用 `git worktree remove --force` 丟掉未提交內容。
 
 ```powershell
 cd F:\srs
-git worktree remove ../srs-tutorial-learn1
+pwsh dev/remove-worktree.ps1 -Path F:\srs-tutorial-learn1 -DryRun
+pwsh dev/remove-worktree.ps1 -Path F:\srs-tutorial-learn1
+git branch -d tutorial/learn1
 ```
 
-不要用 `git reset --hard` 清掉目前工作區。
+`git worktree remove` 是直接刪除，不進回收站；完整說明與手動流程見 [Git worktree 安全清理](../git-worktree.md)。
 
 ## 學習順序
 

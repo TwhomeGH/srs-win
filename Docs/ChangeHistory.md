@@ -30,6 +30,23 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 Worktree 安全清理：回收站優先與 helper
+
+**類型**: 文件／工具鏈 · **檔案**: `Docs/development/git-worktree.md`, `Docs/development/tutorial/*`, `dev/remove-worktree.ps1`
+
+### 修改
+
+- 新增 worktree 生命週期指南：建立、檢查、回收站優先、可直接清理的產物、`git worktree remove` 行為、分支與 reflog。
+- 新增 `dev/remove-worktree.ps1`：驗證註冊 worktree、拒絕主 worktree、列出未提交變更、拒絕執行中程序、送 Windows 回收站後 `git worktree prune`；不自動降級永久刪除。
+- Learn 1 與教學入口改掉直接 `git worktree remove` 的收尾，連結到安全清理流程。
+
+### 驗證
+
+- 乾淨 worktree：`-DryRun` 通過；實際回收後目錄消失、metadata prune、分支保留。
+- dirty worktree：未加 `-DiscardChanges` 會拒絕並保留；加上後送回收站。
+- 主 worktree 與不存在路徑：正確拒絕。
+- 函式改用 approved verb `ConvertTo-NormalizedPath`，避免 PowerShell 警告。
+
 ## 2026.11.27 Learn 1 在乾淨 worktree 實跑：補 console bundle 與 UI 建置步驟
 
 **類型**: 文件／工具鏈 · **檔案**: `Docs/development/tutorial/01-learn1-build-and-run.md`, `dev/srs-dev.ps1`, `dev/README.md`, `TODO.md`

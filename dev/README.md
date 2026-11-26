@@ -230,6 +230,17 @@ ffmpeg -re -f lavfi -i testsrc=size=320x240:rate=10 -t 5 `
 - `.dockerignore` 已排除 `dev/runtime`、建置目錄與 `Docs/`，Docker context 不會帶進產物。
 - `.changelog.toml` 的 `exclude` 也排除 `dev/runtime/**`，靜態站不會索引執行時資料。
 
+## Worktree 清理
+
+教學或實驗用 worktree 完成後，預設送回收站，不要直接 `git worktree remove --force`：
+
+```powershell
+pwsh dev/remove-worktree.ps1 -Path F:\srs-tutorial-learn1 -DryRun
+pwsh dev/remove-worktree.ps1 -Path F:\srs-tutorial-learn1
+```
+
+完整判斷（哪些可直接清、哪些要回收、`git worktree remove` 行為與分支處理）見 [`Docs/development/git-worktree.md`](../Docs/development/git-worktree.md)。
+
 ## 常見問題
 
 | 症狀 | 處理 |

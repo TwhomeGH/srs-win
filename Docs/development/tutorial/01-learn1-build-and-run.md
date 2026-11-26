@@ -325,6 +325,19 @@ missing from trunk/configure:
 - [ ] 故意新增 source 時，source list 檢查失敗
 - [ ] 練習檔已刪除，`git status` 乾淨
 
+## 8. 清理 worktree
+
+練習完成後不要直接用 `git worktree remove --force` 丟掉整份目錄；它不會進回收站。先確認沒有未提交內容，再用 helper 送回收站：
+
+```powershell
+cd F:\srs
+pwsh dev/remove-worktree.ps1 -Path F:\srs-tutorial-learn1 -DryRun
+pwsh dev/remove-worktree.ps1 -Path F:\srs-tutorial-learn1
+git branch -d tutorial/learn1
+```
+
+什麼該回收、什麼可直接清、`git worktree remove` 的實際行為與分支處理，見 [Git worktree 安全清理](../git-worktree.md)。
+
 ## 延伸閱讀：API 參考
 
 Learn 1 不教 API 註解或 Doxygen 設定；這些放在單一文件入口，避免教學與工具文件各自漂移。
