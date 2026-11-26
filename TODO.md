@@ -24,6 +24,14 @@
 - [ ] 檢查連線關閉流程（fd 回收、half-close、`select()` 例外集）
 - [x] 檢查 pid 檔與服務生命週期的設計（Windows 改用 `LockFileEx`，stale pid 可重啟）
 
+## 開發教學
+
+- [x] Learn 1 教材：建置、啟動、Docker、VSCode 入口（`Docs/development/tutorial/`）
+- [ ] Learn 1 在乾淨 worktree 從頭實跑，修正文件與指令落差
+- [ ] Learn 2：新增唯讀 API 欄位（含 Doxygen／console 驗證）
+- [ ] Learn 3：VSCode 除錯工作流（launch／tasks／attach／Docker 邊界）
+- [ ] Learn 4：新增 console 頁面（React／Vite）
+
 ## CI／發佈
 
 - [x] Nightly 改為每晚排程＋手動觸發；有 commit 變更才建置，push 不再觸發
