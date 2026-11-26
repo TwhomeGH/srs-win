@@ -116,6 +116,20 @@ function Build-Windows {
     Get-ChildItem (Join-Path $BuildDir 'Debug') -Filter 'libcrypto-*.dll' | Copy-Item -Destination $WinRuntime -Force
     Get-ChildItem (Join-Path $BuildDir 'Debug') -Filter 'libssl-*.dll' | Copy-Item -Destination $WinRuntime -Force
     New-Item -ItemType Directory (Join-Path $WinRuntime 'objs') -Force | Out-Null
+
+    # The console is built into the CMake output by dev/build-ui.ps1. Copy it
+    # into the runtime bundle so http_server can serve /console from the same
+    # cwd as srs-dev.exe; otherwise the API works but /console returns 404.
+    $consoleSrc = Join-Path $BuildDir 'Debug\objs\nginx\html\console'
+    $consoleDst = Join-Path $WinRuntime 'objs\nginx\html\console'
+    if (Test-Path (Join-Path $consoleSrc 'index.html')) {
+        New-Item -ItemType Directory $consoleDst -Force | Out-Null
+        Copy-Item (Join-Path $consoleSrc '*') $consoleDst -Recurse -Force
+        Write-Output 'windows: console copied'
+    } else {
+        Write-Output 'windows: console not built; run pwsh dev/build-ui.ps1 -Target default'
+    }
+
     Write-Output "windows: bundle ready at $WinRuntime"
 }
 

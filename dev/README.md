@@ -170,7 +170,7 @@ Docker lane 已把 HLS 掛到 `dev/runtime/docker/hls`，並把可選的認證�
 
 1. 若沒有 `CMakeCache.txt` 就 configure（Visual Studio 17 2022 / x64）。
 2. 建置 `trunk/ide/srs_msvc/build` 的 Debug。
-3. 複製 `srs.exe` → `dev/runtime/windows/srs-dev.exe`，連同 `srs.pdb`、OpenSSL DLL。
+3. 複製 `srs.exe` → `dev/runtime/windows/srs-dev.exe`，連同 `srs.pdb`、OpenSSL DLL 與已建置的 `objs/nginx/html/console`。
 4. 建立可寫的 `objs/`，使用 `dev/windows/dev.conf`。
 
 日誌：`dev/runtime/windows/srs-dev.out.log`、`srs-dev.err.log`；pid：`srs-dev.pid`。

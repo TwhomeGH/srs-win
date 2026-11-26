@@ -84,6 +84,14 @@ check OK: ...s (default)
 
 ## 3. 啟動 Windows dev 版
 
+先建置 Web 控制台；`srs-dev.ps1 -Build` 會把 `build/Debug/objs/nginx/html/console` 複製到 runtime bundle，否則是 API 可用但 `/console/` 會回 404。
+
+```powershell
+pwsh dev/build-ui.ps1 -Target default
+```
+
+再啟動：
+
 ```powershell
 pwsh dev/srs-dev.ps1 -Build -Run
 ```
@@ -101,6 +109,8 @@ Invoke-RestMethod http://127.0.0.1:11985/api/v1/versions | ConvertTo-Json
 ```text
 http://127.0.0.1:11985/console/
 ```
+
+應回 200 並載入 console；若回 404，先確認 `dev/build-ui.ps1 -Target default` 已成功，再重新跑 `srs-dev.ps1 -Build`。
 
 停止：
 
@@ -309,6 +319,7 @@ missing from trunk/configure:
 - [ ] `dev/check-source-lists.ps1` 回 OK
 - [ ] `dev/check.ps1` 建置＋ctest 通過
 - [ ] Windows dev API 回 200
+- [ ] Windows dev `/console/` 回 200
 - [ ] 能用 VSCode 的 launch 設定啟動 SRS，並從 Tasks 跑一次 `dev: check Windows`
 - [ ] Docker `-Test` 回 HTTP 200 與 RTMP 16 bytes
 - [ ] 故意新增 source 時，source list 檢查失敗
@@ -343,6 +354,8 @@ Learn 2 開始改 API 時，才會把「產生 API 參考 → 檢查類別／函
 | 現象 | 原因 | 處理 |
 | --- | --- | --- |
 | `PidFileAcquire` | `objs/` 不存在或殘留 pid | 建立 `objs/`，刪除對應 pid |
+| `/console/` 回 404 | runtime bundle 沒有 console | 跑 `pwsh dev/build-ui.ps1 -Target default`，再跑 `srs-dev.ps1 -Build` |
+| `srs-dev.exe` 檔案被占用 | 上一個 `srs-dev.exe` 還在跑 | 先 `pwsh dev/srs-dev.ps1 -Stop`，或停止 `srs-dev` 程序 |
 | 11985 already in use | 舊的 `srs.exe` 還在跑 | `Get-Process srs` 後停止，或用 `dev/srs-dev.ps1 -Stop` |
 | Docker context 很大 | `.dockerignore` 沒有排除 build 產物 | 不要移除 `trunk/ide`、`trunk/build` 的排除規則 |
 | full build 找不到 vcpkg | 沒有 `.vscode/vcpkg` junction | 跑 `pwsh dev/setup-vscode.ps1` |

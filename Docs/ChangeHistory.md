@@ -30,6 +30,26 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 Learn 1 在乾淨 worktree 實跑：補 console bundle 與 UI 建置步驟
+
+**類型**: 文件／工具鏈 · **檔案**: `Docs/development/tutorial/01-learn1-build-and-run.md`, `dev/srs-dev.ps1`, `dev/README.md`, `TODO.md`
+
+### 驗證
+
+以 worktree `tutorial/learn1`（baseline `f4ce8d6c8`）從頭執行：
+
+- `dev/check-source-lists.ps1`：OK（56 個 app source）。
+- `dev/check.ps1`：4/4 native tests passed（244.2s）。
+- Windows dev：API 200；`/console/` 在修正後 200。
+- Docker Linux lane：`local-deploy.ps1 -Deploy` 成功；smoke HTTP 200、RTMP handshake 16 bytes。
+- Tutorial probe：檢查正確 FAIL，刪除後恢復 OK。
+
+### 修正
+
+- 發現 `srs-dev.ps1 -Build` 只建立空的 `objs`，沒有把已建置的 console 複製到 runtime，導致 API 可用但 `/console/` 回 404。
+- `Build-Windows` 現在會把 `build/Debug/objs/nginx/html/console` 複製到 runtime；找不到時明確提示先跑 `dev/build-ui.ps1 -Target default`。
+- Learn 1 加入 console 建置步驟、404 與檔案占用排錯。
+
 ## 2026.11.16 02:50 Tutorial probe 改由檢查腳本守門，不加入 .gitignore
 
 **類型**: 工具鏈／文件 · **檔案**: `dev/check-source-lists.ps1`, `Docs/development/tutorial/01-learn1-build-and-run.md`
