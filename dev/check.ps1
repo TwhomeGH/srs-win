@@ -13,13 +13,15 @@
       pwsh dev/check.ps1 -Docs
       pwsh dev/check.ps1 -Ui
       pwsh dev/check.ps1 -NoTests
+      pwsh dev/check.ps1 -Platform
 #>
 [CmdletBinding()]
 param(
     [switch]$Full,
     [switch]$Docs,
     [switch]$NoTests,
-    [switch]$Ui
+    [switch]$Ui,
+    [switch]$Platform
 )
 
 $ErrorActionPreference = 'Stop'
@@ -134,6 +136,11 @@ if ($Ui) {
     } finally {
         Pop-Location
     }
+}
+
+if ($Platform) {
+    Step 'run platform contract test'
+    Invoke-Checked { & (Join-Path $PSScriptRoot 'test-platform-contract.ps1') } 'platform contract test'
 }
 
 $stopwatch.Stop()

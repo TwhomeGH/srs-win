@@ -87,6 +87,12 @@ jobs:
           ctest --test-dir trunk/ide/srs_msvc/build -C Release -R 'st-event-loop-test|path-rename-test|file-share-test|win-compat-test' --output-on-failure
           if ($LASTEXITCODE -ne 0) { throw "native tests failed" }
 
+      - name: Platform contract (PID lock)
+        shell: pwsh
+        run: |
+          pwsh dev/test-platform-contract.ps1 -SrsExe trunk/ide/srs_msvc/build/Release/srs.exe
+          if ($LASTEXITCODE -ne 0) { throw "platform contract failed" }
+
       - name: Install web console deps
         working-directory: ui
         run: npm ci --no-audit --no-fund

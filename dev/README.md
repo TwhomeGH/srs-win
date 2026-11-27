@@ -50,6 +50,8 @@ curl http://127.0.0.1:11985/api/v1/versions
 pwsh dev/check.ps1          # 增量建置 srs + st-event-loop-test，再跑 ctest
 pwsh dev/check.ps1 -Full    # windows-full（RTC/SRT）
 pwsh dev/check.ps1 -Docs    # 同時更新 _site/api
+pwsh dev/check.ps1 -Platform # 加上 PID 單實例／stale pid 契約測試
+pwsh dev/test-platform-contract.ps1  # 只跑 platform contract（真實 server）
 pwsh dev/check-source-lists.ps1  # 只檢查 configure／CMake／src/app 是否一致
 ```
 

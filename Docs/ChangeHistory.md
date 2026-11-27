@@ -30,6 +30,21 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 Platform capability：PID lock 端到端測試
+
+**類型**: 測試／CI · **檔案**: `dev/test-platform-contract.ps1`, `dev/check.ps1`, `.github/workflows/windows-nightly.yml`, `Docs/測試策略.md`, `Docs/平台移植契約.md`
+
+### 修改
+
+- 新增真實 server 契約測試：第一個 instance 啟動、第二個被 PID lock 拒絕、stale pid 不阻止重啟。
+- `dev/check.ps1 -Platform` 可選擇執行；Nightly 加入 `Platform contract (PID lock)`。
+- 契約文件與測試策略補上測試對應。
+
+### 驗證
+
+- 本機 `dev/check.ps1 -NoTests -Platform`：PID duplicate rejected、stale pid recovered、PASS。
+- Nightly YAML 可解析；待下一次 CI 驗證。
+
 ## 2026.11.27 新增平台移植契約
 
 **類型**: 文件／架構 · **檔案**: `Docs/平台移植契約.md`, `Docs/文件索引.md`, `.changelog.toml`, `TODO.md`
