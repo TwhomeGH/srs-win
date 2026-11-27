@@ -33,6 +33,11 @@ extern srs_error_t srs_api_response_code(ISrsHttpResponseWriter *w, ISrsHttpMess
 extern srs_error_t srs_api_response_code(ISrsHttpResponseWriter *w, ISrsHttpMessage *r, srs_error_t code);
 
 // For http root.
+/**
+ * @brief Root API index.
+ * @details Returns server identity and discoverable URLs. It is not the web
+ * console; browsers should use /console/ for the console UI.
+ */
 class SrsGoApiRoot : public ISrsHttpHandler
 {
 public:

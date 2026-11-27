@@ -192,6 +192,10 @@ srs_error_t SrsGoApiRoot::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessage 
     obj->set("urls", urls);
 
     urls->set("api", SrsJsonAny::str("the api root"));
+    // The API root is not the web console. Keep the distinction explicit so a
+    // browser hitting / can discover /console/ without changing the upstream
+    // API-root response.
+    urls->set("console", SrsJsonAny::str("/console/"));
 
     if (true) {
         SrsJsonObject *rtc = SrsJsonAny::object();

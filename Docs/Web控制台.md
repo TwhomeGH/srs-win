@@ -11,6 +11,22 @@
 | 只建置靜態檔 | `npm --prefix ui run build` |
 | 指定 SRS API | `pwsh dev/serve-ui.ps1 -Api http://127.0.0.1:1985` |
 
+## 路徑分類
+
+`http_api` 的根路徑是 API 索引，不是 Web 控制台：
+
+| 路徑 | 用途 |
+| --- | --- |
+| `/` | SRS API root JSON；含 `urls.console` 指向控制台 |
+| `/console/` | Web 控制台靜態檔 |
+| `/console` | 301 到 `/console/` |
+| `/api/v1/*` | 唯讀 API |
+
+這個區分是刻意的：`/` 保持與上游 SRS API 相容，避免 API client 取得 HTML；瀏覽器要進控制台請用 `/console/`。若部署上希望根路徑直接開控制台，應在反向代理做導向，而不是改 API 的根語意。
+
+> [!NOTE]
+> 直接開 `http://<host>:<api-port>/` 看到 JSON 是正常行為；不是 console 壞掉。
+
 ## 頁面
 
 | 頁面 | 資料來源 | 說明 |

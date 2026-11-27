@@ -841,6 +841,11 @@ srs_error_t SrsServer::http_handle()
 
     // TODO: FIXME: for console.
     // TODO: FIXME: support reload.
+    // Redirect the directory spelling without a trailing slash; otherwise the
+    // root API handler can catch /console and return JSON to a browser.
+    if ((err = http_api_mux_->handle("/console", new SrsHttpRedirectHandler("/console/", SRS_CONSTS_HTTP_MovedPermanently))) != srs_success) {
+        return srs_error_wrap(err, "handle /console redirect");
+    }
     std::string dir = _srs_config->get_http_stream_dir() + "/console";
     if ((err = http_api_mux_->handle("/console/", new SrsHttpFileServer(dir))) != srs_success) {
         return srs_error_wrap(err, "handle console at %s", dir.c_str());

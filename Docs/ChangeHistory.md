@@ -2,6 +2,30 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.27 15:27 釐清 API root 與 console 路徑
+
+**類型**: 路由／文件 · **檔案**: `trunk/src/app/srs_app_http_api.cpp`, `trunk/src/app/srs_app_http_api.hpp`, `trunk/src/app/srs_app_server.cpp`, `Docs/Web控制台.md`
+
+### 問題
+
+直接開 `http://<host>:11985/` 會得到 API root JSON，瀏覽器使用者可能誤以為 console 未啟動；`/console` 沒有尾斜線時也可能被 root handler 接走。
+
+### 根因
+
+`/` 是上游 SRS 的 API root，不是 Web 控制台；console 掛在 `/console/`。這是刻意的路徑分類，不應把 `/` 改成 HTML 而破壞 API 相容性。
+
+### 修改
+
+- API root JSON 的 `urls` 增加 `console: /console/`，讓 client 可發現控制台。
+- `/console`（無尾斜線）以 301 導向 `/console/`，避免落入 root handler。
+- `SrsGoApiRoot` 補 Doxygen 說明；文件明列 `/`、`/console/`、`/api/v1/*` 的用途。
+
+### 驗證
+
+- `dev/check.ps1`：4/4 native tests passed。
+- 實際 server：`urls.console=/console/`、`/console` 回 301 到 `/console/`、`/console/` 回 200。
+- `dev/lint-docs.ps1`：0 errors。
+
 ## 2026.11.27 15:21 修正 VSCode IntelliSense 的 Windows／Linux 設定
 
 **類型**: 工具／文件 · **檔案**: `.vscode/c_cpp_properties.json`, `Docs/VSCode除錯手冊.md`
