@@ -33,6 +33,51 @@ pwsh dev/setup-vscode.ps1
 - `dev/check.ps1 -Full` 會在 junction 不存在時自動呼叫這個腳本。
 - 若 IntelliSense 還顯示舊路徑，重開 VSCode 或執行 `C/C++: Reset IntelliSense Database`。
 
+## IntelliSense 找不到 `sys/uio.h`／`unistd.h`
+
+這不是 Windows SDK 缺少檔案，而是 C/C++ IntelliSense 沒有把 Windows 相容層放進 include path。SRS 的 `trunk/src` 使用 POSIX 標頭，Windows 由 `trunk/ide/srs_msvc/compat/` 提供：
+
+```text
+compat/unistd.h
+compat/sys/uio.h
+compat/sys/time.h
+compat/arpa/inet.h
+```
+
+`.vscode/c_cpp_properties.json` 的 Windows 設定已包含：
+
+```text
+${workspaceFolder}/trunk/ide/srs_msvc/compat
+```
+
+以及和 CMake `/FI` 對應的：
+
+```text
+forcedInclude: trunk/ide/srs_msvc/force_include.h
+```
+
+修改後若錯誤還在，執行：
+
+```text
+C/C++: Reset IntelliSense Database
+```
+
+## Windows 與 Linux 的 IntelliSense 設定
+
+不要用同一組 includePath 硬掃兩個平台；兩邊的系統標頭語意不同：
+
+| 設定 | 使用時機 | 系統標頭來源 |
+| --- | --- | --- |
+| `Win32 Default` | Windows default build | MSVC＋`srs_msvc/compat/` |
+| `Win32 Full (RTC/SRT)` | Windows full build | MSVC＋vcpkg |
+| `Linux (Dev Container)` | 在 Linux Dev Container 開啟 workspace | 容器內 `/usr/include` |
+
+- 在 Windows 本機開資料夾時選 `Win32 Default` 或 `Win32 Full`；不要選 `Linux` 假裝掃 Linux，`/usr/include` 不存在，錯誤只會更多。
+- 在 Linux Dev Container 開啟時選 `Linux (Dev Container)`；它使用 `/usr/bin/g++` 與 Linux 原生標頭，不應把 `srs_msvc/compat/` 放進去，否則會用 Windows stub 覆蓋真正的 POSIX 標頭。
+- 需要切換時按 `Ctrl+Shift+P` → `C/C++: Select a Configuration...`。
+
+Linux 容器內的原始碼層除錯仍需要 Dev Containers＋gdb；目前 Docker 工作只負責建置與 smoke。
+
 ## 建置
 
 ```powershell

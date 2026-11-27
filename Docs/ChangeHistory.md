@@ -2,6 +2,29 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.27 15:21 修正 VSCode IntelliSense 的 Windows／Linux 設定
+
+**類型**: 工具／文件 · **檔案**: `.vscode/c_cpp_properties.json`, `Docs/VSCode除錯手冊.md`
+
+### 問題
+
+`srs_app_http_api.cpp` 的 IntelliSense 找不到 `sys/uio.h`、`unistd.h`、`sys/time.h`、`arpa/inet.h`。
+
+### 根因
+
+Windows 設定沒有把 `trunk/ide/srs_msvc/compat/` 放進 include path，也沒有對齊 CMake 的 `forcedInclude`；這些 POSIX 標頭由 Windows 相容層提供，不是 Windows SDK 缺少。
+
+### 修改
+
+- Win32 Default／Full 加入 `compat/` 與 `force_include.h`，`intelliSenseMode` 改為 `windows-msvc-x64`。
+- 新增 `Linux (Dev Container)` 設定，使用 `/usr/bin/g++` 與 Linux 原生標頭，不加 Windows compat。
+- 文件補上 Windows／Linux 選擇方式、Reset IntelliSense Database 與 Dev Container 邊界。
+
+### 驗證
+
+- JSON 可解析，三個 configuration 均存在；四個相容標頭都存在。
+- CMake 建置與 `dev/check.ps1` 不受影響（4/4 native tests passed）。
+
 ## 2026.11.27 15:14 變更歷史時間戳記檢查
 
 **類型**: 工具／文件 · **檔案**: `dev/lint-docs.ps1`, `Docs/ChangeHistory.md`

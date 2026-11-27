@@ -8,18 +8,22 @@
                 "${workspaceFolder}/trunk/src/protocol",
                 "${workspaceFolder}/trunk/src/app",
                 "${workspaceFolder}/trunk/src/main",
+                "${workspaceFolder}/trunk/ide/srs_msvc/compat",
                 "${workspaceFolder}/trunk/ide/srs_msvc",
                 "${workspaceFolder}/trunk/ide/srs_msvc/build",
                 "${workspaceFolder}/trunk/3rdparty/st-srs",
                 "${workspaceFolder}/.vscode/vcpkg/installed/x64-windows/include",
                 "C:/Program Files/OpenSSL-Win64/include"
             ],
+            "forcedInclude": [
+                "${workspaceFolder}/trunk/ide/srs_msvc/force_include.h"
+            ],
             "defines": ["_WIN32", "_DEBUG", "SRS_AUTO_SSL", "SRS_AUTO_SSL_USE", "SRS_FFMPEG_STUB", "SRS_AUTO_H265"],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "msvc-x64"
+            "intelliSenseMode": "windows-msvc-x64"
         },
         {
             "name": "Win32 Full (RTC/SRT)",
@@ -29,18 +33,40 @@
                 "${workspaceFolder}/trunk/src/protocol",
                 "${workspaceFolder}/trunk/src/app",
                 "${workspaceFolder}/trunk/src/main",
+                "${workspaceFolder}/trunk/ide/srs_msvc/compat",
                 "${workspaceFolder}/trunk/ide/srs_msvc",
                 "${workspaceFolder}/trunk/ide/srs_msvc/build-full",
                 "${workspaceFolder}/trunk/3rdparty/st-srs",
                 "${workspaceFolder}/.vscode/vcpkg/installed/x64-windows/include",
                 "C:/Program Files/OpenSSL-Win64/include"
             ],
+            "forcedInclude": [
+                "${workspaceFolder}/trunk/ide/srs_msvc/force_include.h"
+            ],
             "defines": ["_WIN32", "_DEBUG", "SRS_AUTO_SSL", "SRS_AUTO_SSL_USE", "SRS_AUTO_RTC_USE", "SRS_AUTO_SRT_USE", "SRS_FFMPEG_FIT", "SRS_AUTO_H265"],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "msvc-x64"
+            "intelliSenseMode": "windows-msvc-x64"
+        },
+        {
+            "name": "Linux (Dev Container)",
+            "includePath": [
+                "${workspaceFolder}/trunk/src/core",
+                "${workspaceFolder}/trunk/src/kernel",
+                "${workspaceFolder}/trunk/src/protocol",
+                "${workspaceFolder}/trunk/src/app",
+                "${workspaceFolder}/trunk/src/main",
+                "${workspaceFolder}/trunk/3rdparty/st-srs",
+                "/usr/include",
+                "/usr/local/include"
+            ],
+            "defines": ["__linux__", "SRS_AUTO_SSL", "SRS_AUTO_SSL_USE"],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4
