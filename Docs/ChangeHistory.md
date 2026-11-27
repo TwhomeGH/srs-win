@@ -30,6 +30,20 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 補 wall clock 與 process stub 契約測試
+
+**類型**: 測試 · **檔案**: `dev/tests/win_compat_test.cpp`, `Docs/平台移植契約.md`, `TODO.md`
+
+### 修改
+
+- `win-compat-test` 新增 wall clock 前進檢查。
+- 新增 `fork`／`kill` 必須回 `ENOSYS`、`getppid` 回 `0` 的 fail-loud 檢查。
+- 修正契約用語：SRS 目前沒有跨平台 monotonic helper，`srs_time_now_realtime()` 是 wall clock，不可假設為 monotonic。
+
+### 驗證
+
+- `dev/check.ps1`：4/4 native tests passed。
+
 ## 2026.11.27 更新 workflow 使用的 Node runtime
 
 **類型**: CI · **檔案**: `.github/workflows/test.yml`, `.github/workflows/codeql-analysis.yml`, `Docs/CI策略.md`

@@ -12,7 +12,8 @@
 - [x] Feature flags 單一來源：共用 `srs_feature_flags.hpp`，Windows／Linux 輸入正規化，並在 `/api/v1/config` 提供 capabilities 自檢
 - [x] 撰寫 `Docs/平台移植契約.md`（Build／OS／ABI contract、capability matrix）
 - [x] PID lock 真實 server 契約測試：重複啟動被拒、stale pid 可重啟（`dev/test-platform-contract.ps1`）
-- [ ] Time monotonic 與 unsupported spawn／signal 契約測試
+- [x] wall clock 前進、`fork`／`kill`／`getppid` fail-loud 測試
+- [ ] 跨平台 monotonic helper（目前 `srs_time_now_realtime` 是 wall clock，不是 monotonic）
 - [ ] 合併 `force_include.h`／`compat/`／`srs_win32_compat.h` 重疊（後者為死碼）
 - [ ] macOS 建置原型（POSIX adapter + Darwin override）
 - [ ] Linux／Windows ARM64 建置原型與 st context-switch probe

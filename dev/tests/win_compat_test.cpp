@@ -124,9 +124,57 @@ static int check_noop_rejections(void)
     return 1;
 }
 
+static int check_process_stubs(void)
+{
+    errno = 0;
+    if (fork() != -1 || errno != ENOSYS) {
+        fprintf(stderr, "fork should fail with ENOSYS, errno=%d\n", errno);
+        return 0;
+    }
+
+    errno = 0;
+    if (kill(getpid(), 0) != -1 || errno != ENOSYS) {
+        fprintf(stderr, "kill should fail with ENOSYS, errno=%d\n", errno);
+        return 0;
+    }
+
+    // SRS gates asprocess on this value; Windows has no parent process id.
+    if (getppid() != 0) {
+        fprintf(stderr, "getppid should return 0 on Windows\n");
+        return 0;
+    }
+
+    return 1;
+}
+
+static int check_wall_clock(void)
+{
+    struct timeval before = {};
+    struct timeval after = {};
+    if (gettimeofday(&before, NULL) != 0 || gettimeofday(&after, NULL) != 0) {
+        fprintf(stderr, "gettimeofday failed\n");
+        return 0;
+    }
+
+    Sleep(20);
+    if (gettimeofday(&after, NULL) != 0) {
+        fprintf(stderr, "gettimeofday failed after sleep\n");
+        return 0;
+    }
+
+    if (after.tv_sec < before.tv_sec ||
+        (after.tv_sec == before.tv_sec && after.tv_usec <= before.tv_usec)) {
+        fprintf(stderr, "wall clock did not advance\n");
+        return 0;
+    }
+
+    return 1;
+}
+
 int main()
 {
-    int ok = check_fcntl_locks() && check_epoll() && check_inotify() && check_noop_rejections();
+    int ok = check_fcntl_locks() && check_epoll() && check_inotify() &&
+             check_noop_rejections() && check_process_stubs() && check_wall_clock();
     if (!ok) {
         return 1;
     }
