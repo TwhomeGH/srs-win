@@ -2,34 +2,6 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
-## 2026.11.17 00:30 Doxygen 內建介面固定英文，避免半套中文翻譯
-
-**類型**: 文件／工具鏈 · **檔案**: `Doxyfile`, `Docs/API導讀.md`
-
-### 問題
-
-`Doxyfile` 原本設定 `OUTPUT_LANGUAGE = Chinese`。Doxygen 1.16 的 Chinese
-語言包未更新，產生文件時會出現 language warning，且部分內建標籤會中英
-混雜。
-
-### 根因
-
-`OUTPUT_LANGUAGE` 只控制 Doxygen 內建 UI 字串，不會翻譯原始碼註解或
-`Docs/API導讀.md`；Chinese catalog 落後目前 Doxygen 版本。這與文件索引中
-「Doxygen API 頁面維持英文」的既有策略也不一致。
-
-### 修改
-
-- `Doxyfile` 改為 `OUTPUT_LANGUAGE = English`，並在設定旁註明原因。
-- `Docs/API導讀.md` 新增「Doxygen 介面語言」：說明只影響內建標籤，不影響
-  API 內容；等 Chinese 語言包追上再評估切回。
-
-### 驗證
-
-- 以本機 Doxygen 重新產生 `_site/api/index.html`，無 language warning。
-- 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
-- API 導讀、原始碼註解與搜尋內容不受影響。
-
 ## 2026.11.27 補 peer close 契約測試
 
 **類型**: 測試 · **檔案**: `dev/tests/st_event_loop_test.cpp`, `Docs/平台移植契約.md`, `TODO.md`
@@ -204,6 +176,34 @@ CMake 從 4.3 更新到 4.4 後，舊的 `CMakeCache.txt` 仍記錄 `CMAKE_ROOT=
 - 發現 `srs-dev.ps1 -Build` 只建立空的 `objs`，沒有把已建置的 console 複製到 runtime，導致 API 可用但 `/console/` 回 404。
 - `Build-Windows` 現在會把 `build/Debug/objs/nginx/html/console` 複製到 runtime；找不到時明確提示先跑 `dev/build-ui.ps1 -Target default`。
 - Learn 1 加入 console 建置步驟、404 與檔案占用排錯。
+
+## 2026.11.17 00:30 Doxygen 內建介面固定英文，避免半套中文翻譯
+
+**類型**: 文件／工具鏈 · **檔案**: `Doxyfile`, `Docs/API導讀.md`
+
+### 問題
+
+`Doxyfile` 原本設定 `OUTPUT_LANGUAGE = Chinese`。Doxygen 1.16 的 Chinese
+語言包未更新，產生文件時會出現 language warning，且部分內建標籤會中英
+混雜。
+
+### 根因
+
+`OUTPUT_LANGUAGE` 只控制 Doxygen 內建 UI 字串，不會翻譯原始碼註解或
+`Docs/API導讀.md`；Chinese catalog 落後目前 Doxygen 版本。這與文件索引中
+「Doxygen API 頁面維持英文」的既有策略也不一致。
+
+### 修改
+
+- `Doxyfile` 改為 `OUTPUT_LANGUAGE = English`，並在設定旁註明原因。
+- `Docs/API導讀.md` 新增「Doxygen 介面語言」：說明只影響內建標籤，不影響
+  API 內容；等 Chinese 語言包追上再評估切回。
+
+### 驗證
+
+- 以本機 Doxygen 重新產生 `_site/api/index.html`，無 language warning。
+- 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
+- API 導讀、原始碼註解與搜尋內容不受影響。
 
 ## 2026.11.16 02:50 Tutorial probe 改由檢查腳本守門，不加入 .gitignore
 
