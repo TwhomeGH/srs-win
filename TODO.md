@@ -14,11 +14,11 @@
 - [x] PID lock 真實 server 契約測試：重複啟動被拒、stale pid 可重啟（`dev/test-platform-contract.ps1`）
 - [x] wall clock 前進、`fork`／`kill`／`getppid` fail-loud 測試
 - [ ] 跨平台 monotonic helper（目前 `srs_time_now_realtime` 是 wall clock，不是 monotonic）
-- [ ] 合併 `force_include.h`／`compat/`／`srs_win32_compat.h` 重疊（後者為死碼）
+- [x] 合併 `force_include.h`／`compat/`／`srs_win32_compat.h` 重疊（後者為死碼，已移除）
 - [ ] macOS 建置原型（POSIX adapter + Darwin override）
 - [ ] Linux／Windows ARM64 建置原型與 st context-switch probe
 
-- [ ] 逐模組檢查 Windows 相容層的設計缺口（`force_include.h`、`srs_win32_compat.h`、`compat/`）
+- [ ] 逐模組檢查 Windows 相容層的設計缺口（`force_include.h`、`compat/`）
 - [ ] 每次修改區塊同步補齊公開 API 的 Doxygen 註解（change-scoped，不做全域大改）
 - [ ] 確認 POSIX 相容層的錯誤碼轉換一致（`errno` ↔ `GetLastError()`）
 - [x] 已使用的 POSIX stub fail-loud（`fcntl`／`epoll`／`inotify`／`asprocess`／`inotify_auto_reload`）
@@ -82,7 +82,6 @@
 - [x] 以 `SetConsoleCtrlHandler()` 取代 POSIX 訊號 stub（優雅關閉）
 - [ ] 評估以 IOCP 取代 `select()` 的可行性
 - [ ] 支援 ARM64 Windows（需 `md_win64_arm64.asm` 與 vcpkg 驗證）
-- [ ] 減少 `force_include.h` 與 `srs_win32_compat.h` 的重複定義（後者目前未被 include）
 - [x] `rebuild.ps1` 改用相對路徑
 - [ ] 移除 dead 第三方元件（`httpx-static`、`srs-docs`、`gprof`、`gperftools`、`signaling`）
 - [ ] OpenSSL：移除 vendored 1.1.1l，統一使用系統 3.x

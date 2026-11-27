@@ -247,7 +247,7 @@ include_directories(
     ${SRS_TRUNK}/src/main
     ${SRS_TRUNK}/src/utest
     ${SRS_TRUNK}/3rdparty/st-srs         # For st.h
-    ${CMAKE_CURRENT_SOURCE_DIR}          # For srs_win32_compat.h
+    ${CMAKE_CURRENT_SOURCE_DIR}          # For force_include.h
 )
 
 # External library includes (vcpkg-provided or system)

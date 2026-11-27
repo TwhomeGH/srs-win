@@ -124,20 +124,9 @@ trunk/3rdparty/st-srs/CMakeLists.txt ← st-srs 子建置 (61 行)
 - `srs_pipe()` — 使用 `CreatePipe` 實作
 - `SIGPIPE` — 定義為 0 (忽略)
 
-## 3. Windows 相容層 (`srs_win32_compat.h`)
+## 3. 舊 Windows 相容層（已移除）
 
-**路徑**: `trunk/ide/srs_msvc/srs_win32_compat.h` (264 行)
-
-提供檔案與 socket 的底層包裝：
-
-- `srs_read_sock()` / `srs_write_sock()` / `srs_close_sock()` — Winsock 包裝
-- `srs_read_file()` / `srs_write_file()` / `srs_open()` — CRT 檔案 I/O
-- `srs_getpagesize()` — `GetSystemInfo`
-- `srs_clock_gettime_monotonic()` — `QueryPerformanceFrequency/Counter`
-- `srs_gettimeofday()` — `GetSystemTimeAsFileTime`
-- `srs_socketpair()` — TCP loopback 模擬
-- `srs_set_nonblock()` — `ioctlsocket(FIONBIO)`
-- `srs_set_cloexec()` — 無操作 (Windows 無 fork，不需 CLOEXEC)
+`trunk/ide/srs_msvc/srs_win32_compat.h` 曾提供檔案與 socket 包裝，但沒有任何 translation unit include 它，只存在於 CMake include path。為了避免兩套實作漂移，已於 2026-11-27 移除；實際生效的是 `force_include.h` 與 `compat/`。
 
 ## 4. POSIX 偽標頭 (compat/)
 

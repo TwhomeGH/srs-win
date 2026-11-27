@@ -30,6 +30,21 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 移除未使用的 `srs_win32_compat.h`
+
+**類型**: 重構／清理 · **檔案**: `trunk/ide/srs_msvc/srs_win32_compat.h`（刪除）, `trunk/ide/srs_msvc/CMakeLists.txt`, `Docs/`
+
+### 修改
+
+- 確認沒有任何 translation unit include 該 header；它只出現在 CMake include path 與文件中。
+- 刪除死碼，保留真正生效的 `force_include.h` 與 `compat/`。
+- 同步 Windows 移植文件、組件盤點、專案概覽、已知限制、Phase 1 結案、平台契約與 TODO。
+
+### 驗證
+
+- `dev/check.ps1`：4/4 native tests passed。
+- `dev/lint-docs.ps1`：0 errors。
+
 ## 2026.11.27 補 wall clock 與 process stub 契約測試
 
 **類型**: 測試 · **檔案**: `dev/tests/win_compat_test.cpp`, `Docs/平台移植契約.md`, `TODO.md`

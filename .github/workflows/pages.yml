@@ -45,6 +45,8 @@ jobs:
       # 需要可重現的建置時，在 repo 變數設定 CHANGELOGKIT_REF=<tag> 覆寫。
       - name: Install changelogkit
         env:
+          # GITHUB_TOKEN 不是 Actions 的預設環境變數；workflow health 需要它查 action.yml。
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHANGELOGKIT_REF: ${{ vars.CHANGELOGKIT_REF }}
         run: |
           ref="${CHANGELOGKIT_REF:-}"

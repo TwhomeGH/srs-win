@@ -40,7 +40,7 @@
 | ARM64 Windows | 需求未出現；需另一份 asm | 有 ARM64 使用者時 |
 | FFmpeg 7.x／真轉碼 | 目前是 stub；功能未在範圍 | 做轉碼／內部 ingest 時 |
 | 移除 dead 第三方元件 | 不影響 runtime | 獨立清理批次 |
-| `srs_win32_compat.h` 重複定義 | 未被 include，屬整理債 | 下一輪結構清理 |
+| `srs_win32_compat.h` 重複定義 | 已移除（未被 include） | 完成 |
 | 連線關閉流程細節 | 尚無實際事故；需專門測試 | 有關閉／fd 洩漏證據時 |
 
 ## 4. 功能開發護欄
