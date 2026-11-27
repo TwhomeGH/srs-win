@@ -97,6 +97,8 @@ helper 會：
 5. 執行 `git worktree prune`，確認 metadata 已移除。
 6. **不刪分支**；需要時另外 `git branch -d`。
 
+> helper 預設在回收後執行 `git worktree prune`。若你要保留「從回收站還原後仍能被 Git 認得」的能力，先不要 prune；prune 後回收站只保留檔案，Git worktree 連結已消失。
+
 有未提交變更但確定不要時：
 
 ```powershell
@@ -122,6 +124,27 @@ git worktree list
 > 不要自行把資料夾搬到 `$RECYCLE.BIN`。請用檔案總管或 Shell API，才有原始路徑與還原資訊。
 
 macOS 用 Finder 的「移到垃圾桶」；Linux 用 `gio trash <path>`（或桌面環境的垃圾桶），之後同樣執行 `git worktree prune`。
+
+## 6.1 `git worktree prune` 會切斷 Git 連結
+
+`git worktree prune` 不是刪檔案，也不是刪分支；它移除的是 `.git/worktrees/<name>` 這個**指向已不存在目錄**的 Git 管理記錄。
+
+```powershell
+git worktree list          # 可能顯示 prunable
+git worktree prune -n -v   # 只預覽，不移除
+git worktree prune -v      # 真正移除 stale metadata
+```
+
+兩種情況要分清楚：
+
+| 情況 | 正確處理 |
+| --- | --- |
+| worktree 被移到新路徑，目錄還在 | 用 `git worktree repair` 修正路徑；**不要 prune** |
+| worktree 目錄已刪除／已送回收站 | 確認不再需要 Git worktree 還原後，再 prune |
+
+> **回收站保留的是檔案；prune 會讓 Git 不再認得那個 worktree。**
+> 已 prune 後再從回收站還原到同一路徑，`git status` 會顯示 `not a git repository`；即使跑 `git worktree repair` 也無法重建已移除的管理記錄。此時只能重新 `git worktree add`，或把還原的檔案當一般檔案搬回。
+> 如果還想保留「從回收站還原後直接繼續使用同一個 worktree」的能力，先不要 prune；等確定不還原時再執行。
 
 ## 7. `git worktree remove` 的行為
 
