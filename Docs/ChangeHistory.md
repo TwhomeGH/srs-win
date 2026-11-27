@@ -30,6 +30,21 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 新增平台移植契約
+
+**類型**: 文件／架構 · **檔案**: `Docs/平台移植契約.md`, `Docs/文件索引.md`, `.changelog.toml`, `TODO.md`
+
+### 內容
+
+- 定義 Build／OS／ABI 三層契約與 Verified／Unverified／Not supported 狀態用語。
+- 記錄檔案替換、share-delete、poll、PID lock、process、signal、time、errno 的必須語意與測試對應。
+- 建立 Windows default／full、Linux x64、macOS、ARM64 的 capability matrix；未驗證不標成支援。
+- 列出平台邊界、變更流程與目前缺口（CreateProcess、IOCP、ARM64、FFmpeg stub 等）。
+
+### 驗證
+
+- Markdown lint 0 errors；文件索引與 changelogkit 設計分組已加入。
+
 ## 2026.11.27 CMake 升級後的 cache 自我修復
 
 **類型**: 建置／工具鏈 · **檔案**: `dev/check.ps1`, `Docs/建置與執行說明.md`, `Docs/VSCode除錯手冊.md`

@@ -10,7 +10,7 @@
 - [x] Linux build CI（workflow 已加入；run `43743234425` 全綠）
 - [x] Add source-list consistency check to `dev/check.ps1` and CI
 - [x] Feature flags 單一來源：共用 `srs_feature_flags.hpp`，Windows／Linux 輸入正規化，並在 `/api/v1/config` 提供 capabilities 自檢
-- [ ] 撰寫 `Docs/平台移植契約.md`（Build／OS／ABI contract、capability matrix）
+- [x] 撰寫 `Docs/平台移植契約.md`（Build／OS／ABI contract、capability matrix）
 - [ ] Platform capability tests（file replace、share-delete、poll、pid lock、spawn、time）
 - [ ] 合併 `force_include.h`／`compat/`／`srs_win32_compat.h` 重疊（後者為死碼）
 - [ ] macOS 建置原型（POSIX adapter + Darwin override）

@@ -28,7 +28,7 @@ id    = "design"
 title = "設計與限制"
 color = "violet"
 order = 20
-paths = ["Docs/Windows移植技術文件.md", "Docs/組件盤點與技術債.md", "Docs/已知限制與待辦事項.md"]
+paths = ["Docs/Windows移植技術文件.md", "Docs/平台移植契約.md", "Docs/組件盤點與技術債.md", "Docs/已知限制與待辦事項.md"]
 
 # Doxygen HTML；changelogkit export 時複製到 _site/api-docs/cpp/。
 [[tool.changelog.api]]
