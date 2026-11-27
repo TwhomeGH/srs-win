@@ -30,6 +30,23 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 CMake 升級後的 cache 自我修復
+
+**類型**: 建置／工具鏈 · **檔案**: `dev/check.ps1`, `Docs/建置與執行說明.md`, `Docs/VSCode除錯手冊.md`
+
+### 問題
+
+CMake 從 4.3 更新到 4.4 後，舊的 `CMakeCache.txt` 仍記錄 `CMAKE_ROOT=C:/Program Files/CMake/share/cmake-4.3`，導致 4.4 的 compiler detection 找不到 4.3 modules，出現 `CMAKE_DETERMINE_COMPILER_ID` unknown。
+
+### 修改
+
+- `dev/check.ps1` 在 cache 存在時檢查 `CMAKE_ROOT`；路徑不存在就自動執行 `cmake --fresh`（default／full 各自 preset），再繼續建置；不刪 build 輸出。
+- 建置文件與 VSCode 除錯手冊加入 `--fresh` 排錯方式。
+
+### 驗證
+
+- 手動把 cache 的 `CMAKE_ROOT` 改成不存在路徑，`dev/check.ps1` 自動 refresh 並成功建置；cache 恢復為 4.4 路徑。
+
 ## 2026.11.27 P0：功能旗標單一來源與 console 能力自檢
 
 **類型**: 建置／API／UI · **檔案**: `trunk/src/core/srs_feature_flags.hpp`, `trunk/src/core/srs_core.hpp`, `trunk/ide/srs_msvc/CMakeLists.txt`, `trunk/auto/auto_headers.sh`, `trunk/src/app/srs_app_http_api.cpp`, `ui/src/pages/Configs.jsx`, `ui/src/i18n.jsx`, `Docs/功能旗標與能力自檢.md`

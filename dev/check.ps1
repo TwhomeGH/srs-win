@@ -53,7 +53,33 @@ if ($Full) {
 Step 'check source lists'
 Invoke-Checked { & (Join-Path $PSScriptRoot 'check-source-lists.ps1') } 'source list check'
 
-if (-not (Test-Path (Join-Path $buildDir 'CMakeCache.txt'))) {
+# CMakeCache stores CMAKE_ROOT as an internal path. After a CMake upgrade the
+# cached 4.x modules directory can disappear while the new binary remains,
+# producing "file failed to open ... cmake-4.3/Modules/...". Refresh only the
+# cache, never the build outputs, so the next build can proceed.
+$cacheFile = Join-Path $buildDir 'CMakeCache.txt'
+if (Test-Path $cacheFile) {
+    $cacheText = Get-Content -LiteralPath $cacheFile -Raw
+    $rootMatch = [regex]::Match($cacheText, '(?m)^CMAKE_ROOT:INTERNAL=(.+)$')
+    if ($rootMatch.Success) {
+        $cachedRoot = $rootMatch.Groups[1].Value.Trim()
+        if ($cachedRoot -and -not (Test-Path $cachedRoot)) {
+            Step "CMake root moved; refresh $buildDir"
+            if ($Full) {
+                Push-Location $sourceDir
+                try {
+                    Invoke-Checked { cmake --preset windows-full --fresh } 'cmake --preset windows-full --fresh'
+                } finally {
+                    Pop-Location
+                }
+            } else {
+                Invoke-Checked { cmake -B $buildDir -S $sourceDir -G 'Visual Studio 17 2022' -A x64 --fresh } 'cmake configure --fresh'
+            }
+        }
+    }
+}
+
+if (-not (Test-Path $cacheFile)) {
     Step "configure $buildDir"
     if ($Full) {
         Push-Location $sourceDir

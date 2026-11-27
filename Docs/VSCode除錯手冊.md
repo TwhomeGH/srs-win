@@ -210,6 +210,7 @@ cmake --build trunk/ide/srs_msvc/build --config Release
 | ------ | ------ | ------ |
 | `0xc0000135`／找不到 `libcrypto-3-x64.dll` | exe 旁沒有 OpenSSL DLL | 重新建置（POST_BUILD 會複製）；或把 OpenSSL `bin` 加進 PATH |
 | `code=1034 PidFileAcquire` | `objs/` 不存在或殘留 `srs.pid` | 建立 `objs/`、刪除 `objs/srs.pid` |
+| CMake 找不到 `cmake-4.3/Modules/...` | CMakeCache 的 `CMAKE_ROOT` 是升級前舊路徑 | 在 `trunk/ide/srs_msvc` 執行 `cmake --preset windows-default --fresh`（full 用 `windows-full`）；`dev/check.ps1` 會自動偵測 |
 | API／RTMP 連線逾時 | 埠被占用或程式沒 accept | 改 `test.conf` 的埠；確認 `Get-NetTCPConnection -LocalPort <port>` |
 | 啟動即 `0xC0000005` | 舊版 ST 堆疊指標／閒置執行緒堆疊 bug | 更新到含 `3748df104` 之後的版本 |
 
