@@ -101,7 +101,10 @@ try {
     if ($config.code -ne 0 -or -not $config.data.version) {
         throw 'config API returned invalid data'
     }
-    Write-Host "Config API OK: version=$($config.data.version) build=$($config.data.build)" -ForegroundColor Green
+    if (-not $config.data.platform) {
+        throw 'config API missing platform field'
+    }
+    Write-Host "Config API OK: version=$($config.data.version) build=$($config.data.build) platform=$($config.data.platform)" -ForegroundColor Green
 } finally {
     if ($proc -and -not $proc.HasExited) {
         Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue

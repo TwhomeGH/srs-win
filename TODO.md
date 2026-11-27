@@ -31,7 +31,7 @@
 - [x] Learn 1 教材：建置、啟動、Docker、VSCode 入口（`Docs/development/tutorial/`）
 - [x] Learn 1 在乾淨 worktree 從頭實跑，修正文件與指令落差
 - [x] Worktree 安全清理指引與 `dev/remove-worktree.ps1`（回收站優先）
-- [ ] Learn 2：新增唯讀 API 欄位（含 Doxygen／console 驗證）
+- [x] Learn 2：新增唯讀 API 欄位（含 Doxygen／console 驗證）
 - [ ] Learn 3：VSCode 除錯工作流（launch／tasks／attach／Docker 邊界）
 - [ ] Learn 4：新增 console 頁面（React／Vite）
 

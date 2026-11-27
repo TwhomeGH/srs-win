@@ -2,7 +2,25 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
-## 2026.11.27 補 peer close 契約測試
+## 2026.11.27 15:12 Learn 2：新增唯讀 API `platform` 欄位
+
+**類型**: 功能／教學 · **檔案**: `trunk/src/app/srs_app_http_api.cpp`, `ui/src/pages/Configs.jsx`, `ui/src/i18n.jsx`, `dev/smoke-test.ps1`, `Docs/development/tutorial/03-learn2-readonly-api-field.md`
+
+### 修改
+
+- `/api/v1/config` 的 `data` 新增編譯期 `platform`（`windows`／`linux`／`macos`）。
+- 設定頁 Server 卡片顯示「執行平台」，zh／en 字串分開；API 值保持英文識別字。
+- smoke test 檢查 `data.platform`，避免欄位被重構漏掉。
+- 新增 Learn 2 教學，涵蓋 C++ JSON、console、smoke、Doxygen 邊界與 worktree 清理。
+
+### 驗證
+
+- `dev/check.ps1`：4/4 native tests passed。
+- `dev/check.ps1 -Ui`／`npm test`：10 tests passed。
+- 實際 dev lane：`platform=windows`；Playwright 開啟設定頁看到「執行平台／windows」。
+- `dev/lint-docs.ps1`：0 errors。
+
+## 2026.11.27 15:01 補 peer close 契約測試
 
 **類型**: 測試 · **檔案**: `dev/tests/st_event_loop_test.cpp`, `Docs/平台移植契約.md`, `TODO.md`
 
@@ -15,7 +33,7 @@
 
 - `dev/check.ps1`：4/4 native tests passed。
 
-## 2026.11.27 移除未使用的 `srs_win32_compat.h`
+## 2026.11.27 15:00 移除未使用的 `srs_win32_compat.h`
 
 **類型**: 重構／清理 · **檔案**: `trunk/ide/srs_msvc/srs_win32_compat.h`（刪除）, `trunk/ide/srs_msvc/CMakeLists.txt`, `Docs/`
 
@@ -30,7 +48,7 @@
 - `dev/check.ps1`：4/4 native tests passed。
 - `dev/lint-docs.ps1`：0 errors。
 
-## 2026.11.27 補 wall clock 與 process stub 契約測試
+## 2026.11.27 14:57 補 wall clock 與 process stub 契約測試
 
 **類型**: 測試 · **檔案**: `dev/tests/win_compat_test.cpp`, `Docs/平台移植契約.md`, `TODO.md`
 
@@ -44,7 +62,7 @@
 
 - `dev/check.ps1`：4/4 native tests passed。
 
-## 2026.11.27 更新 workflow 使用的 Node runtime
+## 2026.11.27 14:54 更新 workflow 使用的 Node runtime
 
 **類型**: CI · **檔案**: `.github/workflows/test.yml`, `.github/workflows/codeql-analysis.yml`, `Docs/CI策略.md`
 
@@ -59,7 +77,7 @@
 - `changelogkit workflows --check`：35 actions、0 EOL、0 unknown、exit 0。
 - YAML 可解析。
 
-## 2026.11.27 Platform capability：PID lock 端到端測試
+## 2026.11.27 14:48 Platform capability：PID lock 端到端測試
 
 **類型**: 測試／CI · **檔案**: `dev/test-platform-contract.ps1`, `dev/check.ps1`, `.github/workflows/windows-nightly.yml`, `Docs/測試策略.md`, `Docs/平台移植契約.md`
 
@@ -74,7 +92,7 @@
 - 本機 `dev/check.ps1 -NoTests -Platform`：PID duplicate rejected、stale pid recovered、PASS。
 - Nightly YAML 可解析；待下一次 CI 驗證。
 
-## 2026.11.27 新增平台移植契約
+## 2026.11.27 14:34 新增平台移植契約
 
 **類型**: 文件／架構 · **檔案**: `Docs/平台移植契約.md`, `Docs/文件索引.md`, `.changelog.toml`, `TODO.md`
 
@@ -89,7 +107,7 @@
 
 - Markdown lint 0 errors；文件索引與 changelogkit 設計分組已加入。
 
-## 2026.11.27 CMake 升級後的 cache 自我修復
+## 2026.11.27 13:32 CMake 升級後的 cache 自我修復
 
 **類型**: 建置／工具鏈 · **檔案**: `dev/check.ps1`, `Docs/建置與執行說明.md`, `Docs/VSCode除錯手冊.md`
 
@@ -106,7 +124,7 @@ CMake 從 4.3 更新到 4.4 後，舊的 `CMakeCache.txt` 仍記錄 `CMAKE_ROOT=
 
 - 手動把 cache 的 `CMAKE_ROOT` 改成不存在路徑，`dev/check.ps1` 自動 refresh 並成功建置；cache 恢復為 4.4 路徑。
 
-## 2026.11.27 P0：功能旗標單一來源與 console 能力自檢
+## 2026.11.27 08:38 P0：功能旗標單一來源與 console 能力自檢
 
 **類型**: 建置／API／UI · **檔案**: `trunk/src/core/srs_feature_flags.hpp`, `trunk/src/core/srs_core.hpp`, `trunk/ide/srs_msvc/CMakeLists.txt`, `trunk/auto/auto_headers.sh`, `trunk/src/app/srs_app_http_api.cpp`, `ui/src/pages/Configs.jsx`, `ui/src/i18n.jsx`, `Docs/功能旗標與能力自檢.md`
 
@@ -125,7 +143,7 @@ CMake 從 4.3 更新到 4.4 後，舊的 `CMakeCache.txt` 仍記錄 `CMAKE_ROOT=
 - `npm --prefix ui test`：10/10 passed；UI build 成功。
 - `/api/v1/config` 實測：default `rtc:false`、full `rtc:true`，Linux full `rtc:true`。
 
-## 2026.11.27 Worktree 文件補 repair 與官方文件來源
+## 2026.11.27 08:11 Worktree 文件補 repair 與官方文件來源
 
 **類型**: 文件 · **檔案**: `Docs/development/git-worktree.md`, `Docs/development/tutorial/README.md`
 
@@ -140,7 +158,7 @@ CMake 從 4.3 更新到 4.4 後，舊的 `CMakeCache.txt` 仍記錄 `CMAKE_ROOT=
 - 實際移動 worktree 後執行 `git worktree repair`，`git worktree list` 與 `status` 均正常。
 - Markdown lint 0 errors。
 
-## 2026.11.27 Worktree 安全清理：回收站優先與 helper
+## 2026.11.27 07:47 Worktree 安全清理：回收站優先與 helper
 
 **類型**: 文件／工具鏈 · **檔案**: `Docs/development/git-worktree.md`, `Docs/development/tutorial/*`, `dev/remove-worktree.ps1`
 
@@ -157,7 +175,7 @@ CMake 從 4.3 更新到 4.4 後，舊的 `CMakeCache.txt` 仍記錄 `CMAKE_ROOT=
 - 主 worktree 與不存在路徑：正確拒絕。
 - 函式改用 approved verb `ConvertTo-NormalizedPath`，避免 PowerShell 警告。
 
-## 2026.11.27 Learn 1 在乾淨 worktree 實跑：補 console bundle 與 UI 建置步驟
+## 2026.11.27 07:20 Learn 1 在乾淨 worktree 實跑：補 console bundle 與 UI 建置步驟
 
 **類型**: 文件／工具鏈 · **檔案**: `Docs/development/tutorial/01-learn1-build-and-run.md`, `dev/srs-dev.ps1`, `dev/README.md`, `TODO.md`
 

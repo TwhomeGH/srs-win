@@ -14,7 +14,7 @@
 | --- | --- | --- |
 | [Learn 1：建置、啟動與 Docker](01-learn1-build-and-run.md) | 建置流程、Windows／Docker、VSCode 入口 | 完成 |
 | [Build 配置導讀：CMake 與 Dockerfile](02-build-configuration.md) | CMake、Dockerfile、來源清單 | 完成 |
-| Learn 2：新增唯讀 API 欄位 | C++ API + console＋Doxygen 驗證 | 規劃中 |
+| [Learn 2：新增唯讀 API 欄位](03-learn2-readonly-api-field.md) | C++ API + console＋Doxygen 驗證 | 完成 |
 | Learn 3：VSCode 除錯工作流 | launch／tasks／attach／Docker 邊界 | 規劃中 |
 | Learn 4：新增 console 頁面 | React／Vite | 規劃中 |
 
@@ -55,7 +55,8 @@ git branch -d tutorial/learn1
 2. 再確認 Docker Linux lane 能建置、啟動、smoke
 3. 讀 CMakePresets／CMakeLists／Dockerfile，知道每個開關在哪裡
 4. 用 source list 檢查做一次「故意失敗」的練習
-5. 才進入實際功能改動
+5. 進入 Learn 2，走一次唯讀 API → console → smoke 的改動
+6. 才進入更大型的功能改動
 ```
 
 ## 為什麼先學建置

@@ -722,6 +722,15 @@ srs_error_t SrsGoApiConfig::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessag
     data->set("version", SrsJsonAny::str(RTMP_SIG_SRS_VERSION));
     data->set("build", SrsJsonAny::str(SRS_BUILD_DATE));
     data->set("build_ts", SrsJsonAny::str(SRS_BUILD_TS));
+    // Compile-time platform identifier. Keep it stable and untranslated so the
+    // console and API clients can branch on it without parsing build strings.
+#if defined(_WIN32)
+    data->set("platform", SrsJsonAny::str("windows"));
+#elif defined(__APPLE__)
+    data->set("platform", SrsJsonAny::str("macos"));
+#else
+    data->set("platform", SrsJsonAny::str("linux"));
+#endif
     data->set("max_connections", SrsJsonAny::integer(_srs_config->get_max_connections()));
 
     SrsJsonObject *listeners = SrsJsonAny::object();

@@ -48,6 +48,8 @@ export default function Configs({ t }) {
                   <div className="fs-5 mb-2">{config.version || '-'}</div>
                   <div className="text-secondary small">{t('configBuild')}</div>
                   <div>{config.build || '-'}{config.build_ts && config.build_ts !== '0' ? ` (${config.build_ts})` : ''}</div>
+                  <div className="text-secondary small mt-2">{t('configPlatform')}</div>
+                  <div>{config.platform || '-'}</div>
                 </div>
               </Card>
             </Col>
