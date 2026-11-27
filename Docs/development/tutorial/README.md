@@ -37,6 +37,7 @@ cd ../srs-tutorial-learn1
 - baseline 是建立這份教學時的 `develop`；`git rev-parse --short HEAD` 會顯示實際 commit。
 - 練習期間只改 worktree。
 - 完成後先離開 worktree，再依照 [Git worktree 安全清理](../git-worktree.md) 送回收站；不要直接用 `git worktree remove --force` 丟掉未提交內容。
+- 需要確認 `prune`／`repair` 的實際行為時，先查 [`git worktree` 官方文件與本機說明](../git-worktree.md#11-查證來源)。
 
 ```powershell
 cd F:\srs

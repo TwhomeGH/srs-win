@@ -146,6 +146,28 @@ git worktree prune -v      # 真正移除 stale metadata
 > 已 prune 後再從回收站還原到同一路徑，`git status` 會顯示 `not a git repository`；即使跑 `git worktree repair` 也無法重建已移除的管理記錄。此時只能重新 `git worktree add`，或把還原的檔案當一般檔案搬回。
 > 如果還想保留「從回收站還原後直接繼續使用同一個 worktree」的能力，先不要 prune；等確定不還原時再執行。
 
+## 6.2 移動 worktree：用 `repair`，不要 `prune`
+
+如果目錄還在、只是換了路徑，先用 `repair` 把 Git 的管理記錄指到新位置：
+
+```powershell
+# 在主 repo 執行；參數是 worktree 的新路徑
+git worktree repair F:\srs-tutorial-learn1-new
+
+git worktree list
+git -C F:\srs-tutorial-learn1-new status --short
+```
+
+實測時 `repair` 可能印出：
+
+```text
+repair: gitdir incorrect: .../.git/worktrees/<name>/gitdir
+```
+
+但 exit code 為 0，`git worktree list` 已指向新路徑，`status` 也正常。**這不是損壞訊息，而是它在修正舊路徑。**
+
+如果目錄已經送回收站／刪除，才用 `prune`；兩者不要顛倒。
+
 ## 7. `git worktree remove` 的行為
 
 ```powershell
@@ -241,6 +263,29 @@ git branch -d tutorial/learn1
 git worktree list
 git status --short
 ```
+
+## 11. 查證來源
+
+教程只給最短操作路徑；行為有疑問時，優先查 Git 自己的文件：
+
+```powershell
+git worktree -h                 # 目前版本的旗標與用法
+git help worktree               # 開啟本機 man／HTML 文件
+git worktree repair -h          # 移動後修復的參數
+```
+
+官方線上文件：
+
+- [git-worktree](https://git-scm.com/docs/git-worktree)
+- [git-worktree repair](https://git-scm.com/docs/git-worktree#Documentation/git-worktree.txt-repair)
+
+Git for Windows 也會把 HTML 文件放在安裝目錄，例如：
+
+```text
+%ProgramFiles%\Git\mingw64\share\doc\git-doc\git-worktree.html
+```
+
+請用 `$env:ProgramFiles` 取得實際位置，不要假設固定磁碟機；Linux／macOS 可用 `man git-worktree`。
 
 ## 相關
 

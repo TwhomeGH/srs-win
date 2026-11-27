@@ -30,6 +30,21 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 Worktree 文件補 repair 與官方文件來源
+
+**類型**: 文件 · **檔案**: `Docs/development/git-worktree.md`, `Docs/development/tutorial/README.md`
+
+### 修改
+
+- 補上 worktree 目錄被移動時用 `git worktree repair`，而不是 `prune`；記錄實測的 `gitdir incorrect` 訊息仍可成功。
+- 補上 `git worktree -h`、`git help worktree`、官方文件與 Git for Windows 本機 HTML 的查詢方式。
+- 明確說明 prune 後從回收站還原只保留檔案，Git worktree 連結不會自動恢復。
+
+### 驗證
+
+- 實際移動 worktree 後執行 `git worktree repair`，`git worktree list` 與 `status` 均正常。
+- Markdown lint 0 errors。
+
 ## 2026.11.27 Worktree 安全清理：回收站優先與 helper
 
 **類型**: 文件／工具鏈 · **檔案**: `Docs/development/git-worktree.md`, `Docs/development/tutorial/*`, `dev/remove-worktree.ps1`
