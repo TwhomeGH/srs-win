@@ -2,6 +2,19 @@
 
 最新在最上。格式：`## YYYY.MM.DD HH:MM 一句話標題`，內文分「問題／根因／修改」。
 
+## 2026.11.27 15:14 變更歷史時間戳記檢查
+
+**類型**: 工具／文件 · **檔案**: `dev/lint-docs.ps1`, `Docs/ChangeHistory.md`
+
+### 修改
+
+- ChangeHistory 的 11 個既有日期標題補上 `HH:MM`，時間取自各條目首次進入 git 的 commit。
+- `dev/lint-docs.ps1` 新增標題格式檢查；缺時間直接失敗，避免再次只寫日期。
+
+### 驗證
+
+- `dev/lint-docs.ps1`：markdownlint 0 errors、`ChangeHistory timestamps: OK`。
+
 ## 2026.11.27 15:12 Learn 2：新增唯讀 API `platform` 欄位
 
 **類型**: 功能／教學 · **檔案**: `trunk/src/app/srs_app_http_api.cpp`, `ui/src/pages/Configs.jsx`, `ui/src/i18n.jsx`, `dev/smoke-test.ps1`, `Docs/development/tutorial/03-learn2-readonly-api-field.md`

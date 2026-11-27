@@ -52,3 +52,18 @@ if ($code -ne 0) {
 }
 
 Write-Host 'markdownlint: OK' -ForegroundColor Green
+
+# ChangeHistory headings are part of the changelogkit contract. Keep the
+# timestamp mandatory so entries remain sortable and do not silently fall
+# back to date-only ordering.
+$history = Join-Path $repoRoot 'Docs/ChangeHistory.md'
+if (Test-Path $history) {
+    $missing = Select-String -Path $history -Pattern '^## ' |
+        Where-Object { $_.Line -notmatch '^## \d{4}\.\d{2}\.\d{2} \d{2}:\d{2} ' }
+    if ($missing) {
+        Write-Host 'ChangeHistory entries missing HH:MM:' -ForegroundColor Red
+        $missing | ForEach-Object { Write-Host ("  " + $_.LineNumber + ': ' + $_.Line) }
+        exit 1
+    }
+    Write-Host 'ChangeHistory timestamps: OK' -ForegroundColor Green
+}
