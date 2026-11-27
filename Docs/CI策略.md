@@ -70,6 +70,18 @@ pwsh dev/build-docs.ps1
 - Windows Full CI `43737927172` 全綠：RTC media E2E、console auth E2E、ctest 與 full smoke 都通過。
 - Linux Build `43743234425` 全綠（1m7s）：source list、configure、make、binary 驗證。
 
+## GitHub Actions runtime 檢查
+
+使用 changelogkit 的 workflow 檢查，會把已停用的 workflow 也一起掃描：
+
+```powershell
+changelogkit workflows --check
+```
+
+目前所有 workflow 的 action 都是 `node24`；`upload-pages-artifact` 是 composite，不適用 Node runtime。
+
+包含已停用但仍保留的 `test.yml` 與 `codeql-analysis.yml`，避免未來重新啟用時才發現 EOL。
+
 ## 目前不做
 
 - 不在每次 push 自動建置。

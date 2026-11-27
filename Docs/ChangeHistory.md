@@ -30,6 +30,21 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 更新 workflow 使用的 Node runtime
+
+**類型**: CI · **檔案**: `.github/workflows/test.yml`, `.github/workflows/codeql-analysis.yml`, `Docs/CI策略.md`
+
+### 修改
+
+- `changelogkit workflows --check` 原本回報 21 個 EOL action（`test.yml`、`codeql-analysis.yml`）。
+- 更新 `actions/checkout@v7`、`github/codeql-action@v4`、`nick-fields/retry@v4`、`docker/setup-qemu-action@v4`、`docker/setup-buildx-action@v4`。
+- 保留已停用 workflow，但同步更新，避免重新啟用時才踩 EOL。
+
+### 驗證
+
+- `changelogkit workflows --check`：35 actions、0 EOL、0 unknown、exit 0。
+- YAML 可解析。
+
 ## 2026.11.27 Platform capability：PID lock 端到端測試
 
 **類型**: 測試／CI · **檔案**: `dev/test-platform-contract.ps1`, `dev/check.ps1`, `.github/workflows/windows-nightly.yml`, `Docs/測試策略.md`, `Docs/平台移植契約.md`
