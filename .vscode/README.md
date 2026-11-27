@@ -3,6 +3,16 @@
 Windows 除錯設定已改為 `cppvsdbg`（Visual Studio 偵錯器）。完整說明在
 [`Docs/VSCode除錯手冊.md`](../Docs/VSCode除錯手冊.md)；這裡只列常用入口。
 
+## IntelliSense 組態
+
+`.vscode/c_cpp_properties.json` 分成三個 configuration：
+
+- `Win32 Default`：Windows default build，使用 `srs_msvc/compat/` 與 `force_include.h`。
+- `Win32 Full (RTC/SRT)`：Windows full build，外加 vcpkg include。
+- `Linux (Dev Container)`：只在 Linux Dev Container 使用 `/usr/bin/g++` 與原生標頭；不要把它套到 Windows 本機。
+
+找不到 `sys/uio.h`／`unistd.h` 時，先確認選的是 Win32 configuration，再執行 `C/C++: Reset IntelliSense Database`。
+
 ## 啟動設定
 
 | 名稱 | 用途 |
