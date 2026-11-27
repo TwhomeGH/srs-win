@@ -269,6 +269,67 @@ static void test_select_roundtrip(void)
     printf("select round-trip: %d loopback connections\n", CLIENTS);
 }
 
+struct close_args {
+    int listen_fd;
+    int saw_eof;
+};
+
+static void *close_server(void *opaque)
+{
+    struct close_args *args = (struct close_args *)opaque;
+    st_netfd_t lfd = st_netfd_open_socket(args->listen_fd);
+    if (!lfd) {
+        args->saw_eof = -1;
+        return NULL;
+    }
+
+    st_netfd_t cfd = st_accept(lfd, NULL, NULL, TEST_TIMEOUT);
+    if (!cfd) {
+        args->saw_eof = -1;
+        st_netfd_close(lfd);
+        return NULL;
+    }
+
+    char byte = 0;
+    int n = (int)st_read(cfd, &byte, 1, TEST_TIMEOUT);
+    args->saw_eof = (n == 0);
+    st_netfd_close(cfd);
+    st_netfd_close(lfd);
+    return NULL;
+}
+
+static void test_peer_close(void)
+{
+    int port = 0;
+    test_socket_t listener = make_listener(&port);
+    CHECK(listener != TEST_INVALID_SOCKET, "failed to create close-test listener");
+    if (listener == TEST_INVALID_SOCKET) {
+        return;
+    }
+
+    struct close_args args;
+    args.listen_fd = (int)listener;
+    args.saw_eof = 0;
+
+    st_thread_t server = st_thread_create(close_server, &args, 1, 0);
+    CHECK(server != NULL, "failed to create close-test server");
+    if (!server) {
+        test_close_socket(listener);
+        return;
+    }
+
+    st_usleep(1000);
+    test_socket_t client = connect_to(port);
+    CHECK(client != TEST_INVALID_SOCKET, "failed to connect close-test client");
+    if (client != TEST_INVALID_SOCKET) {
+        test_close_socket(client);
+    }
+
+    st_thread_join(server, NULL);
+    CHECK(args.saw_eof == 1, "server did not observe EOF after peer close");
+    printf("peer close: EOF observed\n");
+}
+
 static void *exception_worker(void *opaque)
 {
     int *caught = (int *)opaque;
@@ -328,6 +389,7 @@ int main(void)
 #endif
     test_coroutine_exception();
     test_select_roundtrip();
+    test_peer_close();
 
     st_destroy();
 

@@ -30,6 +30,19 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 補 peer close 契約測試
+
+**類型**: 測試 · **檔案**: `dev/tests/st_event_loop_test.cpp`, `Docs/平台移植契約.md`, `TODO.md`
+
+### 修改
+
+- `st-event-loop-test` 新增 peer close：client 關閉後，server 的 `st_read` 必須回 0（EOF），不可卡住或誤判。
+- 契約將關閉流程標為 Verified（peer close）；half-close 仍待補。
+
+### 驗證
+
+- `dev/check.ps1`：4/4 native tests passed。
+
 ## 2026.11.27 移除未使用的 `srs_win32_compat.h`
 
 **類型**: 重構／清理 · **檔案**: `trunk/ide/srs_msvc/srs_win32_compat.h`（刪除）, `trunk/ide/srs_msvc/CMakeLists.txt`, `Docs/`
