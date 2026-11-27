@@ -657,6 +657,44 @@ static void srs_config_add_listens(SrsJsonObject *obj, const char *name, std::ve
     obj->set(name, arr);
 }
 
+// Build capabilities are compile-time facts. Runtime enabled flags are
+// separate: a capability can be compiled in but disabled by config.
+static void srs_config_add_capabilities(SrsJsonObject *obj)
+{
+#ifdef SRS_AUTO_RTC
+    obj->set("rtc", SrsJsonAny::boolean(true));
+#else
+    obj->set("rtc", SrsJsonAny::boolean(false));
+#endif
+#ifdef SRS_AUTO_SRT
+    obj->set("srt", SrsJsonAny::boolean(true));
+#else
+    obj->set("srt", SrsJsonAny::boolean(false));
+#endif
+#ifdef SRS_AUTO_H265
+    obj->set("h265", SrsJsonAny::boolean(true));
+#else
+    obj->set("h265", SrsJsonAny::boolean(false));
+#endif
+#ifdef SRS_AUTO_GB28181
+    obj->set("gb28181", SrsJsonAny::boolean(true));
+#else
+    obj->set("gb28181", SrsJsonAny::boolean(false));
+#endif
+#ifdef SRS_DASH
+    obj->set("dash", SrsJsonAny::boolean(true));
+#else
+    obj->set("dash", SrsJsonAny::boolean(false));
+#endif
+#ifdef SRS_AUTO_SSL
+    obj->set("ssl", SrsJsonAny::boolean(true));
+#else
+    obj->set("ssl", SrsJsonAny::boolean(false));
+#endif
+    obj->set("hls", SrsJsonAny::boolean(true));
+    obj->set("dvr", SrsJsonAny::boolean(true));
+}
+
 SrsGoApiConfig::SrsGoApiConfig()
 {
 }
@@ -701,6 +739,13 @@ srs_error_t SrsGoApiConfig::serve_http(ISrsHttpResponseWriter *w, ISrsHttpMessag
     enabled->set("http_server", SrsJsonAny::boolean(_srs_config->get_http_stream_enabled()));
     enabled->set("srt", SrsJsonAny::boolean(_srs_config->get_srt_enabled()));
     enabled->set("rtc", SrsJsonAny::boolean(_srs_config->get_rtc_server_enabled()));
+    enabled->set("hls", SrsJsonAny::boolean(_srs_config->get_hls_enabled("__defaultVhost__")));
+    enabled->set("dash", SrsJsonAny::boolean(_srs_config->get_dash_enabled("__defaultVhost__")));
+    enabled->set("dvr", SrsJsonAny::boolean(_srs_config->get_dvr_enabled("__defaultVhost__")));
+
+    SrsJsonObject *capabilities = SrsJsonAny::object();
+    data->set("capabilities", capabilities);
+    srs_config_add_capabilities(capabilities);
 
     SrsJsonObject *crossdomain = SrsJsonAny::object();
     data->set("crossdomain", crossdomain);

@@ -329,42 +329,25 @@ file(WRITE ${SRS_AUTO_HEADERS}
 
 // Features
 #define SRS_AUTO_SSL
-#define SRS_AUTO_SSL_USE
 #define SRS_AUTO_H265
-#define SRS_AUTO_H265_USE
 #define SRS_DASH
 
 // Feature _BOOL variants (for API version info)
 #define SRS_OSX_BOOL false
 #define SRS_CROSSBUILD_BOOL false
-#define SRS_HDS_BOOL false
 
-// Conditional features (enabled only when libraries are found)
+// Conditional features are normalized by srs_feature_flags.hpp.
 "
 )
 if(_srs_rtc_enabled)
     file(APPEND ${SRS_AUTO_HEADERS}
-"#define SRS_AUTO_RTC_USE
-#define SRS_AUTO_RTC
-#define SRS_RTC_BOOL true
-"
-    )
-else()
-    file(APPEND ${SRS_AUTO_HEADERS}
-"#define SRS_RTC_BOOL false
+"#define SRS_AUTO_RTC
 "
     )
 endif()
 if(_srs_srt_enabled)
     file(APPEND ${SRS_AUTO_HEADERS}
 "#define SRS_AUTO_SRT
-#define SRS_AUTO_SRT_USE
-#define SRS_SRT_BOOL true
-"
-    )
-else()
-    file(APPEND ${SRS_AUTO_HEADERS}
-"#define SRS_SRT_BOOL false
 "
     )
 endif()
@@ -376,7 +359,6 @@ if(_srs_rtc_enabled)
 endif()
 file(APPEND ${SRS_AUTO_HEADERS}
 "#define SRS_AUTO_GB28181
-#define SRS_GB28181
 "
 )
 file(APPEND ${SRS_AUTO_HEADERS}

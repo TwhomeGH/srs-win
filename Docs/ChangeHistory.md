@@ -30,6 +30,25 @@
 - 既有原始碼註解的 Doxygen warning 仍在，未在本變更擴大處理。
 - API 導讀、原始碼註解與搜尋內容不受影響。
 
+## 2026.11.27 P0：功能旗標單一來源與 console 能力自檢
+
+**類型**: 建置／API／UI · **檔案**: `trunk/src/core/srs_feature_flags.hpp`, `trunk/src/core/srs_core.hpp`, `trunk/ide/srs_msvc/CMakeLists.txt`, `trunk/auto/auto_headers.sh`, `trunk/src/app/srs_app_http_api.cpp`, `ui/src/pages/Configs.jsx`, `ui/src/i18n.jsx`, `Docs/功能旗標與能力自檢.md`
+
+### 修改
+
+- 新增 `srs_feature_flags.hpp`，把 Linux 的 `SRS_*` 與 Windows 的 `SRS_AUTO_*` 正規化為 `SRS_AUTO_*`、`SRS_AUTO_*_USE`、`SRS_*_BOOL`；缺失 alias 時以 `#error` 阻擋。
+- Windows CMake 不再重複產生 `SRS_AUTO_*_USE`／`_BOOL`；Linux `auto_headers.sh` 補上 canonical `SRS_SSL`／`SRS_HLS` 輸入。
+- `/api/v1/config` 新增 `capabilities`（編譯能力），並補上 HLS／DASH／DVR 的 runtime `enabled`。
+- Console 設定頁改為「能力／建置／設定／狀態」表格，區分 compiled 與 configured。
+- 新增 `Docs/功能旗標與能力自檢.md`。
+
+### 驗證
+
+- Windows default／full 建置成功（含 full RTC／SRT）。
+- Linux Docker 建置與 smoke 成功；capabilities 回報 `ssl:true`，GB28181／DASH 依 lane 關閉。
+- `npm --prefix ui test`：10/10 passed；UI build 成功。
+- `/api/v1/config` 實測：default `rtc:false`、full `rtc:true`，Linux full `rtc:true`。
+
 ## 2026.11.27 Worktree 文件補 repair 與官方文件來源
 
 **類型**: 文件 · **檔案**: `Docs/development/git-worktree.md`, `Docs/development/tutorial/README.md`

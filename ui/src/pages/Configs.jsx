@@ -6,21 +6,31 @@ import { usePolling } from '../usePolling';
 
 export default function Configs({ t }) {
   const loader = React.useCallback(async () => {
-    const [configBody, vhostBody, featureBody] = await Promise.all([
+    const [configBody, vhostBody] = await Promise.all([
       apiGet('/config'),
       apiGet('/vhosts/').catch(() => ({ vhosts: [] })),
-      apiGet('/features').catch(() => ({ data: { features: {} } })),
     ]);
     return {
       config: configBody.data || {},
       vhosts: vhostBody.vhosts || [],
-      features: featureBody.data?.features || {},
     };
   }, []);
   const { data, error, updatedAt, reload } = usePolling(loader, 5000);
 
   const config = data?.config;
   const raw = config?.raw_api;
+  const capabilities = config?.capabilities || {};
+  const enabled = config?.enabled || {};
+  const capabilityRows = [
+    { key: 'rtc', label: 'RTC', build: !!capabilities.rtc, configured: !!enabled.rtc },
+    { key: 'srt', label: 'SRT', build: !!capabilities.srt, configured: !!enabled.srt },
+    { key: 'hls', label: 'HLS', build: !!capabilities.hls, configured: !!enabled.hls },
+    { key: 'dash', label: 'DASH', build: !!capabilities.dash, configured: !!enabled.dash },
+    { key: 'dvr', label: 'DVR', build: !!capabilities.dvr, configured: !!enabled.dvr },
+    { key: 'h265', label: 'H.265', build: !!capabilities.h265, configured: null },
+    { key: 'gb28181', label: 'GB28181', build: !!capabilities.gb28181, configured: null },
+    { key: 'ssl', label: 'SSL', build: !!capabilities.ssl, configured: null },
+  ];
 
   return (
     <>
@@ -92,13 +102,29 @@ export default function Configs({ t }) {
             </Col>
             <Col xs={12} xl={6}>
               <Card title={t('configFeatures')}>
-                <div className="card-body d-flex flex-wrap gap-2">
-                  {Object.entries(data.features).map(([name, yes]) => (
-                    <Badge key={name} variant={yes ? 'success' : 'secondary'}>{name}</Badge>
-                  ))}
-                  <Badge variant={config.enabled?.srt ? 'success' : 'secondary'}>srt</Badge>
-                  <Badge variant={config.enabled?.rtc ? 'success' : 'secondary'}>rtc</Badge>
-                </div>
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>{t('configCapability')}</th>
+                      <th>{t('configBuildState')}</th>
+                      <th>{t('configConfigured')}</th>
+                      <th>{t('configStatus')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {capabilityRows.map(row => {
+                      const available = row.build && row.configured !== false;
+                      return (
+                        <tr key={row.key}>
+                          <td><code>{row.label}</code></td>
+                          <td>{row.build ? <Badge variant="success">{t('configCompiled')}</Badge> : <Badge variant="secondary">{t('configNotBuilt')}</Badge>}</td>
+                          <td>{row.configured === null ? <span className="text-secondary">-</span> : row.configured ? <Badge variant="success">{t('enabled')}</Badge> : <Badge variant="secondary">{t('disabled')}</Badge>}</td>
+                          <td>{available ? <Badge variant="success">{t('configAvailable')}</Badge> : <Badge variant="secondary">{t('configUnavailable')}</Badge>}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
               </Card>
             </Col>
           </Row>
